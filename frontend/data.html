@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frontend com Fetch</title>
+    <link rel="stylesheet" href="styles2.css" />
+  </head>
+  <body>
+    <h1>Lista de Data</h1>
+
+    <!-- Formulário de busca -->
+    <form id="searchTimeForm">
+      <input type="time" id="searchTime" placeholder="Horário" />
+      <button type="submit">Buscar Horário</button>
+    </form>
+
+    <!-- Formulário para adicionar horario -->
+    <form id="addTimeForm">
+      <input type="time" id="time" placeholder="Horário" required />
+      <input type="text" id="name" placeholder="Nome" required />
+      <input type="text" id="contact" placeholder="Contato" required />
+      <input type="text" id="observation" placeholder="Observação" required />
+      <button type="submit">Adicionar Horário</button>
+    </form>
+
+    <!-- Lista de horarios -->
+    <ul id="timeList"></ul>
+
+    <!-- Botões de paginação -->
+    <div id="pagination">
+      <button id="prevPage">Anterior</button>
+      <button id="nextPage">Próxima</button>
+    </div>
+
+    <script src="scripts/scriptData.js"></script>
+  </body>
+</html>
