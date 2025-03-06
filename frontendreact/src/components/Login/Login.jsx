@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { get_fk_empresa_id, login } from '../../services/api';
+import { get_fk_empresa_id, login } from '../../services/authService';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -14,9 +14,17 @@ function Login() {
       const response = await login({ email, senha });
       if (response.token) {
         const userData = await get_fk_empresa_id(email)
-        console.log(userData)
         localStorage.setItem('token', response.token);
-        navigate(`/usuario/${userData}`);
+        console.log(userData.fk_empresa_id)
+        if(userData.tipo_usuario === 'funcionario'){
+          navigate(`/agenda/${userData.id_usuario}`);
+        }
+        else if(userData.tipo_usuario === 'secretario' || userData.tipo_usuario === 'gerente'){
+          navigate(`/usuario/${userData.fk_empresa_id}`); 
+        }
+        else if(userData.tipo_usuario === 'admin'){
+          navigate(`/empresa`);
+        }
       }
     } catch (err) {
       setError('Erro ao fazer login. Verifique suas credenciais.');

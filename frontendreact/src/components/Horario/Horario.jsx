@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchHorarios, addHorario, deleteHorario } from '../../services/api';
+import { fetchHorarios, addHorario, deleteHorario } from '../../services/horarioService';
 
 function Horario() {
   const { id } = useParams(); // Obtém o ID da agenda da URL

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchUsuarios, addUsuario, deleteUsuario, updateUsuario } from '../../services/api';
+import { fetchUsuarios, addUsuario, deleteUsuario, updateUsuario } from '../../services/usuarioService';
 
 function Usuario() {
   const { id } = useParams();

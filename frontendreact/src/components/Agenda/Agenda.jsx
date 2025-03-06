@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchAgendamentos, addAgendamento, deleteAgendamento, updateAgendamento } from '../../services/api';
+import { fetchAgendamentos, addAgendamento, deleteAgendamento, updateAgendamento } from '../../services/agendaService';
 
 function Agenda() {
   const { id } = useParams();

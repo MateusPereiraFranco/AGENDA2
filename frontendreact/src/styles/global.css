@@ -2,12 +2,12 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
     background-color: #422020;
-    color: #5588d1;
+    color: #7286a2;
   }
   
   button {
     background-color: #04AA6D;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     padding: 10px;
     border-radius: 5px;
@@ -22,8 +22,10 @@ body {
   input {
     padding: 8px;
     margin: 5px;
-    border: 1px solid #ccc;
+    background-color: #251f1f;
+    border: 1px solid #f3e7e7;
     border-radius: 4px;
+    color: #f3e7e7;
   }
   
   ul {
@@ -33,7 +35,7 @@ body {
   }
   
   li {
-    background-color: #fff;
+    background-color: #fbfbfb49;
     margin: 5px 0;
     padding: 10px;
     border-radius: 5px;
