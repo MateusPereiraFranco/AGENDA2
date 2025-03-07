@@ -1,43 +1,85 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #422020;
-    color: #7286a2;
-  }
-  
-  button {
-    background-color: #04AA6D;
-    color: rgb(255, 255, 255);
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 5px;
-  }
-  
-  button:hover {
-    opacity: 0.8;
-  }
-  
-  input {
-    padding: 8px;
-    margin: 5px;
-    background-color: #251f1f;
-    border: 1px solid #f3e7e7;
-    border-radius: 4px;
-    color: #f3e7e7;
-  }
-  
-  ul {
-    list-style-type: none;
-    padding: 0;
-    color: #000000;
-  }
-  
-  li {
-    background-color: #fbfbfb49;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+  font-family: "Playwrite IT Moderna", cursive;
+  font-optical-sizing: auto;
+  font-weight: weight;
+  font-style: normal;
+  margin: 20px;
+  background-color: #4e2020;
+  color: #6cd875;
+  font-weight: 400;
+}
+
+/*Login*/
+.login-container {
+text-align: center;
+margin-top: 10%;
+margin-left: auto;
+margin-right: auto;
+padding: 5%;
+padding-top: 3%;
+width: 20%;
+border-radius: 25px;
+box-shadow: 7px 7px rgba(0, 0, 0, 0.397);
+background-color: rgba(255, 255, 255, 0.247);
+transition: 0.5s;
+}
+
+.login-container:hover {
+background-color: rgba(255, 255, 255, 0.411);
+}
+
+.form-group1 {
+display: flex;
+justify-content: center;
+gap: 16px;
+align-items: center;
+}
+
+.form-group2 {
+display: flex;
+justify-content: center;
+gap: 10px;
+align-items: center;
+}
+
+.login-container button {
+width: 35%;
+}
+
+button {
+background-color: rgb(67, 185, 106);
+color: rgb(255, 255, 255);
+border: none;
+padding: 10px;
+border-radius: 5px;
+cursor: pointer;
+margin-top: 15px;
+transition: 0.5s; 
+}
+
+.login-container button:hover {
+background-color: rgb(97, 214, 136);
+}
+
+input {
+padding: 8px;
+margin: 5px;
+background-color: #251f1f;
+border: 1px solid #f3e7e7;
+border-radius: 4px;
+color: #f3e7e7;
+}
+
+ul {
+list-style-type: none;
+padding: 0;
+color: #000000;
+}
+
+li {
+background-color: #fbfbfb49;
+margin: 5px 0;
+padding: 10px;
+border-radius: 5px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+} 
