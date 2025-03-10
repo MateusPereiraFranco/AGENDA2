@@ -15,7 +15,7 @@ function Login() {
       if (response.token) {
         const userData = await get_fk_empresa_id(email)
         localStorage.setItem('token', response.token);
-        console.log(userData.fk_empresa_id)
+        localStorage.setItem('tipo_usuario', userData.tipo_usuario);
         if(userData.tipo_usuario === 'funcionario'){
           navigate(`/agenda/${userData.id_usuario}`);
         }

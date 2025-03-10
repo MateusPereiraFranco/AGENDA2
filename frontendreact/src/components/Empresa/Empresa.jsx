@@ -4,7 +4,7 @@ import { fetchEmpresas, addEmpresa, updateEmpresa, deleteEmpresa } from '../../s
 
 function Empresa() {
   const [empresas, setEmpresas] = useState([]);
-  const [searchParams, setSearchParams] = useState({});
+  const [searchParams, setSearchParams] = useState({ nome: '', cnpj: '' }); // Inicializa com campos vazios
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
@@ -14,8 +14,20 @@ function Empresa() {
 
   const loadEmpresas = async () => {
     try {
-      const data = await fetchEmpresas({ ...searchParams, page: currentPage });
-      setEmpresas(data);
+      const params = { ...searchParams };
+      if (params.cnpj === '') delete params.cnpj;
+      if (params.nome === '') delete params.nome;
+      params.page = currentPage;
+  
+      const data = await fetchEmpresas(params);
+  
+      // Verifica se data é um array antes de usar
+      if (Array.isArray(data)) {
+        setEmpresas(data);
+      } else {
+        setEmpresas([]); // Define como array vazio se data não for válido
+        console.error('Dados inválidos recebidos:', data);
+      }
     } catch (error) {
       console.error(error);
       alert('Erro ao carregar empresas');
@@ -67,31 +79,34 @@ function Empresa() {
     navigate(`/usuario/${id}`);
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSearchChange = (e) => {
+    const { name, value } = e.target;
 
-    const nome = e.target.searchName.value.trim(); // trim Remove espaços em branco
-    const cnpj = e.target.searchCnpj.value.trim();
-
-    if (!nome && !cnpj) {
-      alert('Por favor, preencha pelo menos um campo (nome ou CNPJ).');
-      return;
-    }
-
-    const searchParams = {};
-    if (nome) searchParams.nome = nome;
-    if (cnpj) searchParams.cnpj = cnpj;
-
-    setSearchParams(searchParams);
+    // Atualiza os parâmetros de busca em tempo real
+    setSearchParams((prevParams) => ({
+      ...prevParams,
+      [name]: value, // Remove espaços em branco e atualiza o campo correspondente
+    }));
   };
 
   return (
     <div>
       <h1>Lista de Empresas</h1>
-      <form onSubmit={handleSearch}>
-        <input type="text" name="searchName" placeholder="Nome da Empresa" />
-        <input type="text" name="searchCnpj" placeholder="CNPJ" />
-        <button type="submit">Buscar</button>
+      <form>
+        <input
+          type="text"
+          name="nome"
+          placeholder="Nome da Empresa"
+          value={searchParams.nome}
+          onChange={handleSearchChange} // Busca em tempo real
+        />
+        <input
+          type="text"
+          name="cnpj"
+          placeholder="CNPJ"
+          value={searchParams.cnpj}
+          onChange={handleSearchChange} // Busca em tempo real
+        />
       </form>
       <form onSubmit={handleAddEmpresa}>
         <input type="text" name="name" placeholder="Nome da Empresa" required />
@@ -100,14 +115,18 @@ function Empresa() {
         <button type="submit">Adicionar Empresa</button>
       </form>
       <ul>
-        {empresas.map((empresa) => (
-          <li key={empresa.id_empresa}>
-            {empresa.nome} - {empresa.cnpj} - {empresa.email}
-            <button onClick={() => handleDeleteEmpresa(empresa.id_empresa)}>Excluir</button>
-            <button onClick={() => handleUpdateEmpresa(empresa.id_empresa)}>Atualizar</button>
-            <button onClick={() => handleVerEmpresa(empresa.id_empresa)}>Ver Empresa</button>
-          </li>
-        ))}
+        {empresas.length > 0 ? (
+          empresas.map((empresa) => (
+            <li key={empresa.id_empresa}>
+              {empresa.nome} - {empresa.cnpj} - {empresa.email}
+              <button onClick={() => handleDeleteEmpresa(empresa.id_empresa)}>Excluir</button>
+              <button onClick={() => handleUpdateEmpresa(empresa.id_empresa)}>Atualizar</button>
+              <button onClick={() => handleVerEmpresa(empresa.id_empresa)}>Ver Empresa</button>
+            </li>
+          ))
+        ) : (
+          <li>Não há empresas cadastradas</li>
+        )}
       </ul>
       <div>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
