@@ -14,12 +14,28 @@ function Horario() {
 
   const loadHorarios = async () => {
     try {
-      const data = await fetchHorarios(id, { ...searchParams, page: currentPage });
-      setHorarios(data);
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao carregar horários');
-    }
+              // Cria uma cópia do searchParams para evitar mutação direta
+              const params = { ...searchParams };
+        
+              // Remove o campo "nome" se estiver vazio
+              if (params.nome === '') {
+                delete params.nome;
+              }
+        
+              // Adiciona a página atual aos parâmetros
+              params.page = currentPage;
+        
+              // Busca os usuários com os parâmetros atualizados
+              const data = await fetchHorarios(id, params);
+              if (data) {
+                setHorarios(data);
+              } else {
+                setHorarios([]); // Define a lista de usuários como vazia se não houver dados
+              }
+            } catch (error) {
+              console.error(error);
+              alert('Erro ao carregar usuários');
+            }
   };
 
   const handleAddHorario = async (e) => {
@@ -40,6 +56,16 @@ function Horario() {
     }
   };
 
+  const handleDeleteHorario = async (id) => {
+      try {
+        await deleteHorario(id);
+        loadHorarios();
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao excluir horário');
+      }
+    };
+
   return (
     <div>
       <h1>Horários</h1>
@@ -51,12 +77,17 @@ function Horario() {
         <button type="submit">Adicionar Horário</button>
       </form>
       <ul>
-        {horarios.map((horario) => (
-          <li key={horario.id_horario}>
-            {horario.horario} - {horario.nome} - {horario.contato} - {horario.observacoes}
-            <button onClick={() => deleteHorario(horario.id_horario)}>Excluir</button>
-          </li>
-        ))}
+        {horarios.length > 0 ? (
+          horarios.map((horario) => (
+            <li key={horario.id_horario}>
+              {horario.horario} - {horario.nome} - {horario.contato} - {horario.observacoes}
+              <button onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
+            </li>
+          ))
+        ) : (
+          <li>Não há horário cadastrado</li>
+        )
+      }
       </ul>
       <div>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>

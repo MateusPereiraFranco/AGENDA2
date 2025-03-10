@@ -7,7 +7,7 @@ export const fetchAgendamentos = async (fk_usuario_id, searchParams = {}) => {
         const queryString = new URLSearchParams(searchParams).toString();
         const response = await fetch(`${API_URL}/schedules?${queryString}&fk_usuario_id=${fk_usuario_id}`);
         if (!response.ok) {
-            throw new Error('Erro ao carregar agendamentos');
+            return null;
         }
         return response.json();
     } catch (error) {

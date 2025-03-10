@@ -26,7 +26,6 @@ export const get_fk_empresa_id = async (email) => {
     try {
         const userResponse = await fetch(`${API_URL}/users?email=${email}`);
         const userData = await userResponse.json();
-        console.log(userData[0])
         if (userResponse.ok) {
             return userData[0];
         }

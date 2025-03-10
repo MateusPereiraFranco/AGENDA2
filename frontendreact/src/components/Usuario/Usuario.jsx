@@ -10,6 +10,7 @@ function Usuario() {
   const [currentPage, setCurrentPage] = useState(1);
   const [empresaNome, setEmpresaNome] = useState('');
   const navigate = useNavigate();
+  const tipoUsuario = localStorage.getItem('tipo_usuario'); // Recupera o tipo de usuário
 
   useEffect(() => {
     loadUsuarios();
@@ -130,7 +131,9 @@ function Usuario() {
           usuarios.map((usuario) => (
             <li key={usuario.id_usuario}>
               {usuario.nome} - {usuario.email} - {usuario.tipo_usuario}
-              <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
+              {tipoUsuario === 'gerente' && (
+                <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
+              )}
               <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>
               <button onClick={() => handleVerFuncionario(usuario.id_usuario)}>Ver Agenda</button>
             </li>

@@ -15,12 +15,28 @@ function Agenda() {
 
   const loadAgendamentos = async () => {
     try {
-      const data = await fetchAgendamentos(id, { ...searchParams, page: currentPage });
-      setAgendamentos(data);
-    } catch (error) {
-      console.error(error);
-      alert('Erro ao carregar agendamentos');
-    }
+          // Cria uma cópia do searchParams para evitar mutação direta
+          const params = { ...searchParams };
+    
+          // Remove o campo "nome" se estiver vazio
+          if (params.nome === '') {
+            delete params.nome;
+          }
+    
+          // Adiciona a página atual aos parâmetros
+          params.page = currentPage;
+    
+          // Busca os usuários com os parâmetros atualizados
+          const data = await fetchAgendamentos(id, params);
+          if (data) {
+            setAgendamentos(data);
+          } else {
+            setAgendamentos([]); // Define a lista de usuários como vazia se não houver dados
+          }
+        } catch (error) {
+          console.error(error);
+          alert('Erro ao carregar usuários');
+        }
   };
 
   const handleAddAgendamento = async (e) => {
@@ -80,14 +96,19 @@ function Agenda() {
         <button type="submit">Adicionar Agendamento</button>
       </form>
       <ul>
-        {agendamentos.map((agendamento) => (
-          <li key={agendamento.id_agenda}>
-            {agendamento.data}
-            <button onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
-            <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
-            <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
-          </li>
-        ))}
+        {agendamentos.length > 0 ? (
+          agendamentos.map((agendamento) => (
+            <li key={agendamento.id_agenda}>
+              {agendamento.data}
+              <button onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
+              <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
+              <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
+            </li>
+          ))
+        ) : (
+          <li>Não há agenda cadastrado</li>
+        )
+      }
       </ul>
       <div>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>

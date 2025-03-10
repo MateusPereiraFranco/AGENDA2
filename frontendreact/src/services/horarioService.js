@@ -7,7 +7,7 @@ export const fetchHorarios = async (fk_agenda_id, searchParams = {}) => {
         const queryString = new URLSearchParams(searchParams).toString();
         const response = await fetch(`${API_URL}/times?${queryString}&fk_agenda_id=${fk_agenda_id}`);
         if (!response.ok) {
-            throw new Error('Erro ao carregar horários');
+            return null;
         }
         return response.json();
     } catch (error) {
