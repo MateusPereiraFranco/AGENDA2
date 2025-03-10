@@ -33,9 +33,9 @@ function Login() {
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-group1">
           <label>Email:</label>
           <input
             type="email"
@@ -44,7 +44,7 @@ function Login() {
             required
           />
         </div>
-        <div className="form-group">
+        <div className="form-group2">
           <label>Senha:</label>
           <input
             type="password"

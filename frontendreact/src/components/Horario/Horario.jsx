@@ -40,29 +40,48 @@ function Horario() {
     }
   };
 
+  const handleDeleteHorario = async (id) => {
+    try {
+      await deleteHorario(id);
+      loadHorarios();
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao excluir horário');
+    }
+  };
+
   return (
-    <div>
+    <div className='horarios_container_geral'>
       <h1>Horários</h1>
-      <form onSubmit={handleAddHorario}>
+      <form className='add_horario' onSubmit={handleAddHorario}>
         <input type="time" name="horario" placeholder="Horário" required />
         <input type="text" name="nome" placeholder="Nome" required />
         <input type="text" name="contato" placeholder="Contato" required />
         <input type="text" name="observacoes" placeholder="Observações" required />
         <button type="submit">Adicionar Horário</button>
       </form>
-      <ul>
-        {horarios.map((horario) => (
-          <li key={horario.id_horario}>
-            {horario.horario} - {horario.nome} - {horario.contato} - {horario.observacoes}
-            <button onClick={() => deleteHorario(horario.id_horario)}>Excluir</button>
-          </li>
-        ))}
-      </ul>
-      <div>
+      <div className="lista_horarios">
+        <ul>
+        {horarios.length > 0 ? (
+          horarios.map((horario) => (
+            <li key={horario.id_horario}>
+              {horario.horario} - {horario.nome} - {horario.contato} - {horario.observacoes}
+              <button onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
+            </li>
+          ))
+          ) : (
+            <li>Não há horário cadastrado</li>
+          )
+          }
+        </ul>
+      </div>
+      <div className='vai_volta'>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>
+        <button onClick={() => setCurrentPage(currentPage + 1)}>
+          Próxima
+        </button>
       </div>
     </div>
   );
