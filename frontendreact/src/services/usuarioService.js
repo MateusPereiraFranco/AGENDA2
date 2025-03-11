@@ -5,7 +5,9 @@ import { handleError } from './errorHandler';
 export const fetchUsuarios = async (fk_empresa_id, searchParams = {}) => {
     try {
         const queryString = new URLSearchParams(searchParams).toString();
-        const response = await fetch(`${API_URL}/users?${queryString}&fk_empresa_id=${fk_empresa_id}`);
+        const response = await fetch(`${API_URL}/users?${queryString}&fk_empresa_id=${fk_empresa_id}`, {
+            credentials: 'include', // Inclui cookies na requisição
+        });
         if (!response.ok) {
             return null;
         }
@@ -23,6 +25,7 @@ export const deleteUsuario = async (id) => {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id }),
+            credentials: 'include', // Inclui cookies na requisição
         });
         if (!response.ok) {
             throw new Error('Erro ao excluir usuário');
@@ -41,6 +44,7 @@ export const updateUsuario = async (id, usuario) => {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuario),
+            credentials: 'include', // Inclui cookies na requisição
         });
         if (!response.ok) {
             throw new Error('Erro ao atualizar usuário');
@@ -59,6 +63,7 @@ export const addUsuario = async (usuario) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuario),
+            credentials: 'include', // Inclui cookies na requisição
         });
         if (!response.ok) {
             throw new Error('Erro ao adicionar usuário');

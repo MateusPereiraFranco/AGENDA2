@@ -26,15 +26,12 @@ const loginController = async (req, res) => {
     try {
         // Busca o usuário pelo email
         const user = await getUserByEmail(email);
-        console.log(user) ////////////////////////////////////////
         if (!user) {
             return res.status(401).json({ message: 'Email ou senha incorretos' });
         }
 
         // Verifica a senha
         const senhaValida = await verifyPassword(senha, user.senha);
-        console.log(senha)
-        console.log(user.senha)
         if (!senhaValida) {
             return res.status(401).json({ message: 'Email ou senha incorretos' });
         }
@@ -42,12 +39,28 @@ const loginController = async (req, res) => {
         // Gera um token JWT
         const token = jwt.sign({ id: user.id_usuario, email: user.email }, 'secreto', { expiresIn: '1h' });
 
-        res.status(200).json({ token });
+
+        // Configura o cookie seguro
+        res.cookie('token', token, {
+            httpOnly: true, // Impede acesso via JavaScript
+            secure: process.env.NODE_ENV === 'production', // Só envia o cookie em HTTPS em produção
+            sameSite: 'strict', // Protege contra ataques CSRF
+            maxAge: 3600000, // Expira em 1 hora (em milissegundos)
+        });
+
+        // Retorna uma resposta de sucesso sem o token no corpo
+        res.status(200).json({ message: 'Login bem-sucedido', user: { id: user.id_usuario, email: user.email } });
+
     } catch (err) {
         console.error('Erro ao fazer login:', err);
-        console.log("3")
         res.status(500).json({ message: 'Erro ao fazer login' });
     }
+};
+
+
+const logoutController = (req, res) => {
+    res.clearCookie('token'); // Remove o cookie
+    res.status(200).json({ message: 'Logout bem-sucedido' });
 };
 
 
@@ -133,5 +146,5 @@ export {
     deleteUserController,
     updateUserController,
     loginController,
+    logoutController,
 }
-

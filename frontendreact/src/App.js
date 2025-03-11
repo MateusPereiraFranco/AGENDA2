@@ -13,7 +13,7 @@ import Navbar from './components/Navbar/Navbar';
 function App() {
     return (
         <Router>
-            <Navbar/>
+            <Navbar />
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/empresa" element={<Empresa />} />

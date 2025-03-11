@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import enterpriseRoutes from './routes/enterpriseRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import scheduleRoutes from './routes/scheduleRoutes.js';
@@ -11,13 +12,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.use(cookieParser()); // Habilita o uso de cookies
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: 'http://localhost:3001', // Permite apenas solicitações do frontend
+        credentials: true, // Permite o envio de cookies
+    })
+);
 
+/*
 app.use(express.static(path.join(__dirname, '../../frontend')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../frontend/index.html'));
 });
+*/
 
 app.use('/api', enterpriseRoutes);
 app.use('/api', userRoutes);

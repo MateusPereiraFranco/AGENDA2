@@ -14,28 +14,28 @@ function Horario() {
 
   const loadHorarios = async () => {
     try {
-              // Cria uma cópia do searchParams para evitar mutação direta
-              const params = { ...searchParams };
+      // Cria uma cópia do searchParams para evitar mutação direta
+      const params = { ...searchParams };
         
-              // Remove o campo "nome" se estiver vazio
-              if (params.nome === '') {
-                delete params.nome;
-              }
+      // Remove o campo "nome" se estiver vazio
+      if (params.nome === '') {
+        delete params.nome;
+      }
         
-              // Adiciona a página atual aos parâmetros
-              params.page = currentPage;
+      // Adiciona a página atual aos parâmetros
+      params.page = currentPage;
         
-              // Busca os usuários com os parâmetros atualizados
-              const data = await fetchHorarios(id, params);
-              if (data) {
-                setHorarios(data);
-              } else {
-                setHorarios([]); // Define a lista de usuários como vazia se não houver dados
-              }
-            } catch (error) {
-              console.error(error);
-              alert('Erro ao carregar usuários');
-            }
+      // Busca os usuários com os parâmetros atualizados
+      const data = await fetchHorarios(id, params);
+      if (data) {
+        setHorarios(data);
+      } else {
+        setHorarios([]); // Define a lista de usuários como vazia se não houver dados
+      }
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao carregar usuários');
+      }
   };
 
   const handleAddHorario = async (e) => {

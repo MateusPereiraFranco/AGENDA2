@@ -11,25 +11,28 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login({ email, senha });
-      if (response.token) {
-        const userData = await get_fk_empresa_id(email)
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('tipo_usuario', userData.tipo_usuario);
-        if(userData.tipo_usuario === 'funcionario'){
-          navigate(`/agenda/${userData.id_usuario}`);
+        const response = await login({ email, senha });
+        if (response && response.message === 'Login bem-sucedido') {
+            const userData = await get_fk_empresa_id(email);
+            if (userData) { // Verifica se userData não é null
+                localStorage.setItem('tipo_usuario', userData.tipo_usuario); // Armazena apenas o tipo de usuário
+                if (userData.tipo_usuario === 'funcionario') {
+                    navigate(`/agenda/${userData.id_usuario}`);
+                } else if (userData.tipo_usuario === 'secretario' || userData.tipo_usuario === 'gerente') {
+                    navigate(`/usuario/${userData.fk_empresa_id}`);
+                } else if (userData.tipo_usuario === 'admin') {
+                    navigate(`/empresa`);
+                }
+            } else {
+                setError('Erro ao buscar informações do usuário.');
+            }
+        } else {
+            setError('Erro ao fazer login. Verifique suas credenciais.');
         }
-        else if(userData.tipo_usuario === 'secretario' || userData.tipo_usuario === 'gerente'){
-          navigate(`/usuario/${userData.fk_empresa_id}`); 
-        }
-        else if(userData.tipo_usuario === 'admin'){
-          navigate(`/empresa`);
-        }
-      }
     } catch (err) {
-      setError('Erro ao fazer login. Verifique suas credenciais.');
+        setError('Erro ao fazer login. Verifique suas credenciais.');
     }
-  };
+};
 
   return (
     <div className="login-container">
