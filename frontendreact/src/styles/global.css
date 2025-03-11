@@ -129,7 +129,7 @@ nav:hover{
 /* Container de Login */
 .login-container {
   text-align: center;
-  margin: 5% auto 0;
+  margin: 5% auto 0 auto;
   padding: 5% 3%;
   width: 90%;
   max-width: 500px;
@@ -164,10 +164,12 @@ nav:hover{
   padding: 10px;
   margin-top: 15px;
 }
+/*/////////////////////////////////////*/
 
 /* Container de Agendamentos */
 .agenda_conteiner_geral,
-.horarios_container_geral
+.horarios_container_geral,
+.conteiner_empresas
 {
   margin-left: 1%;
 }
@@ -193,16 +195,22 @@ nav:hover{
   align-items: baseline;
 }
 
-.resultado_agendamento_busca {
+.resultado_agendamento_busca, 
+.resultado_empresas_busca {
   width: 90%;
   max-width: 600px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  color: var(--text-color);
 }
 
-.resultado_agendamento_busca button {
-  margin-right: 3%;
+.resultado_agendamento_busca button,
+.resultado_empresas_busca button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
   margin-right: 3%;
   max-width: 150px;
   height: 30px;
@@ -214,7 +222,8 @@ nav:hover{
   color: var(--text-color);
 }
 
-.resultado_agendamento_busca li {
+.resultado_agendamento_busca li,
+.resultado_empresas_busca li {
   display: flex;
   flex-direction: row;
   align-items: baseline;
@@ -278,6 +287,12 @@ nav:hover{
   margin-left: 20px;
   height: 25px;
   width: 125px;
+}
+/*//////////////////////////////////////////////*/
+
+/*Conteiner de Empresas*/
+.conteiner_empresas{
+  margin-left: ;
 }
 
 /* Responsividade */
