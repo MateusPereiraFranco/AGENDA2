@@ -1,19 +1,25 @@
-import express from 'express'
-import { getUsersController, addUserController, deleteUserController, updateUserController, loginController } from '../controllers/userController.js';
-import authenticateToken from '../middlewares/authMiddleware.js';
+import express from 'express';
+import {
+    getUsersController,
+    addUserController,
+    deleteUserController,
+    updateUserController,
+    loginController,
+    logoutController,
+} from '../controllers/userController.js';
+import autenticar from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
 
 const router = express.Router();
 
-// Rota para listar os usuarios
+// Rota de login (não precisa de autenticação)
 router.post('/login', loginController);
-router.get('/users', getUsersController);
-router.post('/addUser', addUserController);
-router.delete('/deleteUser', deleteUserController)
-router.put('/updateUser/:id', updateUserController)
 
-// Exemplo de rota protegida
-router.get('/protected', authenticateToken, (req, res) => {
-    res.json({ message: 'Rota protegida', user: req.user });
-});
+// Rotas protegidas (exigem autenticação)
+router.get('/users', autenticar, getUsersController); // Listar usuários
+router.post('/addUser', autenticar, addUserController); // Adicionar usuário
+router.delete('/deleteUser', autenticar, deleteUserController); // Deletar usuário
+router.put('/updateUser/:id', autenticar, updateUserController); // Atualizar usuário
+router.post('/logout', logoutController);
+
 
 export default router;

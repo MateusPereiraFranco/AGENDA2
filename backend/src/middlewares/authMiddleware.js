@@ -1,20 +1,20 @@
-// backend/src/middlewares/authMiddleware.js
 import jwt from 'jsonwebtoken';
 
-const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization'];
+const autenticar = (req, res, next) => {
+    const token = req.cookies.token; // Token vem do cookie
 
     if (!token) {
-        return res.status(401).json({ message: 'Token de autenticação não fornecido' });
+        return res.status(401).json({ message: 'Acesso não autorizado' });
     }
 
-    jwt.verify(token, 'secreto', (err, user) => {
-        if (err) {
-            return res.status(403).json({ message: 'Token inválido ou expirado' });
-        }
-        req.user = user;
-        next();
-    });
+    try {
+        // Verifica o token
+        const decoded = jwt.verify(token, 'secreto');
+        req.user = decoded; // Adiciona os dados do usuário à requisição
+        next(); // Continua para a próxima função/rota
+    } catch (err) {
+        res.status(401).json({ message: 'Token inválido ou expirado' });
+    }
 };
 
-export default authenticateToken;
+export default autenticar;
