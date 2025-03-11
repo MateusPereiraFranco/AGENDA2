@@ -81,40 +81,48 @@ function Agenda() {
   };
 
   return (
-    <div>
+    <div className='agenda_conteiner_geral'>
       <h1>Agendamentos</h1>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <input
-          type="date"
-          placeholder="Buscar por data"
-          onChange={(e) => setSearchParams({ data: e.target.value })}
-        />
-        <button type="submit">Buscar</button>
-      </form>
-      <form onSubmit={handleAddAgendamento}>
-        <input type="date" name="data" placeholder="Data" required />
-        <button type="submit">Adicionar Agendamento</button>
-      </form>
+      <div className="conteiner_agendamento">
+        <form onSubmit={(e) => e.preventDefault()} className='agendamento_1'>
+          <input
+            type="date"
+            placeholder="Buscar por data"
+            onChange={(e) => setSearchParams({ data: e.target.value })}
+          />
+          <button type="submit">Buscar</button>
+        </form>
+        <form onSubmit={handleAddAgendamento} className='agendamento_1'>
+          <input type="date" name="data" placeholder="Data" required />
+          <button type="submit">Adicionar Agendamento</button>
+        </form>
+      </div>
       <ul>
-        {agendamentos.length > 0 ? (
-          agendamentos.map((agendamento) => (
-            <li key={agendamento.id_agenda}>
-              {agendamento.data}
-              <button onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
-              <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
-              <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
-            </li>
+        <div className="resultado_agendamento_busca">
+          {agendamentos.length > 0 ? (
+            agendamentos.map((agendamento) => (
+              <li key={agendamento.id_agenda}>
+                <div className="data">
+                  {agendamento.data}
+                </div>
+                <button onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
+                <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
+                <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
+              </li>
           ))
-        ) : (
-          <li>Não há agenda cadastrado</li>
-        )
-      }
+          ) : (
+            <li>Não há agenda cadastrado</li>
+          )
+        }
+        </div>
       </ul>
-      <div>
+      <div className='vai_volta'>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>
+        <button onClick={() => setCurrentPage(currentPage + 1)}>
+          Próxima
+        </button>
       </div>
     </div>
   );
