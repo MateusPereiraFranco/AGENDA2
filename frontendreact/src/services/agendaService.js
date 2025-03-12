@@ -5,7 +5,9 @@ import { handleError } from './errorHandler';
 export const fetchAgendamentos = async (fk_usuario_id, searchParams = {}) => {
     try {
         const queryString = new URLSearchParams(searchParams).toString();
-        const response = await fetch(`${API_URL}/schedules?${queryString}&fk_usuario_id=${fk_usuario_id}`);
+        const response = await fetch(`${API_URL}/schedules?${queryString}&fk_usuario_id=${fk_usuario_id}`, {
+            credentials: 'include',
+        });
         if (!response.ok) {
             return null;
         }
@@ -24,6 +26,7 @@ export const deleteAgendamento = async (id) => {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id }),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao excluir agendamento');
@@ -42,6 +45,7 @@ export const updateAgendamento = async (id, agendamento) => {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(agendamento),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao atualizar agendamento');
@@ -57,12 +61,11 @@ export const updateAgendamento = async (id, agendamento) => {
 // Função para adicionar um agendamento
 export const addAgendamento = async (agendamento) => {
     try {
-
-
         const response = await fetch(`${API_URL}/addSchedule`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(agendamento),
+            credentials: 'include', // Inclui cookies na requisição
         });
         if (!response.ok) {
             throw new Error('Erro ao adicionar agendamento');
