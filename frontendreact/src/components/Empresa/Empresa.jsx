@@ -114,22 +114,28 @@ function Empresa() {
         <input type="text" name="email" placeholder="Email" required />
         <button type="submit">Adicionar Empresa</button>
       </form>
-      <ul>
-        <div className="resultado_empresas_busca">
+      <table>
+        <tbody>
           {empresas.length > 0 ? (
             empresas.map((empresa) => (
-              <li key={empresa.id_empresa}>
-                {empresa.nome} - {empresa.cnpj} - {empresa.email}
-                <button onClick={() => handleDeleteEmpresa(empresa.id_empresa)}>Excluir</button>
-                <button onClick={() => handleUpdateEmpresa(empresa.id_empresa)}>Atualizar</button>
-                <button onClick={() => handleVerEmpresa(empresa.id_empresa)}>Ver Empresa</button>
-              </li>
+              <tr key={empresa.id_empresa}>
+                <td>{empresa.nome}</td>
+                <td>{empresa.cnpj}</td>
+                <td>{empresa.email}</td>
+                <td>
+                  <button onClick={() => handleDeleteEmpresa(empresa.id_empresa)}>Excluir</button>
+                  <button onClick={() => handleUpdateEmpresa(empresa.id_empresa)}>Atualizar</button>
+                  <button onClick={() => handleVerEmpresa(empresa.id_empresa)}>Ver Empresa</button>
+                </td>
+              </tr>
             ))
           ) : (
-            <li>Não há empresas cadastradas</li>
+            <tr>
+              <td colSpan="4" style={{ textAlign: 'center' }}>Nenhuma empresa cadastrada</td>
+            </tr>
           )}
-        </div>
-      </ul>
+        </tbody>
+      </table>
       <div>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Anterior
