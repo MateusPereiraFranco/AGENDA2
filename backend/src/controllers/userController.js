@@ -37,7 +37,11 @@ const loginController = async (req, res) => {
         }
 
         // Gera um token JWT
-        const token = jwt.sign({ id: user.id_usuario, email: user.email }, 'secreto', { expiresIn: '1h' });
+        const token = jwt.sign(
+            { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario },
+            'secreto',
+            { expiresIn: '1h' }
+        );
 
 
         // Configura o cookie seguro

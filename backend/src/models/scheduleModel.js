@@ -1,5 +1,19 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 
+// Função para buscar um agendamento pelo ID
+const getScheduleById = async (id) => {
+    try {
+        const result = await client.query(
+            'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, fk_usuario_id FROM agenda WHERE id_agenda = $1',
+            [id]
+        );
+        return result.rows[0] || null; // Retorna o agendamento ou null se não existir
+    } catch (err) {
+        console.error('Erro ao buscar agendamento por ID:', err);
+        throw err;
+    }
+};
+
 const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sortBy = 'id_agenda', order = 'ASC' } = {}) => {
     try {
         let query = 'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, fk_usuario_id FROM agenda';
@@ -86,5 +100,6 @@ export {
     getSchedules,
     addSchedule,
     deleteSchedule,
-    updateSchedule
+    updateSchedule,
+    getScheduleById,
 }

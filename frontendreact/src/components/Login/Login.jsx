@@ -15,7 +15,8 @@ function Login() {
         if (response && response.message === 'Login bem-sucedido') {
             const userData = await get_fk_empresa_id(email);
             if (userData) { // Verifica se userData não é null
-                localStorage.setItem('tipo_usuario', userData.tipo_usuario); // Armazena apenas o tipo de usuário
+                localStorage.setItem('tipo_usuario', userData.tipo_usuario);
+                localStorage.setItem('id_usuario', userData.id_usuario);
                 if (userData.tipo_usuario === 'funcionario') {
                     navigate(`/agenda/${userData.id_usuario}`);
                 } else if (userData.tipo_usuario === 'secretario' || userData.tipo_usuario === 'gerente') {
