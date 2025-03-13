@@ -122,7 +122,7 @@ function Empresa() {
                 <td>{empresa.nome}</td>
                 <td>{empresa.cnpj}</td>
                 <td>{empresa.email}</td>
-                <td>
+                <td className='tabela_botao'>
                   <button onClick={() => handleDeleteEmpresa(empresa.id_empresa)}>Excluir</button>
                   <button onClick={() => handleUpdateEmpresa(empresa.id_empresa)}>Atualizar</button>
                   <button onClick={() => handleVerEmpresa(empresa.id_empresa)}>Ver Empresa</button>
@@ -136,7 +136,7 @@ function Empresa() {
           )}
         </tbody>
       </table>
-      <div>
+      <div className='vai_volta'>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Anterior
         </button>

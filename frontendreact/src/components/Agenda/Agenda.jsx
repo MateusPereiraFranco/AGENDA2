@@ -96,24 +96,28 @@ function Agenda() {
                     <button type="submit">Adicionar Agendamento</button>
                 </form>
             </div>
-            <ul>
-                <div className="resultado_agendamento_busca">
+            <div className='tabela_agenda'>
+                <table>
+                  <tbody>
                     {agendamentos.length > 0 ? (
-                        agendamentos.map((agendamento) => (
-                            <li key={agendamento.id_agenda}>
-                                <div className="data">
-                                    {agendamento.data}
-                                </div>
-                                <button onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
-                                <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
-                                <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
-                            </li>
-                        ))
+                      agendamentos.map((agendamento) => (
+                        <tr key={agendamento.id_agenda}>
+                          <td>{agendamento.data}</td>
+                          <td>
+                            <button onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
+                            <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
+                            <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
+                          </td>
+                        </tr>
+                      ))
                     ) : (
-                        <li>Não há agenda cadastrado</li>
+                      <tr>
+                        <td colSpan="2" style={{ textAlign: 'center' }}>Nenhum agendamento cadastrado</td>
+                      </tr>
                     )}
-                </div>
-            </ul>
+                  </tbody>
+                </table>
+            </div>
             <div className='vai_volta'>
                 <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                     Anterior
