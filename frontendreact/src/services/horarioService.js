@@ -5,7 +5,9 @@ import { handleError } from './errorHandler';
 export const fetchHorarios = async (fk_agenda_id, searchParams = {}) => {
     try {
         const queryString = new URLSearchParams(searchParams).toString();
-        const response = await fetch(`${API_URL}/times?${queryString}&fk_agenda_id=${fk_agenda_id}`);
+        const response = await fetch(`${API_URL}/times?${queryString}&fk_agenda_id=${fk_agenda_id}`, {
+            credentials: 'include',
+        });
         if (!response.ok) {
             return null;
         }
@@ -23,6 +25,7 @@ export const addHorario = async (horario) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(horario),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao adicionar horário');
@@ -41,6 +44,7 @@ export const deleteHorario = async (id) => {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id }),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao excluir horário');

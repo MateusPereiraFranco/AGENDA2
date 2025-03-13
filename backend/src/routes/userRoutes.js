@@ -6,6 +6,7 @@ import {
     updateUserController,
     loginController,
     logoutController,
+    checkAuthController,
 } from '../controllers/userController.js';
 import autenticar from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
 
@@ -20,6 +21,7 @@ router.post('/addUser', autenticar, addUserController); // Adicionar usuário
 router.delete('/deleteUser', autenticar, deleteUserController); // Deletar usuário
 router.put('/updateUser/:id', autenticar, updateUserController); // Atualizar usuário
 router.post('/logout', logoutController);
+router.get('/check-auth', checkAuthController);
 
 
 export default router;

@@ -1,12 +1,12 @@
-import express from 'express'
+import express from 'express';
 import { getTimesController, addTimeController, deleteTimeController, updateTimeController } from '../controllers/timeController.js';
+import autenticar from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Rota para listar os horarios
-router.get('/times', getTimesController);
-router.post('/addTime', addTimeController);
-router.delete('/deleteTime', deleteTimeController)
-router.put('/updateTime/:id', updateTimeController)
+router.get('/times', autenticar, getTimesController);
+router.post('/addTime', autenticar, addTimeController);
+router.delete('/deleteTime', autenticar, deleteTimeController);
+router.put('/updateTime/:id', autenticar, updateTimeController);
 
 export default router;

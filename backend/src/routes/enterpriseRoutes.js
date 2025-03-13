@@ -1,12 +1,20 @@
-import express from 'express'
-import { addEnterpriseController, deleteEnterpriseController, getEnterprisesController, updateEnterpriseController } from '../controllers/enterpriseController.js';
+import express from 'express';
+import { getEnterprisesController, addEnterpriseController, deleteEnterpriseController, updateEnterpriseController } from '../controllers/enterpriseController.js';
+import autenticar from '../middlewares/authMiddleware.js';
+
 const router = express.Router();
 
+const isAdmin = (req, res, next) => {
+    if (req.user.tipo_usuario === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ message: 'Acesso negado. Somente administradores podem acessar esta rota.' });
+    }
+};
 
-// Rota para listar os empresas
-router.get('/enterprises', getEnterprisesController);
-router.post('/addEnterprise', addEnterpriseController);
-router.delete('/deleteEnterprise', deleteEnterpriseController)
-router.put('/updateEnterprise/:id', updateEnterpriseController)
+router.get('/enterprises', autenticar, isAdmin, getEnterprisesController);
+router.post('/addEnterprise', autenticar, isAdmin, addEnterpriseController);
+router.delete('/deleteEnterprise', autenticar, isAdmin, deleteEnterpriseController);
+router.put('/updateEnterprise/:id', autenticar, isAdmin, updateEnterpriseController);
 
 export default router;

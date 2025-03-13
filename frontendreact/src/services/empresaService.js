@@ -5,7 +5,9 @@ import { handleError } from './errorHandler';
 export const fetchEmpresas = async (searchParams = {}) => {
     try {
         const queryString = new URLSearchParams(searchParams).toString();
-        const response = await fetch(`${API_URL}/enterprises?${queryString}`);
+        const response = await fetch(`${API_URL}/enterprises?${queryString}`, {
+            credentials: 'include',
+        });
         if (!response.ok) {
             return null;
         }
@@ -14,7 +16,6 @@ export const fetchEmpresas = async (searchParams = {}) => {
         handleError(error);
         return null;
     }
-    // Mudar a forma de busca para aceitar apenas 1 das buscas. ele necessita das 2 informações
 };
 
 // Função para adicionar uma empresa
@@ -24,6 +25,7 @@ export const addEmpresa = async (empresa) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(empresa),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao adicionar empresa');
@@ -42,6 +44,7 @@ export const updateEmpresa = async (id, empresa) => {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(empresa),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao atualizar empresa');
@@ -60,6 +63,7 @@ export const deleteEmpresa = async (id) => {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id }),
+            credentials: 'include',
         });
         if (!response.ok) {
             throw new Error('Erro ao excluir empresa');

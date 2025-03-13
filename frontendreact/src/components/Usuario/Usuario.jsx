@@ -131,7 +131,7 @@ function Usuario() {
           usuarios.map((usuario) => (
             <li key={usuario.id_usuario}>
               {usuario.nome} - {usuario.email} - {usuario.tipo_usuario}
-              {tipoUsuario === 'gerente' && (
+              {(tipoUsuario === 'gerente' || tipoUsuario === 'admin')  && (
                 <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
               )}
               <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>

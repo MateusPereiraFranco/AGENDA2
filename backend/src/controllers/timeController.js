@@ -1,6 +1,5 @@
-import { getTimes, addTime, deleteTime, updateTime } from "../models/timeModel.js";
-
-
+import { getTimes, addTime, deleteTime, updateTime, getTimeById } from "../models/timeModel.js";
+import { getScheduleById } from "../models/scheduleModel.js";
 import Joi from 'joi';
 
 const searchSchema = Joi.object({
@@ -23,7 +22,22 @@ const getTimesController = async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
+    const usuarioAutenticado = req.user; // Dados do usuário autenticado
+
     try {
+        // Verifica se o usuário tem permissão para acessar os horários da agenda
+        if (value.fk_agenda_id) {
+            const agenda = await getScheduleById(value.fk_agenda_id); // Busca a agenda pelo ID
+            if (!agenda) {
+                return res.status(404).send('Agenda não encontrada');
+            }
+
+            // Verifica se o usuário é o dono da agenda ou tem permissão de admin/gerente/secretário
+            if (usuarioAutenticado.id !== agenda.fk_usuario_id && !['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+                return res.status(403).send('Você não tem permissão para acessar os horários desta agenda');
+            }
+        }
+
         const times = await getTimes(value);
 
         if (times.length === 0) {
@@ -55,22 +69,39 @@ const addTimeController = async (req, res) => {
 
 // Controlador para adicionar um novo horario
 const deleteTimeController = async (req, res) => {
-    const { id } = req.body; // Recebe os dados do corpo da requisição
+    const { id } = req.body; // Recebe o ID do horário a ser deletado
+    const usuarioAutenticado = req.user;
+
     if (!id) {
         return res.status(400).send('ID é obrigatório para exclusão');
     }
 
     try {
-        const time = await deleteTime(id); // Chama o modelo para deletar o horario
+        // Busca o horário pelo ID
+        const time = await getTimeById(id);
         if (!time) {
-            return res.status(404).send('Horario não encontrado');
+            return res.status(404).send('Horário não encontrado');
         }
-        res.status(200).json({ message: 'Horario excluido com sucesso!', time }); // Retorna horario excluido
+
+        // Busca a agenda associada ao horário
+        const agenda = await getScheduleById(time.fk_agenda_id);
+        if (!agenda) {
+            return res.status(404).send('Agenda não encontrada');
+        }
+
+        // Verifica se o usuário tem permissão para deletar o horário
+        if (usuarioAutenticado.id === agenda.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+            const deletedTime = await deleteTime(id);
+            res.status(200).json({ message: 'Horário excluído com sucesso!', time: deletedTime });
+        } else {
+            res.status(403).send('Você não tem permissão para excluir horários desta agenda');
+        }
     } catch (err) {
-        console.error('Erro ao excluir horario:', err);
-        res.status(500).send('Erro ao excluir horario:');
+        console.error('Erro ao excluir horário:', err);
+        res.status(500).send('Erro ao excluir horário');
     }
 };
+
 
 const updateTimeController = async (req, res) => {
     const { id } = req.params;

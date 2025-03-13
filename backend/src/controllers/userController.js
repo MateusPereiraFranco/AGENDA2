@@ -16,6 +16,34 @@ const searchSchema = Joi.object({
     order: Joi.string().valid('ASC', 'DESC').default('ASC'),
 });
 
+const checkAuthController = async (req, res) => {
+    // Extrai o token do cookie
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.status(401).json({ authenticated: false, message: 'Token não fornecido' });
+    }
+
+    try {
+        // Verifica o token usando a chave secreta
+        const decoded = jwt.verify(token, 'secreto'); // Use a mesma chave usada no login
+
+        // Retorna as informações do usuário e o status de autenticação
+        res.status(200).json({
+            authenticated: true,
+            user: {
+                id: decoded.id,
+                email: decoded.email,
+                tipo_usuario: decoded.tipo_usuario,
+            },
+        });
+    } catch (err) {
+        // Se o token for inválido ou expirado
+        console.error('Erro ao verificar token:', err);
+        res.status(401).json({ authenticated: false, message: 'Token inválido ou expirado' });
+    }
+};
+
 const loginController = async (req, res) => {
     const { email, senha } = req.body;
 
@@ -151,4 +179,5 @@ export {
     updateUserController,
     loginController,
     logoutController,
+    checkAuthController,
 }

@@ -1,5 +1,19 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 
+
+export const getTimeById = async (id) => {
+    try {
+        const result = await client.query(
+            'SELECT * FROM horario WHERE id_horario = $1',
+            [id]
+        );
+        return result.rows[0] || null; // Retorna o horário ou null se não existir
+    } catch (err) {
+        console.error('Erro ao buscar horário por ID:', err);
+        throw err;
+    }
+};
+
 const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes, page = 1, limit = 10, sortBy = 'id_horario', order = 'ASC' } = {}) => {
     try {
         let query = 'SELECT * FROM horario';
