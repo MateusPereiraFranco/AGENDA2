@@ -1,13 +1,6 @@
-//react
 import React, { useState, useEffect } from 'react';
-
-// routerdom
 import { useNavigate } from 'react-router-dom'; // Para redirecionar o usuário
-
-//Api
-import { API_URL } from '../../services/apiConfig';
-
-//Icons
+import { API_URL } from '../../services/apiConfig'; // Importe a URL da API
 import { BsCart2 } from "react-icons/bs";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
@@ -17,31 +10,40 @@ import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
 import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { useAuth } from '../../context/AuthContext'; // Importe o hook useAuth
 
 const Navbar = () => {
     const [openMenu, setOpenMenu] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticação
+    const { isAuthenticated, setIsAuthenticated } = useAuth(); // Use o contexto de autenticação
     const navigate = useNavigate();
 
     // Verifica se o usuário está autenticado ao carregar o componente
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                // Verifica se o cookie de autenticação existe
                 const response = await fetch(`${API_URL}/check-auth`, {
                     credentials: 'include', // Inclui cookies na requisição
                 });
+
+                // Verifica se a resposta foi bem-sucedida
+                if (!response.ok) {
+                    throw new Error('Erro ao verificar autenticação');
+                }
+
                 const data = await response.json();
                 if (data.authenticated) {
-                    setIsAuthenticated(true);
+                    setIsAuthenticated(true); // Atualiza o estado de autenticação
+                } else {
+                    setIsAuthenticated(false); // Define como não autenticado
                 }
             } catch (error) {
                 console.error('Erro ao verificar autenticação:', error);
+                setIsAuthenticated(false); // Define como não autenticado em caso de erro
             }
         };
 
         checkAuth();
-    }, []);
+    }, [setIsAuthenticated]); // Adiciona setIsAuthenticated como dependência
 
     // Função para fazer logout
     const handleLogout = async () => {
@@ -52,7 +54,9 @@ const Navbar = () => {
             });
             if (response.ok) {
                 setIsAuthenticated(false); // Atualiza o estado de autenticação
-                navigate('/'); // Redireciona para a página de login
+                localStorage.removeItem('tipo_usuario'); // Limpa o tipo de usuário do localStorage
+                localStorage.removeItem('id_usuario'); // Limpa o ID do usuário do localStorage
+                navigate('/login'); // Redireciona para a página de login
             } else {
                 console.error('Erro ao fazer logout:', response.statusText);
             }
@@ -78,18 +82,11 @@ const Navbar = () => {
             icon: <CommentRoundedIcon />,
             path: "/testimonials"
         },
-        // Substitui "Contact" por "Logout" se o usuário estiver autenticado
-        isAuthenticated
-            ? {
-                text: "Logout",
-                icon: <LogoutIcon />,
-                onClick: handleLogout // Ação de logout
-            }
-            : {
-                text: "Contact",
-                icon: <PhoneRoundedIcon />,
-                path: "/contact"
-            },
+        {
+            text: "Contact",
+            icon: <PhoneRoundedIcon />,
+            path: "/contact"
+        },
         {
             text: "Cart",
             icon: <ShoppingCartRoundedIcon />,
@@ -108,6 +105,12 @@ const Navbar = () => {
                         {item.text}
                     </a>
                 ))}
+                {/* Botão de logout ao lado do Cart */}
+                {isAuthenticated && (
+                    <button className='logout-button' onClick={handleLogout}>
+                        <LogoutIcon /> Logout
+                    </button>
+                )}
                 <button className='primary-button'>Booking Now</button>
             </div>
             <div className='navbar-menu-container'>
@@ -129,6 +132,15 @@ const Navbar = () => {
                                 </ListItemButton>
                             </ListItem>
                         ))}
+                        {/* Adiciona o botão de logout no menu lateral */}
+                        {isAuthenticated && (
+                            <ListItem disablePadding>
+                                <ListItemButton onClick={handleLogout}>
+                                    <ListItemIcon><LogoutIcon /></ListItemIcon>
+                                    <ListItemText primary="Logout" />
+                                </ListItemButton>
+                            </ListItem>
+                        )}
                     </List>
                 </Box>
             </Drawer>

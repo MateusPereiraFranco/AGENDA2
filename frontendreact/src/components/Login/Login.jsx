@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get_fk_empresa_id, login } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 function Login() {
+  const { setIsAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
@@ -14,7 +16,8 @@ function Login() {
         const response = await login({ email, senha });
         if (response && response.message === 'Login bem-sucedido') {
             const userData = await get_fk_empresa_id(email);
-            if (userData) { // Verifica se userData não é null
+            if (userData) {
+                setIsAuthenticated(true);
                 localStorage.setItem('tipo_usuario', userData.tipo_usuario);
                 localStorage.setItem('id_usuario', userData.id_usuario);
                 if (userData.tipo_usuario === 'funcionario') {
