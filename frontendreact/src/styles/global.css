@@ -1,6 +1,5 @@
 /*Variáveis CSS*/
 :root {
-
   --secondary-bg: rgba(0, 0, 0, 0.25);
   --secondary-bg-hover: rgba(0, 0, 0, 0.4);
   --text-color: #6cd875;
@@ -26,12 +25,14 @@ body {
 }
 
 input {
-  padding: 8px;
   margin: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: rgb(255, 255, 255);
   background-color: var(--input-bg);
   border: 1px solid var(--input-border);
-  color: rgb(255, 255, 255);
-  border-radius: 4px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 ul {
@@ -40,11 +41,11 @@ ul {
 }
 
 button {
-  border-radius: 5px;
-  cursor: pointer;
   border: none;
-  box-shadow: 2px 2px var(--shadows);
   color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 2px 2px var(--shadows);
   background-color: var(--button-bg);
   transition: 0.5s;
 }
@@ -58,6 +59,8 @@ table {
   max-width: 1000px;
   border-collapse: collapse;
   margin: 20px 0;
+  box-shadow: 3px 3px var(--shadows);
+  text-shadow: 2px 2px var(--shadows);
 }
 
 th, td {
@@ -164,7 +167,7 @@ nav:hover{
 }
 
 .secondary-button:hover {
-  background-color: #e48f0f;
+  background-color: #1b70a8;
 }
 /*/////////////////////////////////////////*/
 
@@ -211,7 +214,8 @@ nav:hover{
 /* Container de Agendamentos */
 .agenda_conteiner_geral,
 .horarios_container_geral,
-.conteiner_empresas
+.conteiner_empresas,
+.conteiner_usuario
 {
   margin-left: 1%;
 }
@@ -259,11 +263,10 @@ nav:hover{
   width: 25%;
 }
 
+
 .tabela_agenda table {
   width: 100%;
   max-width: 600px;
-  box-shadow: 3px 3px var(--shadows);
-  text-shadow: 2px 2px var(--shadows);
 }
 
 .resultado_agendamento_busca li .data {

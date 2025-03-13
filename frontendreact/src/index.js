@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client'; // Importa createRoot
 import App from './App';
+import './styles/normalize.css';
 import './styles/global.css';
 
 // Seleciona o elemento raiz do aplicativo

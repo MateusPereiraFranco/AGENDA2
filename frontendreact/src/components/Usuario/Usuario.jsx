@@ -108,7 +108,7 @@ function Usuario() {
   };
 
   return (
-    <div>
+    <div className='conteiner_usuario'>
       <h1>{empresaNome}</h1>
       <form onSubmit={(e) => e.preventDefault()}>
         <input
@@ -126,23 +126,31 @@ function Usuario() {
         <input type="text" name="tipo_usuario" placeholder="Tipo de Usuário" required />
         <button type="submit">Adicionar Funcionário</button>
       </form>
-      <ul>
-        {usuarios.length > 0 ? (
-          usuarios.map((usuario) => (
-            <li key={usuario.id_usuario}>
-              {usuario.nome} - {usuario.email} - {usuario.tipo_usuario}
-              {(tipoUsuario === 'gerente' || tipoUsuario === 'admin')  && (
-                <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
-              )}
-              <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>
-              <button onClick={() => handleVerFuncionario(usuario.id_usuario)}>Ver Agenda</button>
-            </li>
-          ))
-        ) : (
-          <li>Não há usuários cadastrados</li>
-        )}
-      </ul>
-      <div>
+      <table>
+        <tbody>
+          {usuarios.length > 0 ? (
+            usuarios.map((usuario) => (
+              <tr key={usuario.id_usuario}>
+                <td>{usuario.nome}</td>
+                <td>{usuario.email}</td>
+                <td>{usuario.tipo_usuario}</td>
+                <td>
+                  {(tipoUsuario === 'gerente' || tipoUsuario === 'admin') && (
+                    <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
+                  )}
+                  <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>
+                  <button onClick={() => handleVerFuncionario(usuario.id_usuario)}>Ver Agenda</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" style={{ textAlign: 'center' }}>Nenhum usuário cadastrado</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <div className='vai_volta'>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Anterior
         </button>
