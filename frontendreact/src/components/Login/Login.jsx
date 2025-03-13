@@ -20,6 +20,7 @@ function Login() {
                 setIsAuthenticated(true);
                 localStorage.setItem('tipo_usuario', userData.tipo_usuario);
                 localStorage.setItem('id_usuario', userData.id_usuario);
+                localStorage.setItem('token', response.token);
                 if (userData.tipo_usuario === 'funcionario') {
                     navigate(`/agenda/${userData.id_usuario}`);
                 } else if (userData.tipo_usuario === 'secretario' || userData.tipo_usuario === 'gerente') {

@@ -4,9 +4,13 @@ import { handleError } from './errorHandler';
 // Função para buscar empresas
 export const fetchEmpresas = async (searchParams = {}) => {
     try {
+        const token = localStorage.getItem('token');
         const queryString = new URLSearchParams(searchParams).toString();
         const response = await fetch(`${API_URL}/enterprises?${queryString}`, {
-            credentials: 'include',
+            credentials: 'include', // Inclui cookies na requisição
+            headers: {
+                'Authorization': `Bearer ${token}`, // Adiciona o token no cabeçalho
+            },
         });
         if (!response.ok) {
             return null;

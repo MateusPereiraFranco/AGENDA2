@@ -59,10 +59,11 @@ const Navbar = () => {
                 credentials: 'include', // Inclui cookies na requisição
             });
             if (response.ok) {
-                setIsAuthenticated(false); // Atualiza o estado de autenticação
-                localStorage.removeItem('tipo_usuario'); // Limpa o tipo de usuário do localStorage
-                localStorage.removeItem('id_usuario'); // Limpa o ID do usuário do localStorage
-                navigate('/login'); // Redireciona para a página de login
+                setIsAuthenticated(false);
+                localStorage.removeItem('token'); // Remove o token do localStorage
+                localStorage.removeItem('tipo_usuario');
+                localStorage.removeItem('id_usuario');
+                navigate('/login');
             } else {
                 console.error('Erro ao fazer logout:', response.statusText);
             }
