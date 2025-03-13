@@ -108,24 +108,27 @@ function Usuario() {
   };
 
   return (
-    <div className='conteiner_usuario'>
+    <div className='conteiner_usuario_geral'>
       <h1>{empresaNome}</h1>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <input
-          type="text"
-          placeholder="Buscar por nome"
-          value={searchParams.nome} // Controla o valor do input
-          onChange={handleSearchChange} // Atualiza o estado ao digitar
-        />
-        <button type="submit">Buscar</button>
-      </form>
-      <form onSubmit={handleAddUsuario}>
-        <input type="text" name="name" placeholder="Nome" required />
-        <input type="text" name="email" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Senha" required />
-        <input type="text" name="tipo_usuario" placeholder="Tipo de Usuário" required />
-        <button type="submit">Adicionar Funcionário</button>
-      </form>
+      <div className="form_usuario">
+        <form onSubmit={(e) => e.preventDefault()}>
+          <input
+            type="text"
+            placeholder="Buscar por nome"
+            value={searchParams.nome} // Controla o valor do input
+            onChange={handleSearchChange} // Atualiza o estado ao digitar
+          />
+          <button type="submit">Buscar</button>
+        </form>
+        <hr />
+        <form onSubmit={handleAddUsuario}>
+          <input type="text" name="name" placeholder="Nome" required />
+          <input type="text" name="email" placeholder="Email" required />
+          <input type="password" name="password" placeholder="Senha" required />
+          <input type="text" name="tipo_usuario" placeholder="Tipo de Usuário" required />
+          <button type="submit">Adicionar Funcionário</button>
+        </form>
+      </div>
       <table>
         <tbody>
           {usuarios.length > 0 ? (

@@ -90,30 +90,33 @@ function Empresa() {
   };
 
   return (
-    <div className='conteiner_empresas'>
+    <div className='conteiner_empresas_geral'>
       <h1>Lista de Empresas</h1>
-      <form>
-        <input
-          type="text"
-          name="nome"
-          placeholder="Nome da Empresa"
-          value={searchParams.nome}
-          onChange={handleSearchChange} // Busca em tempo real
-        />
-        <input
-          type="text"
-          name="cnpj"
-          placeholder="CNPJ"
-          value={searchParams.cnpj}
-          onChange={handleSearchChange} // Busca em tempo real
-        />
-      </form>
-      <form onSubmit={handleAddEmpresa}>
-        <input type="text" name="name" placeholder="Nome da Empresa" required />
-        <input type="text" name="cnpj" placeholder="CNPJ" required />
-        <input type="text" name="email" placeholder="Email" required />
-        <button type="submit">Adicionar Empresa</button>
-      </form>
+      <div className="form_empresa">
+        <form>
+          <input
+            type="text"
+            name="nome"
+            placeholder="Nome da Empresa"
+            value={searchParams.nome}
+            onChange={handleSearchChange} // Busca em tempo real
+          />
+          <input
+            type="text"
+            name="cnpj"
+            placeholder="CNPJ"
+            value={searchParams.cnpj}
+            onChange={handleSearchChange} // Busca em tempo real
+          />
+        </form>
+        <hr />
+        <form onSubmit={handleAddEmpresa}>
+          <input type="text" name="name" placeholder="Nome da Empresa" required />
+          <input type="text" name="cnpj" placeholder="CNPJ" required />
+          <input type="text" name="email" placeholder="Email" required />
+          <button type="submit">Adicionar Empresa</button>
+        </form>
+      </div>
       <table>
         <tbody>
           {empresas.length > 0 ? (

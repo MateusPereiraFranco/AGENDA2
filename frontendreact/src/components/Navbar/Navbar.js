@@ -1,6 +1,12 @@
+//react
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Para redirecionar o usuário
+
+//API
 import { API_URL } from '../../services/apiConfig'; // Importe a URL da API
+
+//Icons
+import piratinha from "../../assets/piratinha.png"
 import { BsCart2 } from "react-icons/bs";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
@@ -97,7 +103,7 @@ const Navbar = () => {
     return (
         <nav>
             <div className='nav-logo-container'>
-                <img src={null} alt="Logo" />
+                <img src={piratinha} alt="Logo" />
             </div>
             <div className='navbar-links-container'>
                 {menuOptions.map((item) => (

@@ -82,8 +82,8 @@ function Agenda() {
     return (
         <div className='agenda_conteiner_geral'>
             <h1>Agendamentos</h1>
-            <div className="conteiner_agendamento">
-                <form onSubmit={(e) => e.preventDefault()} className='agendamento_1'>
+            <div className="form_agenda">
+                <form onSubmit={(e) => e.preventDefault()}>
                     <input
                         type="date"
                         placeholder="Buscar por data"
@@ -91,7 +91,8 @@ function Agenda() {
                     />
                     <button type="submit">Buscar</button>
                 </form>
-                <form onSubmit={handleAddAgendamento} className='agendamento_1'>
+                <hr />
+                <form onSubmit={handleAddAgendamento}>
                     <input type="date" name="data" placeholder="Data" required />
                     <button type="submit">Adicionar Agendamento</button>
                 </form>

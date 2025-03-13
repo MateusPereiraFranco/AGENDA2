@@ -69,27 +69,37 @@ function Horario() {
   return (
     <div className='horarios_container_geral'>
       <h1>Horários</h1>
-      <form className='add_horario' onSubmit={handleAddHorario}>
-        <input type="time" name="horario" placeholder="Horário" required />
-        <input type="text" name="nome" placeholder="Nome" required />
-        <input type="text" name="contato" placeholder="Contato" required />
-        <input type="text" name="observacoes" placeholder="Observações" required />
-        <button type="submit">Adicionar Horário</button>
-      </form>
-      <div className="lista_horarios">
-        <ul>
-        {horarios.length > 0 ? (
-          horarios.map((horario) => (
-            <li key={horario.id_horario}>
-              {horario.horario} - {horario.nome} - {horario.contato} - {horario.observacoes}
-              <button onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
-            </li>
-          ))
+      <div className="form_horario">
+        <form className='add_horario' onSubmit={handleAddHorario}>
+          <input type="time" name="horario" placeholder="Horário" required />
+          <input type="text" name="nome" placeholder="Nome" required />
+          <input type="text" name="contato" placeholder="Contato" required />
+          <input type="text" name="observacoes" placeholder="Observações" required />
+          <button type="submit">Adicionar Horário</button>
+        </form>
+      </div>
+      <div className="tabela_horario">
+      <table>
+        <tbody>
+          {horarios.length > 0 ? (
+            horarios.map((horario) => (
+              <tr key={horario.id_horario}>
+                <td>{horario.horario}</td>
+                <td>{horario.nome}</td>
+                <td>{horario.contato}</td>
+                <td>{horario.observacoes}</td>
+                <td>
+                  <button onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
+                </td>
+              </tr>
+            ))
           ) : (
-            <li>Não há horário cadastrado</li>
-          )
-          }
-        </ul>
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center' }}>Nenhum horário cadastrado</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
       </div>
       <div className='vai_volta'>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
