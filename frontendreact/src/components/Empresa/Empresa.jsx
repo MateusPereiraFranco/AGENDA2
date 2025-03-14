@@ -117,6 +117,7 @@ function Empresa() {
           <button type="submit">Adicionar Empresa</button>
         </form>
       </div>
+      <div className='tabela_empresa'>
       <table>
         <tbody>
           {empresas.length > 0 ? (
@@ -139,6 +140,7 @@ function Empresa() {
           )}
         </tbody>
       </table>
+      </div>
       <div className='vai_volta'>
         <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
           Anterior

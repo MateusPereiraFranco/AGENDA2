@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchUsuarios, addUsuario, deleteUsuario, updateUsuario } from '../../services/usuarioService';
-import { fetchEmpresas } from '../../services/empresaService';
+import { fetchEmpresaNome } from '../../services/empresaService';
 
 function Usuario() {
     const { id } = useParams();
@@ -48,15 +48,15 @@ function Usuario() {
 
     const loadEmpresa = async () => {
         try {
-            const empresa = await fetchEmpresas({ id });
-            if (empresa && empresa.length > 0) {
-                setEmpresaNome(empresa[0].nome);
+            const nomeEmpresa = await fetchEmpresaNome(id); // Busca o nome da empresa
+            if (nomeEmpresa) {
+                setEmpresaNome(nomeEmpresa);
             } else {
                 setEmpresaNome('Empresa não encontrada');
             }
         } catch (error) {
             console.error(error);
-            setError('Erro ao carregar detalhes da empresa.'); // Exibe a mensagem de erro na interface
+            setError('Erro ao carregar detalhes da empresa.');
         }
     };
 

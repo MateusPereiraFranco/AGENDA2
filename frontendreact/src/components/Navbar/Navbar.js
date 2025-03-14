@@ -60,7 +60,6 @@ const Navbar = () => {
             });
             if (response.ok) {
                 setIsAuthenticated(false);
-                localStorage.removeItem('token'); // Remove o token do localStorage
                 localStorage.removeItem('tipo_usuario');
                 localStorage.removeItem('id_usuario');
                 navigate('/login');

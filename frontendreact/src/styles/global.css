@@ -306,6 +306,11 @@ table button:hover {
   max-width: 600px;
 }
 
+.tabela_empresa table {
+  width: 100%;
+  max-width: 1200px;
+}
+
 .vai_volta button {
   width: 7%;
   height: 25px;

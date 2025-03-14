@@ -5,44 +5,39 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
 
     // Verifica a autenticação ao carregar a aplicação
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('token'); // Recupera o token do localStorage
-            if (token) {
-                try {
-                    const response = await fetch(`${API_URL}/check-auth`, {
-                        credentials: 'include', // Inclui cookies na requisição
-                        headers: {
-                            'Authorization': `Bearer ${token}`, // Envia o token no cabeçalho
-                        },
-                    });
+            try {
+                const response = await fetch(`${API_URL}/check-auth`, {
+                    credentials: 'include', // Inclui cookies na requisição
+                });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.authenticated) {
-                            setIsAuthenticated(true);
-                        } else {
-                            setIsAuthenticated(false);
-                        }
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated) {
+                        setIsAuthenticated(true); // Usuário autenticado
                     } else {
-                        setIsAuthenticated(false);
+                        setIsAuthenticated(false); // Usuário não autenticado
                     }
-                } catch (error) {
-                    console.error('Erro ao verificar autenticação:', error);
-                    setIsAuthenticated(false);
+                } else {
+                    setIsAuthenticated(false); // Erro na requisição
                 }
-            } else {
-                setIsAuthenticated(false);
+            } catch (error) {
+                console.error('Erro ao verificar autenticação:', error);
+                setIsAuthenticated(false); // Erro na requisição
+            } finally {
+                setIsLoading(false); // Finaliza o carregamento
             }
         };
 
-        checkAuth();
+        checkAuth(); // Executa a verificação ao carregar a aplicação
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

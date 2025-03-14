@@ -1,5 +1,5 @@
 import express from 'express';
-import { getEnterprisesController, addEnterpriseController, deleteEnterpriseController, updateEnterpriseController } from '../controllers/enterpriseController.js';
+import { getEnterprisesController, addEnterpriseController, deleteEnterpriseController, updateEnterpriseController, getEnterpriseNameController } from '../controllers/enterpriseController.js';
 import autenticar from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -16,5 +16,6 @@ router.get('/enterprises', autenticar, isAdmin, getEnterprisesController);
 router.post('/addEnterprise', autenticar, isAdmin, addEnterpriseController);
 router.delete('/deleteEnterprise', autenticar, isAdmin, deleteEnterpriseController);
 router.put('/updateEnterprise/:id', autenticar, isAdmin, updateEnterpriseController);
+router.get('/enterpriseName', autenticar, getEnterpriseNameController)
 
 export default router;
