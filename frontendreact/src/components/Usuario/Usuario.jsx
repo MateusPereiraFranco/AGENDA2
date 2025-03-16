@@ -6,12 +6,12 @@ import { fetchEmpresaNome } from '../../services/empresaService';
 function Usuario() {
     const { id } = useParams();
     const [usuarios, setUsuarios] = useState([]);
-    const [searchParams, setSearchParams] = useState({ nome: '' }); // Inicialize com nome vazio
+    const [searchParams, setSearchParams] = useState({ nome: '', tipo_usuario: '',sortBy: 'tipo_usuario, nome' });
     const [currentPage, setCurrentPage] = useState(1);
     const [empresaNome, setEmpresaNome] = useState('');
-    const [error, setError] = useState(''); // Estado para mensagens de erro
+    const [error, setError] = useState('');
     const navigate = useNavigate();
-    const tipoUsuario = localStorage.getItem('tipo_usuario'); // Recupera o tipo de usuário
+    const tipoUsuario = localStorage.getItem('tipo_usuario');
 
     useEffect(() => {
         loadUsuarios();
@@ -26,6 +26,9 @@ function Usuario() {
             // Remove o campo "nome" se estiver vazio
             if (params.nome === '') {
                 delete params.nome;
+            }
+            if(params.tipo_usuario === ''){
+                delete params.tipo_usuario;
             }
 
             // Adiciona a página atual aos parâmetros
@@ -66,9 +69,18 @@ function Usuario() {
         const email = e.target.email.value;
         const senha = e.target.password.value;
         const tipo_usuario = e.target.tipo_usuario.value;
+        if (tipo_usuario === 'cargo') {
+            alert('Escolha um cargo.');
+            return null;
+        }
         try {
             await addUsuario({ nome, email, senha, tipo_usuario, fk_empresa_id: id });
             loadUsuarios();
+
+            e.target.name.value = '';
+            e.target.email.value = '';
+            e.target.password.value = '';
+            e.target.tipo_usuario.value = 'cargo';
         } catch (error) {
             console.error(error);
             setError('Erro ao adicionar usuário.'); // Exibe a mensagem de erro na interface
@@ -106,11 +118,19 @@ function Usuario() {
         navigate(`/agenda/${id}`);
     };
 
-    const handleSearchChange = (e) => {
+    const handleSearchChangeNome = (e) => {
         const value = e.target.value;
         setSearchParams((prevParams) => ({
             ...prevParams,
             nome: value, // Atualiza o campo "nome" no searchParams
+        }));
+    };
+
+    const handleSearchChangeTipo_Usuario = (e) => {
+        const value = e.target.value;
+        setSearchParams((prevParams) => ({
+            ...prevParams,
+            tipo_usuario: value === "Todos" ? "" : value, // Se for "Todos", limpa o filtro
         }));
     };
 
@@ -124,8 +144,17 @@ function Usuario() {
                         type="text"
                         placeholder="Buscar por nome"
                         value={searchParams.nome} // Controla o valor do input
-                        onChange={handleSearchChange} // Atualiza o estado ao digitar
+                        onChange={handleSearchChangeNome} // Atualiza o estado ao digitar
                     />
+                    <select
+                        value={searchParams.tipo_usuario || "Todos"} // "Todos" é o valor padrão
+                        onChange={handleSearchChangeTipo_Usuario}
+                    >
+                        <option value="Todos">Todos</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="secretario">Secretário</option>
+                        <option value="funcionario">Funcionário</option>
+                    </select>
                     <button type="submit">Buscar</button>
                 </form>
                 <hr />
@@ -133,7 +162,12 @@ function Usuario() {
                     <input type="text" name="name" placeholder="Nome" required />
                     <input type="text" name="email" placeholder="Email" required />
                     <input type="password" name="password" placeholder="Senha" required />
-                    <input type="text" name="tipo_usuario" placeholder="Tipo de Usuário" required />
+                    <select name="tipo_usuario">
+                        <option value="cargo">Cargo</option>
+                        <option value="funcionario">Funcionário</option>
+                        <option value="secretario">Secretário</option>
+                        <option value="gerente">Gerente</option>
+                    </select>
                     <button type="submit">Adicionar Funcionário</button>
                 </form>
             </div>
@@ -150,7 +184,9 @@ function Usuario() {
                                         <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
                                     )}
                                     <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>
-                                    <button onClick={() => handleVerFuncionario(usuario.id_usuario)}>Ver Agenda</button>
+                                    {(usuario.tipo_usuario === 'funcionario' || usuario.tipo_usuario === 'gerente') && (
+                                        <button onClick={() => handleVerFuncionario(usuario.id_usuario)}>Ver Agenda</button>
+                                    )}
                                 </td>
                             </tr>
                         ))

@@ -26,7 +26,6 @@ function Empresa() {
         setEmpresas(data);
       } else {
         setEmpresas([]); // Define como array vazio se data não for válido
-        console.error('Dados inválidos recebidos:', data);
       }
     } catch (error) {
       console.error(error);
