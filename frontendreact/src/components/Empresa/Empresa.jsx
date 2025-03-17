@@ -41,6 +41,9 @@ function Empresa() {
     try {
       await addEmpresa({ nome, cnpj, email });
       loadEmpresas();
+      e.target.name.value='';
+      e.target.cnpj.value='';
+      e.target.email.value='';
     } catch (error) {
       console.error(error);
       alert('Erro ao adicionar empresa');

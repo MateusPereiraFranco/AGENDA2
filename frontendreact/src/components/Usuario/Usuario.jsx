@@ -183,7 +183,9 @@ function Usuario() {
                                     {(tipoUsuario === 'gerente' || tipoUsuario === 'admin') && (
                                         <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
                                     )}
-                                    <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>
+                                    {(tipoUsuario === 'gerente' || tipoUsuario === 'admin') && (
+                                        <button onClick={() => handleUpdateUsuario(usuario.id_usuario)}>Atualizar</button>
+                                    )}
                                     {(usuario.tipo_usuario === 'funcionario' || usuario.tipo_usuario === 'gerente') && (
                                         <button onClick={() => handleVerFuncionario(usuario.id_usuario)}>Ver Agenda</button>
                                     )}

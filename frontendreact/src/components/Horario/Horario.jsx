@@ -50,6 +50,10 @@ function Horario() {
     try {
       await addHorario(horario);
       loadHorarios();
+      e.target.horario.value=''
+      e.target.nome.value=''
+      e.target.contato.value=''
+      e.target.observacoes.value=''
     } catch (error) {
       console.error(error);
       alert('Erro ao adicionar horário');
