@@ -37,7 +37,12 @@ function Usuario() {
             // Busca os usuários com os parâmetros atualizados
             const data = await fetchUsuarios(id, params);
             if (data) {
-                setUsuarios(data);
+                // Ordena os usuários: gerentes -> funcionários -> secretários
+                const usuariosOrdenados = data.sort((a, b) => {
+                    const ordem = { gerente: 1, funcionario: 2, secretario: 3 };
+                    return ordem[a.tipo_usuario] - ordem[b.tipo_usuario];
+                });
+                setUsuarios(usuariosOrdenados);
                 setError(''); // Limpa a mensagem de erro
             } else {
                 setUsuarios([]); // Define a lista de usuários como vazia se não houver dados
@@ -133,6 +138,12 @@ function Usuario() {
             tipo_usuario: value === "Todos" ? "" : value, // Se for "Todos", limpa o filtro
         }));
     };
+    
+    const tipoUsuarioMap = {
+        gerente: "Gerente",
+        funcionario: "Funcionário",
+        secretario: "Secretário",
+    };
 
     return (
         <div className='conteiner_usuario_geral'>
@@ -155,7 +166,6 @@ function Usuario() {
                         <option value="secretario">Secretário</option>
                         <option value="funcionario">Funcionário</option>
                     </select>
-                    <button type="submit">Buscar</button>
                 </form>
                 <hr />
                 <form onSubmit={handleAddUsuario}>
@@ -178,7 +188,7 @@ function Usuario() {
                             <tr key={usuario.id_usuario}>
                                 <td>{usuario.nome}</td>
                                 <td>{usuario.email}</td>
-                                <td>{usuario.tipo_usuario}</td>
+                                <td>{tipoUsuarioMap[usuario.tipo_usuario] || usuario.tipo_usuario}</td>
                                 <td>
                                     {(tipoUsuario === 'gerente' || tipoUsuario === 'admin') && (
                                         <button onClick={() => handleDeleteUsuario(usuario.id_usuario)}>Excluir</button>
