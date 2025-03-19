@@ -62,6 +62,7 @@ const Navbar = () => {
                 setIsAuthenticated(false);
                 localStorage.removeItem('tipo_usuario');
                 localStorage.removeItem('id_usuario');
+                localStorage.removeItem('fk_empresa_id');
                 navigate('/login');
             } else {
                 console.error('Erro ao fazer logout:', response.statusText);

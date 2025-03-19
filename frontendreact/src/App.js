@@ -8,6 +8,7 @@ import Horario from './components/Horario/Horario';
 import Navbar from './components/Navbar/Navbar';
 import ProtectedRoute from './services/ProtectedRoute'; // Importe o componente de rota protegida
 import { AuthProvider } from './context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <Navbar />
                 <Routes>
                     {/* Rota pública (não protegida) */}
+                    <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<Login />} />
 
                     {/* Rotas protegidas */}

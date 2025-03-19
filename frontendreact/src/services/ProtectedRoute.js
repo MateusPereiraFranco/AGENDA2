@@ -1,22 +1,51 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useParams } from 'react-router-dom';
 
 const ProtectedRoute = () => {
     const { isAuthenticated, isLoading } = useAuth(); // Verifica se o usuário está autenticado e se está carregando
+    const { id } = useParams(); // Captura o parâmetro da URL (id_usuario, fk_empresa_id, etc.)
+    const tipoUsuario = localStorage.getItem('tipo_usuario');
+    const idUsuario = localStorage.getItem('id_usuario');
+    const fkEmpresaId = localStorage.getItem('fk_empresa_id');
 
-    // Se estiver carregando, exibe uma mensagem ou um spinner
     if (isLoading) {
-        return <div>Carregando...</div>; // Ou um componente de spinner
+        return <div>Carregando...</div>;
     }
 
-    // Se o usuário não estiver autenticado, redirecione para a página de login
     if (!isAuthenticated) {
         return <Navigate to="/login" />;
     }
 
-    // Se o usuário estiver autenticado, renderize a rota solicitada
-    return <Outlet />;
+    switch (tipoUsuario) {
+        case 'admin':
+            return <Outlet />;
+
+        case 'gerente':
+        case 'secretario':
+            if (window.location.pathname.startsWith('/usuario') && id !== fkEmpresaId) {
+                return <Navigate to={`/usuario/${fkEmpresaId}`} />; // Redireciona para a página da empresa do usuário
+            }
+            if (window.location.pathname.startsWith('/agenda')) {
+                // Verifica se o funcionário pertence à mesma empresa
+                const funcionarioEmpresaId = localStorage.getItem(`empresa_do_funcionario_${id}`);
+                if (funcionarioEmpresaId && funcionarioEmpresaId !== fkEmpresaId) {
+                    return <Navigate to={`/usuario/${fkEmpresaId}`} />; // Redireciona para a página da empresa do usuário
+                }
+            }
+            return <Outlet />;
+
+        case 'funcionario':
+            if (id && id !== idUsuario) {
+                return <Navigate to={`/agenda/${idUsuario}`} />;
+            }
+            return <Outlet />;
+
+        default:
+            return <Navigate to="/login" />;
+    }
+
 };
 
 export default ProtectedRoute;
