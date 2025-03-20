@@ -4,9 +4,13 @@ import { handleError } from './errorHandler';
 // Função para buscar empresas
 export const fetchEmpresas = async (searchParams = {}) => {
     try {
+        const token = localStorage.getItem('token');
         const queryString = new URLSearchParams(searchParams).toString();
         const response = await fetch(`${API_URL}/enterprises?${queryString}`, {
-            credentials: 'include',
+            credentials: 'include', // Inclui cookies na requisição
+            headers: {
+                'Authorization': `Bearer ${token}`, // Adiciona o token no cabeçalho
+            },
         });
         if (!response.ok) {
             return null;
@@ -18,7 +22,26 @@ export const fetchEmpresas = async (searchParams = {}) => {
     }
 };
 
-// Função para adicionar uma empresa
+export const fetchEmpresaNome = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/enterpriseName?id=${id}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            return null; // Retorna null se a resposta não for bem-sucedida
+        }
+
+        const data = await response.json();
+        return data.nome; // Retorna o nome da empresa
+    } catch (error) {
+        handleError(error);
+        return null;
+    }
+};
+
+
 export const addEmpresa = async (empresa) => {
     try {
         const response = await fetch(`${API_URL}/addEnterprise`, {

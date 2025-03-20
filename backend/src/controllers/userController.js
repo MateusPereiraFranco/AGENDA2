@@ -12,7 +12,7 @@ const searchSchema = Joi.object({
     tipo_usuario: Joi.string().optional(),
     page: Joi.number().integer().positive().default(1),
     limit: Joi.number().integer().positive().default(10),
-    sortBy: Joi.string().valid('id_usuario', 'nome', 'email').default('id_usuario'),
+    sortBy: Joi.string().default('id_usuario'),
     order: Joi.string().valid('ASC', 'DESC').default('ASC'),
 });
 

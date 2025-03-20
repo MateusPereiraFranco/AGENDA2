@@ -1,7 +1,4 @@
-//React
 import React from 'react';
-
-//Components
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login/Login';
 import Empresa from './components/Empresa/Empresa';
@@ -9,8 +6,9 @@ import Usuario from './components/Usuario/Usuario';
 import Agenda from './components/Agenda/Agenda';
 import Horario from './components/Horario/Horario';
 import Navbar from './components/Navbar/Navbar';
-
+import ProtectedRoute from './services/ProtectedRoute'; // Importe o componente de rota protegida
 import { AuthProvider } from './context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 function App() {
     return (
@@ -18,11 +16,17 @@ function App() {
             <Router>
                 <Navbar />
                 <Routes>
+                    {/* Rota pública (não protegida) */}
+                    <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/empresa" element={<Empresa />} />
-                    <Route path="/usuario/:id" element={<Usuario />} />
-                    <Route path="/agenda/:id" element={<Agenda />} />
-                    <Route path="/horario/:id" element={<Horario />} />
+
+                    {/* Rotas protegidas */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/empresa" element={<Empresa />} />
+                        <Route path="/usuario/:id" element={<Usuario />} />
+                        <Route path="/agenda/:id" element={<Agenda />} />
+                        <Route path="/horario/:id" element={<Horario />} />
+                    </Route>
                 </Routes>
             </Router>
         </AuthProvider>

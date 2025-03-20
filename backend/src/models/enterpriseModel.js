@@ -1,5 +1,20 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 
+const getEnterpriseName = async (id) => {
+    try {
+
+        const result = await client.query(
+            'SELECT nome FROM empresa WHERE id_empresa = $1',
+            [id]
+        );
+        return result.rows[0];
+    } catch (err) {
+        console.error('Erro ao buscar empresas:', err);
+        throw err;
+    }
+};
+
+
 const getEnterprises = async ({ id, nome, cnpj, telefone, email, page = 1, limit = 10, sortBy = 'id_empresa', order = 'ASC' } = {}) => {
     try {
         let query = 'SELECT * FROM empresa';
@@ -93,6 +108,7 @@ export {
     addEnterprise,
     deleteEnterprise,
     updateEnterprise,
+    getEnterpriseName,
 }
 
 // export { getAllUsers, getUser, addUser, deleteUser, updateUser };

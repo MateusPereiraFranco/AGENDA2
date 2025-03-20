@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fetchEmpresas, addEmpresa, updateEmpresa, deleteEmpresa } from '../../services/empresaService';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  fetchEmpresas,
+  addEmpresa,
+  updateEmpresa,
+  deleteEmpresa,
+} from "../../services/empresaService";
 
 function Empresa() {
   const [empresas, setEmpresas] = useState([]);
-  const [searchParams, setSearchParams] = useState({ nome: '', cnpj: '' }); // Inicializa com campos vazios
+  const [searchParams, setSearchParams] = useState({ nome: "", cnpj: "" });
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingEmpresa, setEditingEmpresa] = useState(null); // Estado para controlar a empresa sendo editada
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,22 +21,20 @@ function Empresa() {
   const loadEmpresas = async () => {
     try {
       const params = { ...searchParams };
-      if (params.cnpj === '') delete params.cnpj;
-      if (params.nome === '') delete params.nome;
+      if (params.cnpj === "") delete params.cnpj;
+      if (params.nome === "") delete params.nome;
       params.page = currentPage;
-  
+
       const data = await fetchEmpresas(params);
-  
-      // Verifica se data é um array antes de usar
+
       if (Array.isArray(data)) {
         setEmpresas(data);
       } else {
-        setEmpresas([]); // Define como array vazio se data não for válido
-        console.error('Dados inválidos recebidos:', data);
+        setEmpresas([]);
       }
     } catch (error) {
       console.error(error);
-      alert('Erro ao carregar empresas');
+      alert("Erro ao carregar empresas");
     }
   };
 
@@ -42,9 +46,12 @@ function Empresa() {
     try {
       await addEmpresa({ nome, cnpj, email });
       loadEmpresas();
+      e.target.name.value = "";
+      e.target.cnpj.value = "";
+      e.target.email.value = "";
     } catch (error) {
       console.error(error);
-      alert('Erro ao adicionar empresa');
+      alert("Erro ao adicionar empresa");
     }
   };
 
@@ -54,24 +61,29 @@ function Empresa() {
       loadEmpresas();
     } catch (error) {
       console.error(error);
-      alert('Erro ao excluir empresa');
+      alert("Erro ao excluir empresa");
     }
   };
 
-  const handleUpdateEmpresa = async (id) => {
-    const nome = prompt('Novo nome da empresa:');
-    const cnpj = prompt('Novo CNPJ:');
-    const email = prompt('Novo email:');
+  const handleUpdateEmpresa = async (e) => {
+    e.preventDefault();
+    const nome = e.target.nome.value;
+    const cnpj = e.target.cnpj.value;
+    const email = e.target.email.value;
+
     if (!nome || !cnpj || !email) {
-      alert('Todos os campos são obrigatórios!');
+      alert("Todos os campos são obrigatórios!");
       return;
     }
+
     try {
-      await updateEmpresa(id, { nome, cnpj, email });
+      await updateEmpresa(editingEmpresa.id_empresa, { nome, cnpj, email });
       loadEmpresas();
+      setEditingEmpresa(null); // Fechar o formulário de edição após a atualização
+      alert("Empresa atualizada com sucesso!");
     } catch (error) {
       console.error(error);
-      alert('Erro ao atualizar empresa');
+      alert("Erro ao atualizar empresa");
     }
   };
 
@@ -81,16 +93,14 @@ function Empresa() {
 
   const handleSearchChange = (e) => {
     const { name, value } = e.target;
-
-    // Atualiza os parâmetros de busca em tempo real
     setSearchParams((prevParams) => ({
       ...prevParams,
-      [name]: value, // Remove espaços em branco e atualiza o campo correspondente
+      [name]: value,
     }));
   };
 
   return (
-    <div className='conteiner_empresas_geral'>
+    <div className="conteiner_empresas_geral">
       <h1>Lista de Empresas</h1>
       <div className="form_empresa">
         <form>
@@ -99,48 +109,125 @@ function Empresa() {
             name="nome"
             placeholder="Nome da Empresa"
             value={searchParams.nome}
-            onChange={handleSearchChange} // Busca em tempo real
+            onChange={handleSearchChange}
           />
           <input
             type="text"
             name="cnpj"
             placeholder="CNPJ"
             value={searchParams.cnpj}
-            onChange={handleSearchChange} // Busca em tempo real
+            onChange={handleSearchChange}
           />
         </form>
         <hr />
         <form onSubmit={handleAddEmpresa}>
-          <input type="text" name="name" placeholder="Nome da Empresa" required />
+          <input
+            type="text"
+            name="name"
+            placeholder="Nome da Empresa"
+            required
+          />
           <input type="text" name="cnpj" placeholder="CNPJ" required />
           <input type="text" name="email" placeholder="Email" required />
           <button type="submit">Adicionar Empresa</button>
         </form>
       </div>
-      <table>
-        <tbody>
-          {empresas.length > 0 ? (
-            empresas.map((empresa) => (
-              <tr key={empresa.id_empresa}>
-                <td>{empresa.nome}</td>
-                <td>{empresa.cnpj}</td>
-                <td>{empresa.email}</td>
-                <td className='tabela_botao'>
-                  <button onClick={() => handleDeleteEmpresa(empresa.id_empresa)}>Excluir</button>
-                  <button onClick={() => handleUpdateEmpresa(empresa.id_empresa)}>Atualizar</button>
-                  <button onClick={() => handleVerEmpresa(empresa.id_empresa)}>Ver Empresa</button>
+      <div className="tabela_empresa">
+        <table>
+          <tbody>
+            {empresas.length > 0 ? (
+              empresas.map((empresa) => (
+                <>
+                  <tr key={empresa.id_empresa}>
+                    <td>{empresa.nome}</td>
+                    <td>{empresa.cnpj}</td>
+                    <td>{empresa.email}</td>
+                    <td>
+                      <button
+                        className="botao-vermelho"
+                        onClick={() => handleDeleteEmpresa(empresa.id_empresa)}
+                      >
+                        Excluir
+                      </button>
+                      <button onClick={() => setEditingEmpresa(empresa)}>
+                        Atualizar
+                      </button>
+                      <button
+                        onClick={() => handleVerEmpresa(empresa.id_empresa)}
+                      >
+                        Ver Empresa
+                      </button>
+                    </td>
+                  </tr>
+                  {editingEmpresa &&
+                    editingEmpresa.id_empresa == empresa.id_empresa && (
+                      <tr className="editando_empresa">
+                        <td colSpan="4">
+                          <div className="edit-empresa-form">
+                            <h2>Editar Empresa</h2>
+                            <form
+                              className="form-atualizacao"
+                              onSubmit={handleUpdateEmpresa}
+                            >
+                              <label htmlFor="nome">Nome:</label>
+                              <input
+                                type="text"
+                                id="nome"
+                                name="nome"
+                                defaultValue={editingEmpresa.nome}
+                                required
+                              />
+
+                              <label htmlFor="cnpj">CNPJ:</label>
+                              <input
+                                type="text"
+                                id="cnpj"
+                                name="cnpj"
+                                defaultValue={editingEmpresa.cnpj}
+                                required
+                              />
+
+                              <label htmlFor="email">Email:</label>
+                              <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                defaultValue={editingEmpresa.email}
+                                required
+                              />
+                              <br />
+                              <div className="form-atualizacao_botao">
+                                <button type="submit">Salvar</button>
+                                <button
+                                  type="button"
+                                  className="botao-vermelho"
+                                  onClick={() => setEditingEmpresa(null)}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                </>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" style={{ textAlign: "center" }}>
+                  Nenhuma empresa cadastrada
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" style={{ textAlign: 'center' }}>Nenhuma empresa cadastrada</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <div className='vai_volta'>
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="vai_volta">
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           Anterior
         </button>
         <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>

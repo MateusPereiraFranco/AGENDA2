@@ -50,6 +50,10 @@ function Horario() {
     try {
       await addHorario(horario);
       loadHorarios();
+      e.target.horario.value=''
+      e.target.nome.value=''
+      e.target.contato.value=''
+      e.target.observacoes.value=''
     } catch (error) {
       console.error(error);
       alert('Erro ao adicionar horário');
@@ -89,7 +93,7 @@ function Horario() {
                 <td>{horario.contato}</td>
                 <td>{horario.observacoes}</td>
                 <td>
-                  <button onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
+                  <button className='botao-vermelho' onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
                 </td>
               </tr>
             ))

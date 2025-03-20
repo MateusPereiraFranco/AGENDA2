@@ -1,4 +1,4 @@
-import { addEnterprise, deleteEnterprise, getEnterprises, updateEnterprise } from "../models/enterpriseModel.js";
+import { addEnterprise, deleteEnterprise, getEnterprises, updateEnterprise, getEnterpriseName } from "../models/enterpriseModel.js";
 
 import Joi from 'joi';
 
@@ -94,9 +94,28 @@ const updateEnterpriseController = async (req, res) => {
     }
 };
 
+
+const getEnterpriseNameController = async (req, res) => {
+    const { id } = req.query;
+
+    try {
+        const enterpriseName = await getEnterpriseName(id);
+
+        if (!enterpriseName) {
+            return res.status(404).send('Nenhuma empresa encontrada');
+        }
+
+        res.status(200).json(enterpriseName);
+    } catch (err) {
+        console.error('Erro ao buscar nome da empresa:', err);
+        res.status(500).send('Erro ao buscar nome da empresa');
+    }
+};
+
 export {
     getEnterprisesController,
     addEnterpriseController,
     deleteEnterpriseController,
     updateEnterpriseController,
+    getEnterpriseNameController
 };
