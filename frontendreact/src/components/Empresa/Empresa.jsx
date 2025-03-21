@@ -160,7 +160,7 @@ function Empresa() {
                     </td>
                   </tr>
                   {editingEmpresa &&
-                    editingEmpresa.id_empresa == empresa.id_empresa && (
+                    editingEmpresa.id_empresa === empresa.id_empresa && (
                       <tr className="editando_empresa">
                         <td colSpan="4">
                           <div className="edit-empresa-form">

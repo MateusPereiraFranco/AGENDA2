@@ -120,7 +120,6 @@ const Navbar = () => {
             <LogoutIcon /> Logout
           </button>
         )}
-        <button className="primary-button">Booking Now</button>
       </div>
       <div className="navbar-menu-container">
         <HiOutlineBars3 onClick={() => setOpenMenu(true)} />
