@@ -7,8 +7,9 @@ import {
     loginController,
     logoutController,
     checkAuthController,
+    getUserByEmailController,
 } from '../controllers/userController.js';
-import autenticar from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
+import { autenticar, isAdminOrManager } from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
 
 const router = express.Router();
 
@@ -16,10 +17,11 @@ const router = express.Router();
 router.post('/login', loginController);
 
 // Rotas protegidas (exigem autenticação)
-router.get('/users', autenticar, getUsersController); // Listar usuários
-router.post('/addUser', autenticar, addUserController); // Adicionar usuário
-router.delete('/deleteUser', autenticar, deleteUserController); // Deletar usuário
-router.put('/updateUser/:id', autenticar, updateUserController); // Atualizar usuário
+router.get('/users', autenticar, isAdminOrManager, getUsersController); // Listar usuários
+router.post('/addUser', autenticar, isAdminOrManager, addUserController); // Adicionar usuário
+router.delete('/deleteUser', autenticar, isAdminOrManager, deleteUserController); // Deletar usuário
+router.put('/updateUser/:id', autenticar, isAdminOrManager, updateUserController); // Atualizar usuário
+router.get('/getEmail', getUserByEmailController);
 router.post('/logout', logoutController);
 router.get('/check-auth', checkAuthController);
 

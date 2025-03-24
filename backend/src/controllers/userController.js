@@ -68,7 +68,7 @@ const loginController = async (req, res) => {
         const token = jwt.sign(
             { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario },
             'secreto',
-            { expiresIn: '1h' }
+            { expiresIn: '3h' }
         );
 
 
@@ -77,7 +77,7 @@ const loginController = async (req, res) => {
             httpOnly: true, // Impede acesso via JavaScript
             secure: process.env.NODE_ENV === 'production', // Só envia o cookie em HTTPS em produção
             sameSite: 'strict', // Protege contra ataques CSRF
-            maxAge: 3600000, // Expira em 1 hora (em milissegundos)
+            maxAge: 10800000, // Expira em 3 hora (em milissegundos)
         });
 
         // Retorna uma resposta de sucesso sem o token no corpo
@@ -95,6 +95,33 @@ const logoutController = (req, res) => {
     res.status(200).json({ message: 'Logout bem-sucedido' });
 };
 
+const getUserByEmailController = async (req, res) => {
+    try {
+        const { email } = req.query; // Mude de req.body para req.query
+
+        const usuario = await getUserByEmail(email);
+
+        if (!usuario) {
+            return res.status(404).json({
+                success: false,
+                message: 'Usuário não encontrado'
+            });
+        }
+
+        // Retorne TODOS os dados do usuário no mesmo formato que seu frontend espera
+        res.status(200).json({
+            success: true,
+            data: usuario // Retorna o objeto completo
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Erro no servidor'
+        });
+    }
+};
 
 const getUsersController = async (req, res) => {
     const { error, value } = searchSchema.validate(req.query);
@@ -180,4 +207,5 @@ export {
     loginController,
     logoutController,
     checkAuthController,
+    getUserByEmailController,
 }

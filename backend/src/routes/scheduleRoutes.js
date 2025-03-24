@@ -5,7 +5,7 @@ import {
     getSchedulesController,
     updateScheduleController,
 } from '../controllers/scheduleController.js';
-import autenticar from '../middlewares/authMiddleware.js';
+import { autenticar } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 

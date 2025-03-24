@@ -1,6 +1,6 @@
 import express from 'express';
 import { getTimesController, addTimeController, deleteTimeController, updateTimeController } from '../controllers/timeController.js';
-import autenticar from '../middlewares/authMiddleware.js';
+import { autenticar } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 

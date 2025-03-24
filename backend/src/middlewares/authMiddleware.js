@@ -17,4 +17,16 @@ const autenticar = (req, res, next) => {
     }
 };
 
-export default autenticar;
+const isAdminOrManager = (req, res, next) => {
+    const allowedRoles = ['admin', 'gerente', 'secretario'];
+
+    if (allowedRoles.includes(req.user.tipo_usuario)) {
+        next(); // Permite acesso
+    } else {
+        res.status(403).json({
+            message: 'Acesso negado. Somente administradores, gerentes ou secretários podem acessar esta rota.'
+        });
+    }
+};
+
+export { autenticar, isAdminOrManager };

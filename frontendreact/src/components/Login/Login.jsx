@@ -30,32 +30,42 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
-
-      const response = await login({ email, senha });
-
-      if (response && response.message === 'Login bem-sucedido') {
-        const userData = await get_fk_empresa_id(email);
-        if (userData) {
-          setIsAuthenticated(true);
-          localStorage.setItem('tipo_usuario', userData.tipo_usuario);
-          localStorage.setItem('id_usuario', userData.id_usuario);
-          localStorage.setItem('fk_empresa_id', userData.fk_empresa_id);
-          if (userData.tipo_usuario === 'funcionario') {
-              navigate(`/agenda/${userData.id_usuario}`);
-          } else if (userData.tipo_usuario === 'secretario' || userData.tipo_usuario === 'gerente') {
-            navigate(`/usuario/${userData.fk_empresa_id}`);
-          } else if (userData.tipo_usuario === 'admin') {
-            navigate(`/empresa`);
-          }
-        } else {
-          setError('Erro ao buscar informações do usuário.');
+        // 1. Faz login
+        const loginResult = await login({ email, senha });
+        
+        if (!loginResult.success) {
+            throw new Error(loginResult.message);
         }
-      } else {
-        setError('Erro ao fazer login. Verifique suas credenciais.');
-      }
+
+        // 2. Busca dados completos do usuário
+        const userData = await get_fk_empresa_id(email);
+        
+        if (!userData) {
+            throw new Error('Dados do usuário não encontrados');
+        }
+
+        // 3. Atualiza estado e armazenamento
+        setIsAuthenticated(true);
+        localStorage.setItem('tipo_usuario', userData.tipo_usuario);
+        localStorage.setItem('id_usuario', userData.id_usuario);
+        localStorage.setItem('fk_empresa_id', userData.fk_empresa_id);
+
+        // 4. Redireciona
+        const redirectPath = {
+            'funcionario': `/agenda/${userData.id_usuario}`,
+            'secretario': `/usuario/${userData.fk_empresa_id}`,
+            'gerente': `/usuario/${userData.fk_empresa_id}`,
+            'admin': '/empresa'
+        }[userData.tipo_usuario];
+
+        navigate(redirectPath || '/');
+
     } catch (err) {
-        setError('Erro ao fazer login. Verifique suas credenciais.');
+        console.error('Erro no login:', err);
+        setError(err.message || 'Erro ao fazer login. Tente novamente.');
     }
 };
 
