@@ -20,7 +20,6 @@ function Login() {
       if (tipoUsuario === 'funcionario') {
         navigate(`/agenda/${idUsuario}`);
       } else if (tipoUsuario === 'secretario' || tipoUsuario === 'gerente') {
-        console.log(idUsuario)
         navigate(`/usuario/${fk_empresa_id}`);
       } else if (tipoUsuario === 'admin') {
         navigate('/empresa');

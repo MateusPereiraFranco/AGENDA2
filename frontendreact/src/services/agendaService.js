@@ -2,19 +2,38 @@ import { API_URL } from './apiConfig';
 import { handleError } from './errorHandler';
 
 // Função para buscar agendamentos de um usuário
-export const fetchAgendamentos = async (fk_usuario_id, searchParams = {}) => {
+export const fetchAgendamentos = async (userId, searchParams = {}) => {
     try {
-        const queryString = new URLSearchParams(searchParams).toString();
-        const response = await fetch(`${API_URL}/schedules?${queryString}&fk_usuario_id=${fk_usuario_id}`, {
-            credentials: 'include',
-        });
-        if (!response.ok) {
-            return null;
+        // Cria uma cópia segura dos parâmetros
+        const params = new URLSearchParams();
+
+        // Adiciona os parâmetros de busca
+        if (searchParams.data) params.append('data', searchParams.data);
+        if (searchParams.page) params.append('page', searchParams.page);
+
+        // Adiciona o userId como fk_usuario_id apenas se não for admin
+        const tipoUsuario = localStorage.getItem('tipo_usuario');
+        if (tipoUsuario !== 'admin') {
+            params.append('fk_usuario_id', userId);
         }
+
+        const response = await fetch(`${API_URL}/schedules?${params.toString()}`, {
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+        }
+
         return response.json();
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro no fetchAgendamentos:', error);
+        throw error;
     }
 };
 

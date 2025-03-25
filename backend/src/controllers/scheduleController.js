@@ -13,25 +13,17 @@ const searchSchema = Joi.object({
 });
 
 const getSchedulesController = async (req, res) => {
-    const { error, value } = searchSchema.validate(req.query);
-
-    if (error) {
-        return res.status(400).send(error.details[0].message);
-    }
-
     try {
-        // VER só o que for seu ------------------------------------++++++++++++++++++++++++++++++++++++++++++++++ fazer um if para ver se é funcionario, admin, gerente ou secretario
-        // value.fk_usuario_id = req.user.id;
-        const schedules = await getSchedules(value);
+        // O middleware já adicionou os filtros necessários
+        const schedules = await getSchedules(req.query);
 
-        if (schedules.length === 0) {
-            return res.status(404).send('Nenhuma agenda encontrada');
-        }
-
-        res.status(200).json(schedules);
+        res.status(200).json(schedules || []);
     } catch (err) {
-        console.error('Erro ao buscar agendas:', err);
-        res.status(500).send('Erro ao buscar agendas');
+        console.error('Erro no getSchedulesController:', err);
+        res.status(500).json({
+            message: 'Erro ao buscar agendas',
+            error: err.message
+        });
     }
 };
 

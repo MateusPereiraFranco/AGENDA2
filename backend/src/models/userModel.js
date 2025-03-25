@@ -1,6 +1,20 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 import bcrypt from 'bcrypt';
 
+
+const getUsuarioById = async (id) => {
+    try {
+        const result = await client.query(
+            'SELECT id_usuario, fk_empresa_id FROM usuario WHERE id_usuario = $1',
+            [id]
+        );
+        return result.rows[0] || null;
+    } catch (err) {
+        console.error('Erro ao buscar usuário por ID:', err);
+        throw err;
+    }
+};
+
 // Função para buscar um usuário por email
 const getUserByEmail = async (email) => {
     try {
@@ -121,4 +135,5 @@ export {
     updateUser,
     getUserByEmail,
     verifyPassword,
+    getUsuarioById,
 }

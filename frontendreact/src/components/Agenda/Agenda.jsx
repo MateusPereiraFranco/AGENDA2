@@ -18,20 +18,16 @@ function Agenda() {
 
     const loadAgendamentos = async () => {
         try {
-            const params = { ...searchParams };
-            if (params.nome === '') {
-                delete params.nome;
-            }
-            params.page = currentPage;
+            const params = { 
+                page: currentPage,
+                ...(searchParams.data && { data: searchParams.data })
+            };
+            
             const data = await fetchAgendamentos(id, params);
-            if (data) {
-                setAgendamentos(data);
-            } else {
-                setAgendamentos([]);
-            }
+            setAgendamentos(data || []);
         } catch (error) {
-            console.error(error);
-            alert('Erro ao carregar agendamentos');
+            console.error('Erro ao carregar agendamentos:', error);
+            alert(error.message || 'Erro ao carregar agendamentos');
         }
     };
 
