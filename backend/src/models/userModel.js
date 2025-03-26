@@ -115,13 +115,13 @@ const deleteUser = async (id) => {
 };
 
 
-const updateUser = async (id, nome, email, senha, fk_empresa_id, tipo_usuario) => {
+const updateUser = async (id, nome, email, tipo_usuario) => {
     try {
         const result = await client.query(
-            'UPDATE usuario SET nome = $1, email = $2, senha = $3, fk_empresa_id = $4, tipo_usuario =$5 WHERE id_usuario = $6 RETURNING *',
-            [nome, email, senha, fk_empresa_id, tipo_usuario, id]
+            'UPDATE usuario SET nome = $1, email = $2, tipo_usuario = $3 WHERE id_usuario = $4 RETURNING *',
+            [nome, email, tipo_usuario, id]
         );
-        return result.rows[0]; // Retorna o usuario atualizado
+        return result.rows[0];
     } catch (err) {
         console.error('Erro ao atualizar usuario:', err);
         throw err;

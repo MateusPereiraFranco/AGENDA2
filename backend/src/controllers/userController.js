@@ -182,20 +182,21 @@ const deleteUserController = async (req, res) => {
 
 const updateUserController = async (req, res) => {
     const { id } = req.params;
-    const { nome, email, senha, fk_empresa_id, tipo_usuario } = req.body; // Recebe os dados do corpo da requisição
-    if (!id || !nome || !email || !senha || !fk_empresa_id || !tipo_usuario) {
-        return res.status(400).send('ID, nome, email, senha, fk_empresa_id e tipo_usuario são obrigatório para atualização');
+    const { nome, email, tipo_usuario } = req.body;
+
+    if (!id || !nome || !email || !tipo_usuario) {
+        return res.status(400).send('ID, nome, email e tipo_usuario são obrigatórios para atualização');
     }
 
     try {
-        const user = await updateUser(id, nome, email, senha, fk_empresa_id, tipo_usuario); // Chama o modelo para atualizar o usuario
+        const user = await updateUser(id, nome, email, tipo_usuario);
         if (!user) {
             return res.status(404).send('Usuario não encontrado');
         }
-        res.status(200).json({ message: 'Usuario atualizado com sucesso!', user }); // Retorna usuario atualizado
+        res.status(200).json({ message: 'Usuario atualizado com sucesso!', user });
     } catch (err) {
         console.error('Erro ao atualizar usuario:', err);
-        res.status(500).send('Erro ao atualizar usuario:');
+        res.status(500).send('Erro ao atualizar usuario');
     }
 };
 
