@@ -102,7 +102,10 @@ function Agenda() {
                           <td>{agendamento.data}</td>
                           <td>
                             <button className='botao-vermelho' onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
-                            <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
+                            {(tipo_usuario === "gerente" ||
+                                tipo_usuario === "admin") && (
+                                    <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
+                            )}
                             <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
                           </td>
                         </tr>

@@ -21,7 +21,7 @@ function Usuario() {
   const [error, setError] = useState("");
   const [editingUsuario, setEditingUsuario] = useState(null); // Estado para controlar o usuário sendo editado
   const navigate = useNavigate();
-  const tipoUsuario = localStorage.getItem("tipo_usuario");
+  const tipo_usuario = localStorage.getItem("tipo_usuario");
 
   useEffect(() => {
     loadUsuarios();
@@ -202,8 +202,8 @@ function Usuario() {
                         usuario.tipo_usuario}
                     </td>
                     <td>
-                      {(tipoUsuario === "gerente" ||
-                        tipoUsuario === "admin") && (
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
                         <button
                           className="botao-vermelho"
                           onClick={() =>
@@ -213,8 +213,8 @@ function Usuario() {
                           Excluir
                         </button>
                       )}
-                      {(tipoUsuario === "gerente" ||
-                        tipoUsuario === "admin") && (
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
                         <button onClick={() => setEditingUsuario(usuario)}>
                           Atualizar
                         </button>

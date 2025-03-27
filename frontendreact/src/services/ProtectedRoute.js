@@ -37,8 +37,13 @@ const ProtectedRoute = () => {
             return <Outlet />;
 
         case 'funcionario':
-            if (id && id !== idUsuario) {
+            if (window.location.pathname.startsWith('/usuario')) {
                 return <Navigate to={`/agenda/${idUsuario}`} />;
+            }
+            if (window.location.pathname.startsWith('/agenda')) {
+                if (id && id !== idUsuario) {
+                    return <Navigate to={`/agenda/${idUsuario}`} />;
+                }
             }
             return <Outlet />;
 

@@ -11,11 +11,7 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
         if (searchParams.data) params.append('data', searchParams.data);
         if (searchParams.page) params.append('page', searchParams.page);
 
-        // Adiciona o userId como fk_usuario_id apenas se não for admin
-        const tipoUsuario = localStorage.getItem('tipo_usuario');
-        if (tipoUsuario !== 'admin') {
-            params.append('fk_usuario_id', userId);
-        }
+        params.append('fk_usuario_id', userId);
 
         const response = await fetch(`${API_URL}/schedules?${params.toString()}`, {
             credentials: 'include',
@@ -41,6 +37,7 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
 // Função para deletar um agendamento
 export const deleteAgendamento = async (id) => {
     try {
+        console.log(id)
         const response = await fetch(`${API_URL}/deleteSchedule`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },

@@ -41,36 +41,42 @@ const isAdminOrManager = async (req, res, next) => {
                 targetCompanyId = req.query.fk_empresa_id;
             }
 
-        } else if (req.method === 'DELETE' || req.method === 'PUT') {
+        } else if (req.user.tipo_usuario === 'gerente') {
+            if (req.method === 'DELETE' || req.method === 'PUT') {
 
-            let idUser
-            // Para UPDATE, verifica o params parameter
-            if (req.params.id) {
-                idUser = req.params.id
-            }
-            // Para DELETE, verifica o body parameter
-            else if (req.body.id) {
-                idUser = req.body.id
+                let idUser
+                // Para UPDATE, verifica o params
+                if (req.params.id) {
+                    idUser = req.params.id
+                }
+                // Para DELETE, verifica o body
+                else if (req.body.id) {
+                    idUser = req.body.id
+                }
+                else {
+                    res.status(403).json({
+                        message: 'Acesso negado. nenhum id passado.'
+                    });
+                }
+                const user = await getUsuarioById(idUser);
+                targetCompanyId = user.fk_empresa_id
             }
             else {
-                res.status(403).json({
-                    message: 'Acesso negado. nenhum id passado.'
-                });
+                if (req.body && req.body.fk_empresa_id) {
+                    targetCompanyId = req.body.fk_empresa_id;
+                }
             }
-            const user = await getUsuarioById(idUser);
-            targetCompanyId = user.fk_empresa_id
-        }
 
-        else {
-            if (req.body && req.body.fk_empresa_id) {
-                targetCompanyId = req.body.fk_empresa_id;
-            }
+        } else {
+            res.status(403).json({
+                message: 'Acesso negado. Apenas gerente pode deletar, adicionar e atualizar.'
+            });
         }
 
         const empresaIdUsuario = req.user.fk_empresa_id;
 
         if (targetCompanyId && empresaIdUsuario && targetCompanyId.toString() === empresaIdUsuario.toString()) {
-            next(); // Permite acesso
+            next();
         } else {
             res.status(403).json({
                 message: 'Acesso negado. Você só pode acessar dados da sua própria empresa.'

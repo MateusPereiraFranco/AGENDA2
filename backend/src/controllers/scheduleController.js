@@ -36,9 +36,8 @@ const addScheduleController = async (req, res) => {
     if (!data || !fk_usuario_id) {
         return res.status(400).send('data e fk_usuario_id são obrigatórios');
     }
-
     try {
-        if (usuarioAutenticado.id === fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+        if (usuarioAutenticado.id_usuario == fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
             const newSchedule = await addSchedule(data, fk_usuario_id);
             res.status(201).json(newSchedule);
         } else {
@@ -68,7 +67,9 @@ const deleteScheduleController = async (req, res) => {
         }
 
         // Verifica se o usuário tem permissão para deletar o agendamento
-        if (usuarioAutenticado.id === schedule.fk_usuario_id || ['admin', 'gerente'].includes(usuarioAutenticado.tipo_usuario)) {
+        console.log(usuarioAutenticado.id_usuario)
+        console.log(schedule.fk_usuario_id)
+        if (usuarioAutenticado.id_usuario === schedule.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
             const deletedSchedule = await deleteSchedule(id);
             res.status(200).json({ message: 'Agenda excluída com sucesso!', schedule: deletedSchedule });
         } else {
@@ -91,7 +92,7 @@ const updateScheduleController = async (req, res) => {
     }
 
     try {
-        if (usuarioAutenticado.id === fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+        if (usuarioAutenticado.id === fk_usuario_id || ['admin', 'gerente'].includes(usuarioAutenticado.tipo_usuario)) {
             const schedule = await updateSchedule(id, data, fk_usuario_id);
             if (!schedule) {
                 return res.status(404).send('Agenda não encontrada');
