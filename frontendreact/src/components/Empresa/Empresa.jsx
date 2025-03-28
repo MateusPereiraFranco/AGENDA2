@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   fetchEmpresas,
   addEmpresa,
@@ -12,6 +14,7 @@ function Empresa() {
   const [searchParams, setSearchParams] = useState({ nome: "", cnpj: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const [editingEmpresa, setEditingEmpresa] = useState(null); // Estado para controlar a empresa sendo editada
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,12 +59,18 @@ function Empresa() {
   };
 
   const handleDeleteEmpresa = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir esta empresa?")) return;
+
+    setDeletingId(id);
     try {
       await deleteEmpresa(id);
-      loadEmpresas();
+      await loadEmpresas();
+      toast.success("Empresa excluída");
     } catch (error) {
       console.error(error);
-      alert("Erro ao excluir empresa");
+      toast.error("Erro ao excluir empresa");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -101,6 +110,11 @@ function Empresa() {
 
   return (
     <div className="conteiner_empresas_geral">
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false} // Fecha imediatamente ao passar o mouse
+        pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
+      />
       <h1>Lista de Empresas</h1>
       <div className="form_empresa">
         <form>
@@ -146,8 +160,11 @@ function Empresa() {
                       <button
                         className="botao-vermelho"
                         onClick={() => handleDeleteEmpresa(empresa.id_empresa)}
+                        disabled={deletingId === empresa.id_empresa}
                       >
-                        Excluir
+                        {deletingId === empresa.id_empresa
+                          ? "Excluindo..."
+                          : "Excluir"}
                       </button>
                       <button onClick={() => setEditingEmpresa(empresa)}>
                         Atualizar
