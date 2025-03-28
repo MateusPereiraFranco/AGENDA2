@@ -7,6 +7,7 @@ function Agenda() {
     const [agendamentos, setAgendamentos] = useState([]);
     const [searchParams, setSearchParams] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
+    const [editingAgendamento, setEditingAgendamento] = useState(null); // Estado para controle de edição
     const navigate = useNavigate();
 
     const tipo_usuario = localStorage.getItem('tipo_usuario');
@@ -38,8 +39,9 @@ function Agenda() {
         const fk_usuario_id = tipo_usuario === 'funcionario' ? id_usuario : id;
 
         try {
-            await addAgendamento({ data, fk_usuario_id});
+            await addAgendamento({ data, fk_usuario_id });
             loadAgendamentos();
+            e.target.reset(); // Limpa o formulário após adicionar
         } catch (error) {
             console.error(error);
             alert('Erro ao adicionar agendamento');
@@ -56,15 +58,19 @@ function Agenda() {
         }
     };
 
-    const handleUpdateAgendamento = async (id) => {
-        const data = prompt('Nova data do agendamento:');
+    const handleUpdateAgendamento = async (e) => {
+        e.preventDefault();
+        const data = e.target.data.value;
+        
         if (!data) {
             alert('O campo é obrigatório!');
             return;
         }
+
         try {
-            await updateAgendamento(id, { data });
+            await updateAgendamento(editingAgendamento.id_agenda, { data });
             loadAgendamentos();
+            setEditingAgendamento(null); // Fecha o formulário de edição
         } catch (error) {
             console.error(error);
             alert('Erro ao atualizar agendamento');
@@ -95,31 +101,67 @@ function Agenda() {
             </div>
             <div className='tabela_agenda'>
                 <table>
-                  <tbody>
-                    {agendamentos.length > 0 ? (
-                      agendamentos.map((agendamento) => (
-                        <tr key={agendamento.id_agenda}>
-                          <td>{agendamento.data}</td>
-                          <td>
-                            <button className='botao-vermelho' onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}>Excluir</button>
-                            {(tipo_usuario === "gerente" ||
-                                tipo_usuario === "admin") && (
-                                    <button onClick={() => handleUpdateAgendamento(agendamento.id_agenda)}>Atualizar</button>
-                            )}
-                            <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>Ver Agenda</button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="2" style={{ textAlign: 'center' }}>Nenhum agendamento cadastrado</td>
-                      </tr>
-                    )}
-                  </tbody>
+                    <tbody>
+                        {agendamentos.length > 0 ? (
+                            agendamentos.map((agendamento) => (
+                                <React.Fragment key={agendamento.id_agenda}>
+                                    <tr>
+                                        <td>{agendamento.data}</td>
+                                        <td>
+                                            <button 
+                                                className='botao-vermelho' 
+                                                onClick={() => handleDeleteAgendamento(agendamento.id_agenda)}
+                                            >
+                                                Excluir
+                                            </button>
+                                            {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                                                <button onClick={() => setEditingAgendamento(agendamento)}>
+                                                    Atualizar
+                                                </button>
+                                            )}
+                                            <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>
+                                                Ver Agenda
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {editingAgendamento && editingAgendamento.id_agenda === agendamento.id_agenda && (
+                                        <tr className="editando_agendamento">
+                                            <td colSpan="2">
+                                                <form className="form-atualizacao" onSubmit={handleUpdateAgendamento}>
+                                                    <label htmlFor="data">Nova Data:</label>
+                                                    <input
+                                                        type="date"
+                                                        name="data"
+                                                        defaultValue={editingAgendamento.data}
+                                                        required
+                                                    />
+                                                    <button type="submit">Salvar</button>
+                                                    <button
+                                                        type="button"
+                                                        className="botao-vermelho"
+                                                        onClick={() => setEditingAgendamento(null)}
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="2" style={{ textAlign: 'center' }}>Nenhum agendamento cadastrado</td>
+                            </tr>
+                        )}
+                    </tbody>
                 </table>
             </div>
             <div className='vai_volta'>
-                <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                <button 
+                    onClick={() => setCurrentPage(currentPage - 1)} 
+                    disabled={currentPage === 1}
+                >
                     Anterior
                 </button>
                 <button onClick={() => setCurrentPage(currentPage + 1)}>

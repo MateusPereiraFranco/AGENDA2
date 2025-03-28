@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { fetchHorarios, addHorario, deleteHorario } from '../../services/horarioService';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import {
+  fetchHorarios,
+  addHorario,
+  deleteHorario,
+  updateHorario,
+} from "../../services/horarioService";
 
 function Horario() {
   const { id } = useParams(); // Obtém o ID da agenda da URL
   const [horarios, setHorarios] = useState([]);
   const [searchParams, setSearchParams] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingHorario, setEditingHorario] = useState(null);
+
+  const tipo_usuario = localStorage.getItem("tipo_usuario");
+  const id_usuario = localStorage.getItem("id_usuario");
 
   useEffect(() => {
     loadHorarios();
@@ -16,15 +25,15 @@ function Horario() {
     try {
       // Cria uma cópia do searchParams para evitar mutação direta
       const params = { ...searchParams };
-        
+
       // Remove o campo "nome" se estiver vazio
-      if (params.nome === '') {
+      if (params.nome === "") {
         delete params.nome;
       }
-        
+
       // Adiciona a página atual aos parâmetros
       params.page = currentPage;
-        
+
       // Busca os usuários com os parâmetros atualizados
       const data = await fetchHorarios(id, params);
       if (data) {
@@ -32,10 +41,10 @@ function Horario() {
       } else {
         setHorarios([]); // Define a lista de usuários como vazia se não houver dados
       }
-      } catch (error) {
-        console.error(error);
-        alert('Erro ao carregar usuários');
-      }
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao carregar usuários");
+    }
   };
 
   const handleAddHorario = async (e) => {
@@ -50,13 +59,13 @@ function Horario() {
     try {
       await addHorario(horario);
       loadHorarios();
-      e.target.horario.value=''
-      e.target.nome.value=''
-      e.target.contato.value=''
-      e.target.observacoes.value=''
+      e.target.horario.value = "";
+      e.target.nome.value = "";
+      e.target.contato.value = "";
+      e.target.observacoes.value = "";
     } catch (error) {
       console.error(error);
-      alert('Erro ao adicionar horário');
+      alert("Erro ao adicionar horário");
     }
   };
 
@@ -66,52 +75,119 @@ function Horario() {
       loadHorarios();
     } catch (error) {
       console.error(error);
-      alert('Erro ao excluir horário');
+      alert("Erro ao excluir horário");
+    }
+  };
+
+  const handleUpdateHorario = async (e) => {
+    e.preventDefault();
+    const horario = e.target.data.value;
+
+    if (!horario) {
+      alert("O campo é obrigatório!");
+      return;
+    }
+
+    try {
+      await updateHorario(editingHorario.id_horario, { horario });
+      loadHorarios();
+      setEditingHorario(null); // Fecha o formulário de edição
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao atualizar horario");
     }
   };
 
   return (
-    <div className='horarios_container_geral'>
+    <div className="horarios_container_geral">
       <h1>Horários</h1>
       <div className="form_horario">
-        <form className='add_horario' onSubmit={handleAddHorario}>
+        <form className="add_horario" onSubmit={handleAddHorario}>
           <input type="time" name="horario" placeholder="Horário" required />
           <input type="text" name="nome" placeholder="Nome" required />
           <input type="text" name="contato" placeholder="Contato" required />
-          <input type="text" name="observacoes" placeholder="Observações" required />
+          <input
+            type="text"
+            name="observacoes"
+            placeholder="Observações"
+            required
+          />
           <button type="submit">Adicionar Horário</button>
         </form>
       </div>
       <div className="tabela_horario">
-      <table>
-        <tbody>
-          {horarios.length > 0 ? (
-            horarios.map((horario) => (
-              <tr key={horario.id_horario}>
-                <td>{horario.horario}</td>
-                <td>{horario.nome}</td>
-                <td>{horario.contato}</td>
-                <td>{horario.observacoes}</td>
-                <td>
-                  <button className='botao-vermelho' onClick={() => handleDeleteHorario(horario.id_horario)}>Excluir</button>
+        <table>
+          <tbody>
+            {horarios.length > 0 ? (
+              horarios.map((horario) => (
+                <React.Fragment key={horario.id_horario}>
+                  <tr key={horario.id_horario}>
+                    <td>{horario.horario}</td>
+                    <td>{horario.nome}</td>
+                    <td>{horario.contato}</td>
+                    <td>{horario.observacoes}</td>
+                    <td>
+                      <button
+                        className="botao-vermelho"
+                        onClick={() => handleDeleteHorario(horario.id_horario)}
+                      >
+                        Excluir
+                      </button>
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
+                        <button onClick={() => setEditingHorario(horario)}>
+                          Atualizar
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                  {editingHorario &&
+                    editingHorario.id_horario === horario.id_horario && (
+                      <tr className="editando_agendamento">
+                        <td colSpan="2">
+                          <form
+                            className="form-atualizacao"
+                            onSubmit={handleUpdateHorario}
+                          >
+                            <label htmlFor="horario">Novo horario:</label>
+                            <input
+                              type="time"
+                              name="horario"
+                              defaultValue={editingHorario.horario}
+                              required
+                            />
+                            <button type="submit">Salvar</button>
+                            <button
+                              type="button"
+                              className="botao-vermelho"
+                              onClick={() => setEditingHorario(null)}
+                            >
+                              Cancelar
+                            </button>
+                          </form>
+                        </td>
+                      </tr>
+                    )}
+                </React.Fragment>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: "center" }}>
+                  Nenhum horário cadastrado
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center' }}>Nenhum horário cadastrado</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
       </div>
-      <div className='vai_volta'>
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+      <div className="vai_volta">
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>
-          Próxima
-        </button>
+        <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>
       </div>
     </div>
   );

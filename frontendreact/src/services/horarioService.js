@@ -55,3 +55,23 @@ export const deleteHorario = async (id) => {
         return null;
     }
 };
+
+// Função para atualizar um horario
+export const updateHorario = async (id, horario) => {
+    try {
+        const response = await fetch(`${API_URL}/updateSchedule/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(horario),
+            credentials: 'include',
+        });
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar horario');
+        }
+        return response.json();
+    } catch (error) {
+        handleError(error);
+        return null;
+    }
+
+};
