@@ -1,6 +1,24 @@
 import { API_URL } from './apiConfig';
 import { handleError } from './errorHandler';
 
+export const fetchAgendamentosFkUsuarioId = async (id) => {
+
+    const response = await fetch(`${API_URL}/schedule/${id}`, {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+    }
+
+    return response.json();
+}
+
 // Função para buscar agendamentos de um usuário
 export const fetchAgendamentos = async (userId, searchParams = {}) => {
     try {

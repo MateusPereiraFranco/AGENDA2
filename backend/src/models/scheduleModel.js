@@ -14,6 +14,25 @@ const getScheduleById = async (id) => {
     }
 };
 
+const getFkUserScheduleById = async (id) => {
+    try {
+        const result = await client.query(
+            'SELECT fk_usuario_id FROM agenda WHERE id_agenda = $1',
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return null;
+        }
+
+        return result.rows[0].fk_usuario_id;
+    } catch (err) {
+        console.error('Erro no model ao buscar fk_usuario_id:', err);
+        throw err; // Propaga o erro para ser tratado no controller
+    }
+};
+
+
 const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sortBy = 'id_agenda', order = 'ASC' } = {}) => {
     try {
         let query = 'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, fk_usuario_id FROM agenda';
@@ -102,4 +121,5 @@ export {
     deleteSchedule,
     updateSchedule,
     getScheduleById,
+    getFkUserScheduleById,
 }

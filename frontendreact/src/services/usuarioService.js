@@ -1,6 +1,7 @@
 import { API_URL } from './apiConfig';
 import { handleError } from './errorHandler';
 
+
 // Função para buscar usuários de uma empresa
 export const fetchUsuarios = async (fk_empresa_id, searchParams = {}) => {
     try {

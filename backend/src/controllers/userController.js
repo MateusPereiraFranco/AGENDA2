@@ -95,6 +95,8 @@ const logoutController = (req, res) => {
     res.status(200).json({ message: 'Logout bem-sucedido' });
 };
 
+
+
 const getUserByEmailController = async (req, res) => {
     try {
         const { email } = req.query; // Mude de req.body para req.query

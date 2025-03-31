@@ -6,9 +6,10 @@ import Usuario from './components/Usuario/Usuario';
 import Agenda from './components/Agenda/Agenda';
 import Horario from './components/Horario/Horario';
 import Navbar from './components/Navbar/Navbar';
-import ProtectedRoute from './services/ProtectedRoute'; // Importe o componente de rota protegida
 import { AuthProvider } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
+import ProtectedUsuarioRoute from './services/ProtectedUsuarioRoute';
+import ProtectedAgendaRoute from './services/ProtectedAgendaRoute';
 
 function App() {
     return (
@@ -21,12 +22,15 @@ function App() {
                     <Route path="/login" element={<Login />} />
 
                     {/* Rotas protegidas */}
-                    <Route element={<ProtectedRoute />}>
+                    <Route element={<ProtectedUsuarioRoute />}>
                         <Route path="/empresa" element={<Empresa />} />
                         <Route path="/usuario/:id" element={<Usuario />} />
-                        <Route path="/agenda/:id" element={<Agenda />} />
-                        <Route path="/horario/:id" element={<Horario />} />
                     </Route>
+
+                    <Route element={<ProtectedAgendaRoute />}>
+                        <Route path="/agenda/:id" element={<Agenda />} />
+                    </Route>
+                    <Route path="/horario/:id" element={<Horario />} />
                 </Routes>
             </Router>
         </AuthProvider>

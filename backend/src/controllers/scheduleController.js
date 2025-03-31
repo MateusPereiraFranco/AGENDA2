@@ -1,4 +1,4 @@
-import { getSchedules, addSchedule, deleteSchedule, updateSchedule, getScheduleById } from "../models/scheduleModel.js";
+import { getSchedules, addSchedule, deleteSchedule, updateSchedule, getScheduleById, getFkUserScheduleById } from "../models/scheduleModel.js";
 
 import Joi from 'joi';
 
@@ -11,6 +11,33 @@ const searchSchema = Joi.object({
     sortBy: Joi.string().valid('id_agenda', 'data', 'fk_usuario_id').default('id_agenda'),
     order: Joi.string().valid('ASC', 'DESC').default('ASC'),
 });
+
+export const getFkUserScheduleByIdController = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const fkUsuarioId = await getFkUserScheduleById(id);
+
+        if (!fkUsuarioId) {
+            return res.status(404).json({
+                success: false,
+                message: 'Agendamento não encontrado'
+            });
+        }
+
+        res.json({
+            success: true,
+            fk_usuario_id: fkUsuarioId
+        });
+    } catch (err) {
+        console.error('Erro no controller ao buscar agendamento:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+};
 
 const getSchedulesController = async (req, res) => {
     try {
