@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   fetchUsuarios,
   addUsuario,
@@ -20,6 +22,7 @@ function Usuario() {
   const [empresaNome, setEmpresaNome] = useState("");
   const [error, setError] = useState("");
   const [editingUsuario, setEditingUsuario] = useState(null); // Estado para controlar o usuário sendo editado
+  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
   const tipo_usuario = localStorage.getItem("tipo_usuario");
 
@@ -92,12 +95,18 @@ function Usuario() {
   };
 
   const handleDeleteUsuario = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir este usuário?")) return;
+
+    setDeletingId(id);
     try {
       await deleteUsuario(id);
-      loadUsuarios();
+      await loadUsuarios();
+      toast.success("Usuário excluído");
     } catch (error) {
       console.error(error);
-      setError("Erro ao excluir usuário.");
+      toast.error("Erro ao excluir usuário");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -154,6 +163,11 @@ function Usuario() {
 
   return (
     <div className="conteiner_usuario_geral">
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false} // Fecha imediatamente ao passar o mouse
+        pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
+      />
       <h1>{empresaNome}</h1>
       {error && <p className="error-message">{error}</p>}
       <div className="form_usuario">
@@ -209,8 +223,11 @@ function Usuario() {
                           onClick={() =>
                             handleDeleteUsuario(usuario.id_usuario)
                           }
+                          disabled={deletingId === usuario.id_usuario}
                         >
-                          Excluir
+                          {deletingId === usuario.id_usuario
+                            ? "Excluindo..."
+                            : "Excluir"}
                         </button>
                       )}
                       {(tipo_usuario === "gerente" ||

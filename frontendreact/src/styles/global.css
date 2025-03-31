@@ -204,6 +204,10 @@ nav:hover{
   background-color: var(--button-vermelho-bg);
 }
 
+.logout-button:hover {
+  background-color: var(--button-vermelho-hover-bg);
+}
+
 /*/////////////////////////////////////////*/
 
 /* Container de Login */
@@ -330,8 +334,9 @@ nav:hover{
   max-width: 800px;
 }
 .tabela_horario button {
-  width: 100%;
+  width: 40%;
   min-width: 100px;
+  max-width: 300px;
 }
 
 .tabela_agenda table {

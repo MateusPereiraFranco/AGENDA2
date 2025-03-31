@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   fetchHorarios,
   addHorario,
@@ -13,7 +15,7 @@ function Horario() {
   const [searchParams, setSearchParams] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [editingHorario, setEditingHorario] = useState(null);
-
+  const [deletingId, setDeletingId] = useState(null);
   const tipo_usuario = localStorage.getItem("tipo_usuario");
   const id_usuario = localStorage.getItem("id_usuario");
 
@@ -70,12 +72,18 @@ function Horario() {
   };
 
   const handleDeleteHorario = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir o horário?")) return;
+
+    setDeletingId(id);
     try {
       await deleteHorario(id);
-      loadHorarios();
+      await loadHorarios();
+      toast.success("Horário excluído");
     } catch (error) {
       console.error(error);
-      alert("Erro ao excluir horário");
+      toast.error("Erro ao excluir horário");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -100,6 +108,11 @@ function Horario() {
 
   return (
     <div className="horarios_container_geral">
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false} // Fecha imediatamente ao passar o mouse
+        pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
+      />
       <h1>Horários</h1>
       <div className="form_horario">
         <form className="add_horario" onSubmit={handleAddHorario}>
@@ -130,8 +143,11 @@ function Horario() {
                       <button
                         className="botao-vermelho"
                         onClick={() => handleDeleteHorario(horario.id_horario)}
+                        disabled={deletingId === horario.id_horario}
                       >
-                        Excluir
+                        {deletingId === horario.id_horario
+                          ? "Excluindo..."
+                          : "Excluir"}
                       </button>
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
