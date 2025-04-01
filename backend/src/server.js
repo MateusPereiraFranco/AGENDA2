@@ -33,6 +33,7 @@ app.use('/api', userRoutes);
 app.use('/api', scheduleRoutes);
 app.use('/api', timeRoutes);
 
+
 // Middleware de tratamento de erros
 app.use((err, req, res, next) => {
     console.error(err.stack);

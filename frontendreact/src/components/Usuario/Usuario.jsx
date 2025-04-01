@@ -189,18 +189,20 @@ function Usuario() {
           </select>
         </form>
         <hr />
-        <form onSubmit={handleAddUsuario}>
-          <input type="text" name="name" placeholder="Nome" required />
-          <input type="text" name="email" placeholder="Email" required />
-          <input type="password" name="password" placeholder="Senha" required />
-          <select name="tipo_usuario">
-            <option value="cargo">Cargo</option>
-            <option value="funcionario">Funcionário</option>
-            <option value="secretario">Secretário</option>
-            <option value="gerente">Gerente</option>
-          </select>
-          <button type="submit">Adicionar Funcionário</button>
-        </form>
+        {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+          <form onSubmit={handleAddUsuario}>
+            <input type="text" name="name" placeholder="Nome" required />
+            <input type="text" name="email" placeholder="Email" required />
+            <input type="password" name="password" placeholder="Senha" required />
+            <select name="tipo_usuario">
+              <option value="cargo">Cargo</option>
+              <option value="funcionario">Funcionário</option>
+              <option value="secretario">Secretário</option>
+              <option value="gerente">Gerente</option>
+            </select>
+            <button type="submit">Adicionar Funcionário</button>
+          </form>
+        )}
       </div>
       <div className="tabela_usuario">
         <table>

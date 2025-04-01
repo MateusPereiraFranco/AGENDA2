@@ -33,7 +33,7 @@ const getTimesController = async (req, res) => {
             }
 
             // Verifica se o usuário é o dono da agenda ou tem permissão de admin/gerente/secretário
-            if (usuarioAutenticado.id !== agenda.fk_usuario_id && !['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+            if (usuarioAutenticado.id_usuario !== agenda.fk_usuario_id && !['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
                 return res.status(403).send('Você não tem permissão para acessar os horários desta agenda');
             }
         }
@@ -90,7 +90,7 @@ const deleteTimeController = async (req, res) => {
         }
 
         // Verifica se o usuário tem permissão para deletar o horário
-        if (usuarioAutenticado.id === agenda.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+        if (usuarioAutenticado.id_usuario === agenda.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
             const deletedTime = await deleteTime(id);
             res.status(200).json({ message: 'Horário excluído com sucesso!', time: deletedTime });
         } else {
