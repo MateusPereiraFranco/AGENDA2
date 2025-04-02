@@ -75,6 +75,7 @@ function Agenda() {
   const handleUpdateAgendamento = async (e) => {
     e.preventDefault();
     const data = e.target.data.value;
+    const fk_usuario_id = editingAgendamento.fk_usuario_id
 
     if (!data) {
       alert("O campo é obrigatório!");
@@ -82,7 +83,7 @@ function Agenda() {
     }
 
     try {
-      await updateAgendamento(editingAgendamento.id_agenda, { data });
+      await updateAgendamento(editingAgendamento.id_agenda, { data, fk_usuario_id});
       loadAgendamentos();
       setEditingAgendamento(null); // Fecha o formulário de edição
     } catch (error) {

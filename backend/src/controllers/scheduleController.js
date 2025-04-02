@@ -14,7 +14,14 @@ const searchSchema = Joi.object({
 
 export const getFkUserScheduleByIdController = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;  // Ou const id = req.body.id;
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID do agendamento é obrigatório'
+            });
+        }
 
         const fkUsuarioId = await getFkUserScheduleById(id);
 
@@ -94,8 +101,6 @@ const deleteScheduleController = async (req, res) => {
         }
 
         // Verifica se o usuário tem permissão para deletar o agendamento
-        console.log(usuarioAutenticado.id_usuario)
-        console.log(schedule.fk_usuario_id)
         if (usuarioAutenticado.id_usuario === schedule.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
             const deletedSchedule = await deleteSchedule(id);
             res.status(200).json({ message: 'Agenda excluída com sucesso!', schedule: deletedSchedule });

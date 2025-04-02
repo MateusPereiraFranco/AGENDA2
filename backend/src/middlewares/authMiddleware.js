@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { getUsuarioById } from '../models/userModel.js'
-import { getUserByEmail } from '../models/userModel.js';
+import { getFkUserScheduleById } from '../models/scheduleModel.js';
 
 const autenticar = (req, res, next) => {
     const token = req.cookies.token;
@@ -101,15 +101,37 @@ const canAccessAgenda = async (req, res, next) => {
         // Obter o ID do usuário alvo da agenda
         let targetUserId;
 
-        // Verifica todas as possíveis fontes
+        if (req.method === 'GET') {
+            if (req.query.fk_usuario_id) {
+                targetUserId = req.query.fk_usuario_id;
+            } else {
+                return null
+            }
+        } else if (req.method === 'PUT') {
+            if (req.body.fk_usuario_id) {
+                targetUserId = req.body.fk_usuario_id;
+            }
+            else {
+                res.status(403).json({
+                    message: 'Acesso negado. nenhum id passado.'
+                });
+            }
 
-        if (req.query.fk_usuario_id) {
-            targetUserId = req.query.fk_usuario_id;
-        } else {
-            return null
+        } else if (req.method === 'DELETE') {
+            if (req.body.id) {
+                try {
+                    targetUserId = await getFkUserScheduleById(req.body.id);
+                } catch (error) {
+                    console.error('Erro ao buscar fk_usuario_id:', error);
+                }
+            }
+        } else if (req.method === 'POST') {
+            if (req.body.fk_usuario_id) {
+                targetUserId = req.body.fk_usuario_id
+            }
         }
 
-        // Se o usuário alvo for ele mesmo, permite
+        // O usuario pode acessar a própria agenda
         if (targetUserId == user.id_usuario) {
             return next();
         }

@@ -55,7 +55,6 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
 // Função para deletar um agendamento
 export const deleteAgendamento = async (id) => {
     try {
-        console.log(id)
         const response = await fetch(`${API_URL}/deleteSchedule`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -75,6 +74,7 @@ export const deleteAgendamento = async (id) => {
 // Função para atualizar um agendamento
 export const updateAgendamento = async (id, agendamento) => {
     try {
+
         const response = await fetch(`${API_URL}/updateSchedule/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
