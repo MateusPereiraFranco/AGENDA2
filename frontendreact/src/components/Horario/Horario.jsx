@@ -8,12 +8,17 @@ import {
   deleteHorario,
   updateHorario,
 } from "../../services/horarioService";
+import { fetchUsuarioNome } from "../../services/usuarioService";
 
 function Horario() {
   const { id } = useParams(); // Obtém o ID da agenda da URL
   const [horarios, setHorarios] = useState([]);
-  const [searchParams, setSearchParams] = useState({});
+  const [searchParams, setSearchParams] = useState({
+    sortBy: "horario"
+  });
   const [currentPage, setCurrentPage] = useState(1);
+  const [usuarioNome, setUsuarioNome] = useState("");
+  const [error, setError] = useState("");
   const [editingHorario, setEditingHorario] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const tipo_usuario = localStorage.getItem("tipo_usuario");
@@ -21,6 +26,7 @@ function Horario() {
 
   useEffect(() => {
     loadHorarios();
+    loadUsuarioName();
   }, [currentPage, searchParams]);
 
   const loadHorarios = async () => {
@@ -49,13 +55,29 @@ function Horario() {
     }
   };
 
+  // Usado para colocar em observação - "Agendado por 'João'".
+  const loadUsuarioName = async () => {
+        try {
+          const nomeUsuario = await fetchUsuarioNome(id_usuario);
+          if (nomeUsuario) {
+            setUsuarioNome(nomeUsuario);
+          } else {
+            setUsuarioNome("Usuario não encontrada");
+          }
+        } catch (error) {
+          console.error(error);
+          setError("Erro ao carregar detalhes do usuario.");
+        }
+      };
+
+
   const handleAddHorario = async (e) => {
     e.preventDefault();
     const horario = {
       horario: e.target.horario.value,
       nome: e.target.nome.value,
       contato: e.target.contato.value,
-      observacoes: e.target.observacoes.value,
+      observacoes: `Agendado por ${usuarioNome}`,
       fk_agenda_id: id,
     };
     try {
@@ -64,7 +86,6 @@ function Horario() {
       e.target.horario.value = "";
       e.target.nome.value = "";
       e.target.contato.value = "";
-      e.target.observacoes.value = "";
     } catch (error) {
       console.error(error);
       alert("Erro ao adicionar horário");
@@ -119,12 +140,6 @@ function Horario() {
           <input type="time" name="horario" placeholder="Horário" required />
           <input type="text" name="nome" placeholder="Nome" required />
           <input type="text" name="contato" placeholder="Contato" required />
-          <input
-            type="text"
-            name="observacoes"
-            placeholder="Observações"
-            required
-          />
           <button type="submit">Adicionar Horário</button>
         </form>
       </div>

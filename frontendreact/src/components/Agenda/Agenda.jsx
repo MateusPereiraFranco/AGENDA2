@@ -8,12 +8,17 @@ import {
   deleteAgendamento,
   updateAgendamento,
 } from "../../services/agendaService";
+import { fetchUsuarioNome } from "../../services/usuarioService";
 
 function Agenda() {
   const { id } = useParams();
   const [agendamentos, setAgendamentos] = useState([]);
-  const [searchParams, setSearchParams] = useState({});
+  const [searchParams, setSearchParams] = useState({
+    sortBy: "data",
+  });
   const [currentPage, setCurrentPage] = useState(1);
+  const [usuarioNome, setUsuarioNome] = useState("");
+  const [error, setError] = useState("");
   const [editingAgendamento, setEditingAgendamento] = useState(null); // Estado para controle de edição
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
@@ -23,15 +28,18 @@ function Agenda() {
 
   useEffect(() => {
     loadAgendamentos();
+    loadUsuarioName();
   }, [currentPage, searchParams]);
 
   const loadAgendamentos = async () => {
     try {
       const params = {
         page: currentPage,
+        sortBy: searchParams.sortBy,
+        order: searchParams.order,
         ...(searchParams.data && { data: searchParams.data }),
       };
-
+  
       const data = await fetchAgendamentos(id, params);
       setAgendamentos(data || []);
     } catch (error) {
@@ -39,6 +47,20 @@ function Agenda() {
       alert(error.message || "Erro ao carregar agendamentos");
     }
   };
+
+  const loadUsuarioName = async () => {
+      try {
+        const nomeUsuario = await fetchUsuarioNome(id);
+        if (nomeUsuario) {
+          setUsuarioNome(nomeUsuario);
+        } else {
+          setUsuarioNome("Usuario não encontrada");
+        }
+      } catch (error) {
+        console.error(error);
+        setError("Erro ao carregar detalhes do usuario.");
+      }
+    };
 
   const handleAddAgendamento = async (e) => {
     e.preventDefault();
@@ -103,7 +125,7 @@ function Agenda() {
         pauseOnHover={false} // Fecha imediatamente ao passar o mouse
         pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
       />
-      <h1>Agendamentos</h1>
+      <h1>Agendas de {usuarioNome}</h1>
       <div className="form_agenda">
         <form onSubmit={(e) => e.preventDefault()}>
           <input

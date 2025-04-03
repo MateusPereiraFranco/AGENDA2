@@ -2,6 +2,21 @@ import client from '../config/database.js'; // Importando a conexão com o banco
 import bcrypt from 'bcrypt';
 
 
+const getUserName = async (id) => {
+    try {
+
+        const result = await client.query(
+            'SELECT nome FROM usuario WHERE id_usuario = $1',
+            [id]
+        );
+        return result.rows[0];
+    } catch (err) {
+        console.error('Erro ao buscar usuario:', err);
+        throw err;
+    }
+};
+
+
 const getUsuarioById = async (id) => {
     try {
         const result = await client.query(
@@ -136,4 +151,5 @@ export {
     getUserByEmail,
     verifyPassword,
     getUsuarioById,
+    getUserName,
 }

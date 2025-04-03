@@ -35,11 +35,11 @@ const getFkUserScheduleById = async (id) => {
 
 const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sortBy = 'id_agenda', order = 'ASC' } = {}) => {
     try {
-        let query = 'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, fk_usuario_id FROM agenda';
+        let query = 'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, data as data_original, fk_usuario_id FROM agenda';
         const params = [];
         let conditions = [];
 
-        // Filtros
+        // Filtros (mantido igual)
         if (id) {
             conditions.push('id_agenda = $' + (params.length + 1));
             params.push(id);
@@ -53,13 +53,13 @@ const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sor
             params.push(fk_usuario_id);
         }
 
-        // Adiciona condições à query, se houver
         if (conditions.length > 0) {
             query += ' WHERE ' + conditions.join(' AND ');
         }
 
-        // Ordenação
-        query += ` ORDER BY ${sortBy} ${order}`;
+        // Ordenação ajustada para data
+        const orderByField = sortBy === 'data' ? 'data_original' : sortBy;
+        query += ` ORDER BY ${orderByField} ${order}`;
 
         // Paginação
         const offset = (page - 1) * limit;

@@ -19,6 +19,25 @@ export const fetchUsuarios = async (fk_empresa_id, searchParams = {}) => {
     }
 };
 
+export const fetchUsuarioNome = async (id) => {
+    try {
+        const response = await fetch(`${API_URL}/usuarioName?id=${id}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            return null; // Retorna null se a resposta não for bem-sucedida
+        }
+
+        const data = await response.json();
+        return data.nome; // Retorna o nome o usuario
+    } catch (error) {
+        handleError(error);
+        return null;
+    }
+};
+
 // Função para deletar um usuário
 export const deleteUsuario = async (id) => {
     try {

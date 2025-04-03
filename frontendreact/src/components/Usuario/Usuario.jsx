@@ -164,7 +164,7 @@ function Usuario() {
   return (
     <div className="conteiner_usuario_geral">
       <ToastContainer
-        autoClose={1500}
+        autoClose={1200}
         pauseOnHover={false} // Fecha imediatamente ao passar o mouse
         pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
       />

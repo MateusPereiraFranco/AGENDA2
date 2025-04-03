@@ -22,13 +22,18 @@ export const fetchAgendamentosFkUsuarioId = async (id) => {
 // Função para buscar agendamentos de um usuário
 export const fetchAgendamentos = async (userId, searchParams = {}) => {
     try {
-        // Cria uma cópia segura dos parâmetros
         const params = new URLSearchParams();
 
-        // Adiciona os parâmetros de busca
-        if (searchParams.data) params.append('data', searchParams.data);
+        // Parâmetros de paginação
         if (searchParams.page) params.append('page', searchParams.page);
+        if (searchParams.limit) params.append('limit', searchParams.limit);
 
+        // Parâmetros de ordenação
+        if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy);
+        if (searchParams.order) params.append('order', searchParams.order);
+
+        // Parâmetros de filtro
+        if (searchParams.data) params.append('data', searchParams.data);
         params.append('fk_usuario_id', userId);
 
         const response = await fetch(`${API_URL}/schedules?${params.toString()}`, {

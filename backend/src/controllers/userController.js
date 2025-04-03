@@ -1,4 +1,4 @@
-import { getUsers, addUser, deleteUser, updateUser, getUserByEmail, verifyPassword } from "../models/userModel.js";
+import { getUsers, addUser, deleteUser, updateUser, getUserByEmail, verifyPassword, getUserName } from "../models/userModel.js";
 import jwt from 'jsonwebtoken';
 
 import Joi from 'joi';
@@ -96,6 +96,22 @@ const logoutController = (req, res) => {
 };
 
 
+const getUserNameController = async (req, res) => {
+    const { id } = req.query;
+
+    try {
+        const userName = await getUserName(id);
+
+        if (!userName) {
+            return res.status(404).send('Nenhum usuário encontrada');
+        }
+
+        res.status(200).json(userName);
+    } catch (err) {
+        console.error('Erro ao buscar nome do usuario:', err);
+        res.status(500).send('Erro ao buscar nome do usuario');
+    }
+};
 
 const getUserByEmailController = async (req, res) => {
     try {
@@ -211,4 +227,5 @@ export {
     logoutController,
     checkAuthController,
     getUserByEmailController,
+    getUserNameController,
 }
