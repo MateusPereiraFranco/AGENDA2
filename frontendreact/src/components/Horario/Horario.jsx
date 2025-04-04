@@ -23,11 +23,29 @@ function Horario() {
   const [deletingId, setDeletingId] = useState(null);
   const tipo_usuario = localStorage.getItem("tipo_usuario");
   const id_usuario = localStorage.getItem("id_usuario");
+  const [contato, setContato] = useState("");
 
   useEffect(() => {
     loadHorarios();
     loadUsuarioName();
   }, [currentPage, searchParams]);
+
+  const handleContatoChange = (e) => {
+    const input = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+    let formattedInput = "";
+    
+    if (input.length > 0) {
+      formattedInput = `(${input.substring(0, 2)}`;
+    }
+    if (input.length > 2) {
+      formattedInput += `) ${input.substring(2, 7)}`;
+    }
+    if (input.length > 7) {
+      formattedInput += `-${input.substring(7, 11)}`;
+    }
+    
+    setContato(formattedInput);
+  };
 
   const loadHorarios = async () => {
     try {
@@ -76,7 +94,7 @@ function Horario() {
     const horario = {
       horario: e.target.horario.value,
       nome: e.target.nome.value,
-      contato: e.target.contato.value,
+      contato: contato,
       observacoes: `Agendado por ${usuarioNome}`,
       fk_agenda_id: id,
     };
@@ -85,7 +103,7 @@ function Horario() {
       loadHorarios();
       e.target.horario.value = "";
       e.target.nome.value = "";
-      e.target.contato.value = "";
+      setContato("");
     } catch (error) {
       console.error(error);
       alert("Erro ao adicionar horário");
@@ -139,7 +157,15 @@ function Horario() {
         <form className="add_horario" onSubmit={handleAddHorario}>
           <input type="time" name="horario" placeholder="Horário" required />
           <input type="text" name="nome" placeholder="Nome" required />
-          <input type="text" name="contato" placeholder="Contato" required />
+          <input
+            type="text"
+            name="contato"
+            placeholder="Contato"
+            value={contato}
+            onChange={handleContatoChange}
+            maxLength={15} // (xx) xxxxx-xxxx
+            required
+          />
           <button type="submit">Adicionar Horário</button>
         </form>
       </div>
