@@ -72,27 +72,27 @@ function Usuario() {
 
   const handleAddUsuario = async (e) => {
     e.preventDefault();
-    const nome = e.target.name.value;
-    const email = e.target.email.value;
-    const senha = e.target.password.value;
-    const tipo_usuario = e.target.tipo_usuario.value;
-    if (tipo_usuario === "cargo") {
-      alert("Escolha um cargo.");
-      return null;
-    }
-    try {
-      await addUsuario({ nome, email, senha, tipo_usuario, fk_empresa_id: id });
-      loadUsuarios();
+    const formData = {
+        nome: e.target.name.value,
+        email: e.target.email.value,
+        senha: e.target.password.value,
+        tipo_usuario: e.target.tipo_usuario.value,
+        fk_empresa_id: id
+    };
 
-      e.target.name.value = "";
-      e.target.email.value = "";
-      e.target.password.value = "";
-      e.target.tipo_usuario.value = "cargo";
+    try {
+        const result = await addUsuario(formData);
+        
+        if (result.success) {
+            loadUsuarios();
+            // Limpa o formulário
+            e.target.reset();
+            setError('');
+        }
     } catch (error) {
-      console.error(error);
-      setError("Erro ao adicionar usuário.");
+        setError(error.message); // Exibe a mensagem de erro específica
     }
-  };
+};
 
   const handleDeleteUsuario = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este usuário?")) return;
@@ -130,7 +130,6 @@ function Usuario() {
       loadUsuarios();
       setEditingUsuario(null); // Fechar o formulário de edição após a atualização
     } catch (error) {
-      console.error(error);
       setError("Erro ao atualizar usuário.");
     }
   };

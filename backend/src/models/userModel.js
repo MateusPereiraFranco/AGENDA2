@@ -104,14 +104,20 @@ const getUsers = async ({ id, nome, email, senha, fk_empresa_id, tipo_usuario, p
 const saltRounds = 10;
 const addUser = async (nome, email, senha, fk_empresa_id, tipo_usuario) => {
     try {
-        const hashedSenha = await bcrypt.hash(senha, saltRounds); // 10 é o número de salt rounds
+        const hashedSenha = await bcrypt.hash(senha, saltRounds);
+
         const result = await client.query(
-            'INSERT INTO usuario (nome, email, senha, fk_empresa_id, tipo_usuario) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            `INSERT INTO usuario 
+            (nome, email, senha, fk_empresa_id, tipo_usuario) 
+            VALUES ($1, $2, $3, $4, $5) 
+            RETURNING id_usuario, nome, email, tipo_usuario`,
             [nome, email, hashedSenha, fk_empresa_id, tipo_usuario]
         );
+
         return result.rows[0];
     } catch (err) {
-        console.error('Erro ao adicionar usuario:', err);
+        // Adiciona o código de erro para tratamento no controller
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };

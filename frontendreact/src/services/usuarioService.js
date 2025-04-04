@@ -83,14 +83,18 @@ export const addUsuario = async (usuario) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuario),
-            credentials: 'include', // Inclui cookies na requisição
+            credentials: 'include'
         });
+
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Erro ao adicionar usuário');
+            throw new Error(data.error || 'Erro ao cadastrar usuário');
         }
-        return response.json();
+
+        return data;
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao adicionar usuário:', error);
+        throw error; // Propaga o erro para ser tratado no componente
     }
 };

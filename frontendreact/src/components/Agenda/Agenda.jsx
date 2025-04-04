@@ -125,7 +125,9 @@ function Agenda() {
         pauseOnHover={false} // Fecha imediatamente ao passar o mouse
         pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
       />
-      <h1>Agendas de {usuarioNome}</h1>
+      <h1>{usuarioNome}</h1>
+      <hr></hr>
+      <p><h2>Agenda</h2></p>
       <div className="form_agenda">
         <form onSubmit={(e) => e.preventDefault()}>
           <input

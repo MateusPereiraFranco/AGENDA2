@@ -165,17 +165,34 @@ const getUsersController = async (req, res) => {
 
 // Controlador para adicionar um nova usuario
 const addUserController = async (req, res) => {
-    const { nome, email, senha, fk_empresa_id, tipo_usuario } = req.body; // Recebe os dados do corpo da requisição
+    const { nome, email, senha, fk_empresa_id, tipo_usuario } = req.body;
+
     if (!nome || !email || !senha || !fk_empresa_id || !tipo_usuario) {
-        return res.status(400).send('Nome, email, senha, empresa e tipo são obrigatórios');
+        return res.status(400).json({
+            error: 'Nome, email, senha, empresa e tipo são obrigatórios'
+        });
     }
 
     try {
-        const newUser = await addUser(nome, email, senha, fk_empresa_id, tipo_usuario); // Chama o modelo para adicionar a usuario
-        res.status(201).json(newUser); // Retorna a usuario criada
+        const newUser = await addUser(nome, email, senha, fk_empresa_id, tipo_usuario);
+        res.status(201).json({
+            success: true,
+            data: newUser
+        });
     } catch (err) {
         console.error('Erro ao adicionar usuario:', err);
-        res.status(500).send('Erro ao adicionar usuario');
+
+        // Tratamento específico para erro de e-mail duplicado
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Este e-mail já está cadastrado'
+            });
+        }
+
+        // Erro genérico para outros casos
+        res.status(500).json({
+            error: 'Erro ao cadastrar usuário'
+        });
     }
 };
 
