@@ -12,55 +12,79 @@ import { fetchUsuarioNome } from "../../services/usuarioService";
 
 function Agenda() {
   const { id } = useParams();
-  const [agendamentos, setAgendamentos] = useState([]);
-  const [searchParams, setSearchParams] = useState({
-    sortBy: "data",
-  });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [usuarioNome, setUsuarioNome] = useState("");
-  const [error, setError] = useState("");
-  const [editingAgendamento, setEditingAgendamento] = useState(null); // Estado para controle de edição
-  const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
   const tipo_usuario = localStorage.getItem("tipo_usuario");
   const id_usuario = localStorage.getItem("id_usuario");
 
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [usuarioNome, setUsuarioNome] = useState("");
+  const [error, setError] = useState("");
+  const [editingAgendamento, setEditingAgendamento] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useState({
+    sortBy: "data",
+    order: "ASC",
+    dataInicio: new Date().toISOString().split("T")[0], // <-- data de hoje em formato yyyy-mm-dd
+    dataFim: ""
+  });
+  
+
   useEffect(() => {
     loadAgendamentos();
     loadUsuarioName();
-  }, [currentPage, searchParams]);
+  }, [currentPage]);
 
   const loadAgendamentos = async () => {
+    if (searchParams.dataInicio && searchParams.dataFim &&
+      new Date(searchParams.dataFim) < new Date(searchParams.dataInicio)) {
+      toast.error("A data final não pode ser anterior à data inicial");
+      return;
+    }
+
     try {
       const params = {
         page: currentPage,
         sortBy: searchParams.sortBy,
         order: searchParams.order,
-        ...(searchParams.data && { data: searchParams.data }),
+        ...(searchParams.dataInicio && { dataInicio: searchParams.dataInicio }),
+        ...(searchParams.dataFim && { dataFim: searchParams.dataFim }),
       };
-  
+
       const data = await fetchAgendamentos(id, params);
       setAgendamentos(data || []);
     } catch (error) {
       console.error("Erro ao carregar agendamentos:", error);
-      alert(error.message || "Erro ao carregar agendamentos");
+      toast.error(error.message || "Erro ao carregar agendamentos");
     }
   };
 
   const loadUsuarioName = async () => {
-      try {
-        const nomeUsuario = await fetchUsuarioNome(id);
-        if (nomeUsuario) {
-          setUsuarioNome(nomeUsuario);
-        } else {
-          setUsuarioNome("Usuario não encontrada");
-        }
-      } catch (error) {
-        console.error(error);
-        setError("Erro ao carregar detalhes do usuario.");
-      }
-    };
+    try {
+      const nomeUsuario = await fetchUsuarioNome(id);
+      setUsuarioNome(nomeUsuario || "Usuário não encontrado");
+    } catch (error) {
+      console.error(error);
+      setError("Erro ao carregar detalhes do usuário.");
+    }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    loadAgendamentos();
+  };
+
+  const limparFiltros = () => {
+    setSearchParams({
+      sortBy: "data",
+      order: "ASC",
+      dataInicio: "",
+      dataFim: ""
+    });
+    setCurrentPage(1);
+    loadAgendamentos();
+  };
 
   const handleAddAgendamento = async (e) => {
     e.preventDefault();
@@ -70,11 +94,12 @@ function Agenda() {
 
     try {
       await addAgendamento({ data, fk_usuario_id });
+      toast.success("Agendamento adicionado com sucesso!");
       loadAgendamentos();
-      e.target.reset(); // Limpa o formulário após adicionar
+      e.target.reset();
     } catch (error) {
       console.error(error);
-      alert("Erro ao adicionar agendamento");
+      toast.error("Erro ao adicionar agendamento");
     }
   };
 
@@ -97,20 +122,21 @@ function Agenda() {
   const handleUpdateAgendamento = async (e) => {
     e.preventDefault();
     const data = e.target.data.value;
-    const fk_usuario_id = editingAgendamento.fk_usuario_id
+    const fk_usuario_id = editingAgendamento.fk_usuario_id;
 
     if (!data) {
-      alert("O campo é obrigatório!");
+      toast.error("O campo de data é obrigatório!");
       return;
     }
 
     try {
-      await updateAgendamento(editingAgendamento.id_agenda, { data, fk_usuario_id});
+      await updateAgendamento(editingAgendamento.id_agenda, { data, fk_usuario_id });
+      toast.success("Agendamento atualizado!");
       loadAgendamentos();
-      setEditingAgendamento(null); // Fecha o formulário de edição
+      setEditingAgendamento(null);
     } catch (error) {
       console.error(error);
-      alert("Erro ao atualizar agendamento");
+      toast.error("Erro ao atualizar agendamento");
     }
   };
 
@@ -118,24 +144,54 @@ function Agenda() {
     navigate(`/horario/${id}`);
   };
 
+
+  const formatarData = (dataString) => {
+    const [ano, mes, dia] = dataString.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+
+  const getDataClassName = (data) => {
+    
+    const today = formatarData(new Date().toISOString().split('T')[0])
+    console.log(today)
+    console.log(data)
+    if (data == today) return "data-hoje";
+    if (data < today) return "data-passado";
+    return "data-futuro";
+  };
+
+
   return (
     <div className="agenda_conteiner_geral">
-      <ToastContainer
-        autoClose={1500}
-        pauseOnHover={false} // Fecha imediatamente ao passar o mouse
-        pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
-      />
+      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
       <h1>{usuarioNome}</h1>
-      <hr></hr>
-      <p><h2>Agenda</h2></p>
+      <hr />
+      <h2>Agenda</h2>
       <div className="form_agenda">
         <form onSubmit={(e) => e.preventDefault()}>
           <input
             type="date"
-            placeholder="Buscar por data"
-            onChange={(e) => setSearchParams({ data: e.target.value })}
+            placeholder="Data inicial"
+            value={searchParams.dataInicio}
+            onChange={(e) =>
+              setSearchParams({ ...searchParams, dataInicio: e.target.value })
+            }
           />
-          <button type="submit">Buscar</button>
+          <input
+            type="date"
+            placeholder="Data final"
+            value={searchParams.dataFim}
+            onChange={(e) =>
+              setSearchParams({ ...searchParams, dataFim: e.target.value })
+            }
+          />
+          <button type="button" onClick={handleSearch}>
+            Buscar
+          </button>
+          <button type="button" onClick={limparFiltros}>
+            Limpar
+          </button>
         </form>
         <hr />
         <form onSubmit={handleAddAgendamento}>
@@ -150,7 +206,9 @@ function Agenda() {
               agendamentos.map((agendamento) => (
                 <React.Fragment key={agendamento.id_agenda}>
                   <tr>
-                    <td>{agendamento.data}</td>
+                    <td className={getDataClassName(agendamento.data)}>
+                      {agendamento.data}
+                    </td>
                     <td>
                       <button
                         className="botao-vermelho"
@@ -161,17 +219,12 @@ function Agenda() {
                           ? "Excluindo..."
                           : "Excluir"}
                       </button>
-                      {(tipo_usuario === "gerente" ||
-                        tipo_usuario === "admin") && (
-                        <button
-                          onClick={() => setEditingAgendamento(agendamento)}
-                        >
+                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                        <button onClick={() => setEditingAgendamento(agendamento)}>
                           Atualizar
                         </button>
                       )}
-                      <button
-                        onClick={() => handleVerAgenda(agendamento.id_agenda)}
-                      >
+                      <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>
                         Ver Agenda
                       </button>
                     </td>

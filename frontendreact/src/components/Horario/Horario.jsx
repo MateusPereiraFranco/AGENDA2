@@ -88,6 +88,12 @@ function Horario() {
         }
       };
 
+  const formatarHorarioSemSegundos = (horarioCompleto) => {
+    if (!horarioCompleto) return '';
+    const partes = horarioCompleto.split(':');
+    return `${partes[0]}:${partes[1]}`;
+  };
+
 
   const handleAddHorario = async (e) => {
     e.preventDefault();
@@ -176,7 +182,7 @@ function Horario() {
               horarios.map((horario) => (
                 <React.Fragment key={horario.id_horario}>
                   <tr key={horario.id_horario}>
-                    <td>{horario.horario}</td>
+                    <td>{formatarHorarioSemSegundos(horario.horario)}</td>
                     <td>{horario.nome}</td>
                     <td>{horario.contato}</td>
                     <td>{horario.observacoes}</td>

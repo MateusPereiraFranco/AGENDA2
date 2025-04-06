@@ -33,23 +33,47 @@ const getFkUserScheduleById = async (id) => {
 };
 
 
-const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sortBy = 'id_agenda', order = 'ASC' } = {}) => {
+const getSchedules = async ({
+    id,
+    dataInicio,
+    dataFim,
+    fk_usuario_id,
+    page = 1,
+    limit = 10,
+    sortBy = 'id_agenda',
+    order = 'ASC'
+} = {}) => {
     try {
-        let query = 'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, data as data_original, fk_usuario_id FROM agenda';
-        const params = [];
-        let conditions = [];
+        let query = `
+        SELECT 
+          id_agenda, 
+          TO_CHAR(data, 'DD/MM/YYYY') as data, 
+          data as data_original, 
+          fk_usuario_id 
+        FROM agenda
+      `;
 
-        // Filtros (mantido igual)
+        const params = [];
+        const conditions = [];
+
         if (id) {
-            conditions.push('id_agenda = $' + (params.length + 1));
+            conditions.push(`id_agenda = $${params.length + 1}`);
             params.push(id);
         }
-        if (data) {
-            conditions.push('DATE(data) = DATE($' + (params.length + 1) + ')');
-            params.push(data);
+
+        if (dataInicio && dataFim) {
+            conditions.push(`DATE(data) BETWEEN DATE($${params.length + 1}) AND DATE($${params.length + 2})`);
+            params.push(dataInicio, dataFim);
+        } else if (dataInicio) {
+            conditions.push(`DATE(data) >= DATE($${params.length + 1})`);
+            params.push(dataInicio);
+        } else if (dataFim) {
+            conditions.push(`DATE(data) <= DATE($${params.length + 1})`);
+            params.push(dataFim);
         }
+
         if (fk_usuario_id) {
-            conditions.push('fk_usuario_id = $' + (params.length + 1));
+            conditions.push(`fk_usuario_id = $${params.length + 1}`);
             params.push(fk_usuario_id);
         }
 
@@ -57,11 +81,9 @@ const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sor
             query += ' WHERE ' + conditions.join(' AND ');
         }
 
-        // Ordenação ajustada para data
         const orderByField = sortBy === 'data' ? 'data_original' : sortBy;
         query += ` ORDER BY ${orderByField} ${order}`;
 
-        // Paginação
         const offset = (page - 1) * limit;
         query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
         params.push(limit, offset);
@@ -73,6 +95,7 @@ const getSchedules = async ({ id, data, fk_usuario_id, page = 1, limit = 10, sor
         throw err;
     }
 };
+
 
 // Função para adicionar um nova agenda
 const addSchedule = async (data, fk_usuario_id) => {

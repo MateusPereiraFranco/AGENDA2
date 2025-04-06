@@ -24,16 +24,13 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
     try {
         const params = new URLSearchParams();
 
-        // Parâmetros de paginação
         if (searchParams.page) params.append('page', searchParams.page);
         if (searchParams.limit) params.append('limit', searchParams.limit);
-
-        // Parâmetros de ordenação
         if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy);
         if (searchParams.order) params.append('order', searchParams.order);
+        if (searchParams.dataInicio) params.append('dataInicio', searchParams.dataInicio);
+        if (searchParams.dataFim) params.append('dataFim', searchParams.dataFim);
 
-        // Parâmetros de filtro
-        if (searchParams.data) params.append('data', searchParams.data);
         params.append('fk_usuario_id', userId);
 
         const response = await fetch(`${API_URL}/schedules?${params.toString()}`, {

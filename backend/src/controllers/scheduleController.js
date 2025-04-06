@@ -4,7 +4,8 @@ import Joi from 'joi';
 
 const searchSchema = Joi.object({
     id: Joi.number().integer().positive().optional(),
-    data: Joi.date().iso().optional(),
+    dataInicio: Joi.date().iso().optional(),
+    dataFim: Joi.date().iso().optional(),
     fk_usuario_id: Joi.number().integer().positive().optional(),
     page: Joi.number().integer().positive().default(1),
     limit: Joi.number().integer().positive().default(10),
@@ -48,8 +49,17 @@ export const getFkUserScheduleByIdController = async (req, res) => {
 
 const getSchedulesController = async (req, res) => {
     try {
+        // Valida os parâmetros de busca
+        const { error, value } = searchSchema.validate(req.query);
+        if (error) {
+            return res.status(400).json({
+                message: 'Parâmetros de busca inválidos',
+                error: error.details
+            });
+        }
+
         // O middleware já adicionou os filtros necessários
-        const schedules = await getSchedules(req.query);
+        const schedules = await getSchedules(value);
 
         res.status(200).json(schedules || []);
     } catch (err) {
