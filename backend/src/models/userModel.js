@@ -1,7 +1,6 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 import bcrypt from 'bcrypt';
 
-
 const getUserName = async (id) => {
     try {
 
@@ -101,7 +100,8 @@ const getUsers = async ({ id, nome, email, senha, fk_empresa_id, tipo_usuario, p
 };
 
 // Função para adicionar um novo usuario
-const saltRounds = 10;
+const saltRounds = process.env.BCRYPT_SALT_ROUNDS;
+
 const addUser = async (nome, email, senha, fk_empresa_id, tipo_usuario) => {
     try {
         const hashedSenha = await bcrypt.hash(senha, saltRounds);
