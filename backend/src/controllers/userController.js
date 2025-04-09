@@ -26,7 +26,7 @@ const checkAuthController = async (req, res) => {
 
     try {
         // Verifica o token usando a chave secreta
-        const decoded = jwt.verify(token, 'secreto'); // Use a mesma chave usada no login
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use a mesma chave usada no login
 
         // Retorna as informações do usuário e o status de autenticação
         res.status(200).json({
@@ -67,7 +67,7 @@ const loginController = async (req, res) => {
         // Gera um token JWT
         const token = jwt.sign(
             { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario, fk_empresa_id: user.fk_empresa_id },
-            'secreto',
+            process.env.JWT_SECRET,
             { expiresIn: '3h' }
         );
 

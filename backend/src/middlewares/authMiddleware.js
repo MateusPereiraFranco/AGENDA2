@@ -10,7 +10,7 @@ const autenticar = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, 'secreto');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = {
             id_usuario: decoded.id,
             email: decoded.email,

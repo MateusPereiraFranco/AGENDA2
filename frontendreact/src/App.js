@@ -12,6 +12,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import ProtectedUsuarioRoute from './services/ProtectedUsuarioRoute';
 import ProtectedAgendaRoute from './services/ProtectedAgendaRoute';
+import ProtectedEmpresaRoute from './services/ProtectedEmpresaRoute';
 
 function App() {
     return (
@@ -24,8 +25,10 @@ function App() {
                     <Route path="/login" element={<Login />} />
 
                     {/* Rotas protegidas */}
-                    <Route element={<ProtectedUsuarioRoute />}>
+                    <Route element={<ProtectedEmpresaRoute />}>
                         <Route path="/empresa" element={<Empresa />} />
+                    </Route>
+                    <Route element={<ProtectedUsuarioRoute />}>
                         <Route path="/usuario/:id" element={<Usuario />} />
                     </Route>
 

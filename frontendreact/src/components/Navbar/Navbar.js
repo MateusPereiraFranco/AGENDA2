@@ -24,6 +24,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useAuth } from "../../context/AuthContext"; // Importe o hook useAuth
+import { flushSync } from 'react-dom';
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
@@ -63,13 +64,20 @@ const Navbar = () => {
     try {
       const response = await fetch(`${API_URL}/logout`, {
         method: "POST",
-        credentials: "include", // Inclui cookies na requisição
+        credentials: "include",
       });
+
       if (response.ok) {
-        setIsAuthenticated(false);
+        // Limpa localStorage
         localStorage.removeItem("tipo_usuario");
         localStorage.removeItem("id_usuario");
         localStorage.removeItem("fk_empresa_id");
+
+        // Atualiza o estado antes da navegação
+        flushSync(() => {
+          setIsAuthenticated(false);
+        });
+
         navigate("/login");
       } else {
         console.error("Erro ao fazer logout:", response.statusText);
