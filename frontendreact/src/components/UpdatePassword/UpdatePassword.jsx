@@ -32,21 +32,27 @@ const UpdatePassword = () => {
     };
 
     return (
-        <div>
-            <h2>Atualizar Senha</h2>
-            <form onSubmit={handleUpdate}>
-                <input
-                    type="password"
-                    placeholder="Senha atual"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="Nova senha"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                />
+        <div className='trocaSenha_conteiner_geral'>
+            <form className='form_trocaSenha' onSubmit={handleUpdate}>
+                <h2>Atualizar Senha</h2>
+                <div className="form-group2">
+                    <label>Senha atual:</label>
+                    <input
+                        type="password"
+                        placeholder="Senha atual"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                </div>
+                <div className="form-group1">
+                    <label>Nova senha:</label>
+                    <input
+                        type="password"
+                        placeholder="Nova senha"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                </div>
                 <button type="submit">Atualizar</button>
             </form>
             {message && <p>{message}</p>}
