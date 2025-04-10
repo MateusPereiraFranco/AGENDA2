@@ -349,10 +349,27 @@ nav:hover{
   max-width: 1100px;
 }
 
-
 .tabela_empresa table {
   width: 100%;
   max-width: 1200px;
+}
+
+.data-hoje {
+  background-color: rgba(10, 178, 10, 0.518);
+  font-weight: bold;
+  color: #f2f2f2;
+}
+
+.data-passado {
+  background-color: rgba(227, 26, 56, 0.584);
+  font-weight: bold;
+  color: #f2f2f2;
+}
+
+.data-futuro {
+  background-color: rgba(104, 143, 215, 0.429);
+  font-weight: bold;
+  color: #f2f2f2;
 }
 
 .vai_volta button {
