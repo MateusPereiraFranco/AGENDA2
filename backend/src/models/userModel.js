@@ -1,6 +1,15 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 import bcrypt from 'bcrypt';
 
+
+const updatePassword = async (userId, hashedPassword) => {
+    const result = await client.query(
+        'UPDATE usuario SET senha = $1 WHERE id_usuario = $2',
+        [hashedPassword, userId]
+    );
+    return result;
+}
+
 const getUserName = async (id) => {
     try {
 
@@ -100,7 +109,7 @@ const getUsers = async ({ id, nome, email, senha, fk_empresa_id, tipo_usuario, p
 };
 
 // Função para adicionar um novo usuario
-const saltRounds = process.env.BCRYPT_SALT_ROUNDS;
+const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
 
 const addUser = async (nome, email, senha, fk_empresa_id, tipo_usuario) => {
     try {
@@ -158,4 +167,5 @@ export {
     verifyPassword,
     getUsuarioById,
     getUserName,
+    updatePassword,
 }

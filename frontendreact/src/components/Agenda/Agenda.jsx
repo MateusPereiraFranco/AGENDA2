@@ -148,11 +148,11 @@ function Agenda() {
     // Converte a string "DD/MM/AAAA" para objeto Date
     const [dia, mes, ano] = dataString.split('/');
     const data = new Date(ano, mes - 1, dia); // mês é 0-based no JS
-
+    
     // Data atual (sem horas/minutos/segundos)
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-
+    
     // Comparação correta
     if (data.getTime() === hoje.getTime()) return "data-hoje";
     if (data < hoje) return "data-passado";

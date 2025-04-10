@@ -133,15 +133,14 @@ nav:hover{
   display: none;
 }
 .navbar-links-container a {
+  font-weight: 600;
+  font-size: 1.1rem;
   margin-right: 2rem;
   text-decoration: none;
   color: var(--text-color);
-  font-size: 1.1rem;
-  font-weight: 600;
   text-shadow: 2px 2px var(--shadows);
   transition: 0.5s;
 }
-
 .navbar-links-container a:hover {
   font-size: 22px;
 }
@@ -211,28 +210,32 @@ nav:hover{
 /*/////////////////////////////////////////*/
 
 /* Container de Login */
+.quatroZeroQuatro_conteiner,
+.form_trocaSenha,
 .login-container {
   text-align: center;
-  margin: 5% auto 0 auto;
-  padding: 5% 3%;
   width: 90%;
+  padding: 5% 3%;
   max-width: 500px;
-  border-radius: var(--border-radius);
+  margin: 5% auto 0 auto;
   box-shadow: var(--shadows);
+  border-radius: var(--border-radius);
   background-color: var(--secondary-bg);
   transition: 0.5s;
 }
 
+.quatroZeroQuatro_conteiner:hover,
+.form_trocaSenha:hover,
 .login-container:hover {
   background-color: var(--secondary-bg-hover);
 }
 
 .form-group1{
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
 }
 
 .form-group2 {
@@ -243,6 +246,7 @@ nav:hover{
   flex-wrap: wrap; /* Para telas menores */
 }
 
+.form_trocaSenha button,
 .login-container button {
   width: 35%;
   padding: 10px;
@@ -251,6 +255,8 @@ nav:hover{
 /*/////////////////////////////////////*/
 
 /* Container de geral */
+.quatroZeroQuatro_conteiner,
+.trocaSenha_conteiner_geral,
 .agenda_conteiner_geral,
 .horarios_container_geral,
 .conteiner_empresas_geral,
@@ -261,6 +267,11 @@ nav:hover{
 }
 
 /*conteiners formularios*/
+.quatroZeroQuatro_conteiner{
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .form-atualizacao {
   display: flex;
   flex-direction: row;
@@ -278,6 +289,18 @@ nav:hover{
   display: flex;
   flex-direction: column;
   align-self: center;
+}
+
+.form-atualizacao button {
+  border: none;
+  cursor: pointer;
+  width: 100px;
+  height: 30px;
+  min-width: 190px;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
 }
 
 .form_usuario,
@@ -302,19 +325,6 @@ nav:hover{
 .form_agenda:hover {
   background-color: var(--secondary-bg-hover);
 }
-
-.form-atualizacao button {
-  border: none;
-  cursor: pointer;
-  width: 100px;
-  height: 30px;
-  min-width: 190px;
-  max-width: 200px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 5px;
-}
-
 
 .form_usuario button,
 .form_horario button,
@@ -354,14 +364,14 @@ nav:hover{
   max-width: 1200px;
 }
 
-.data-hoje {
-  background-color: rgba(10, 178, 10, 0.518);
+.data-passado {
+  background-color: rgba(227, 26, 56, 0.584);
   font-weight: bold;
   color: #f2f2f2;
 }
 
-.data-passado {
-  background-color: rgba(227, 26, 56, 0.584);
+.data-hoje {
+  background-color: rgba(10, 178, 10, 0.518);
   font-weight: bold;
   color: #f2f2f2;
 }

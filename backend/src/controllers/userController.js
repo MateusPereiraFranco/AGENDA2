@@ -1,4 +1,5 @@
-import { getUsers, addUser, deleteUser, updateUser, getUserByEmail, verifyPassword, getUserName } from "../models/userModel.js";
+import { getUsers, addUser, deleteUser, updateUser, getUserByEmail, verifyPassword, getUserName, updatePassword } from "../models/userModel.js";
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import Joi from 'joi';
@@ -93,6 +94,37 @@ const loginController = async (req, res) => {
 const logoutController = (req, res) => {
     res.clearCookie('token'); // Remove o cookie
     res.status(200).json({ message: 'Logout bem-sucedido' });
+};
+
+const updatePasswordController = async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({ message: 'Não autenticado' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Preencha todos os campos' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await getUserByEmail(decoded.email);
+
+        const valid = await verifyPassword(currentPassword, user.senha);
+        if (!valid) {
+            return res.status(401).json({ message: 'Senha atual incorreta' });
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, parseInt(process.env.BCRYPT_SALT_ROUNDS));
+        await updatePassword(decoded.id, hashedNewPassword);
+
+        return res.status(200).json({ message: 'Senha atualizada com sucesso' });
+    } catch (err) {
+        console.error('Erro ao atualizar senha:', err);
+        res.status(500).json({ message: 'Erro ao atualizar senha' });
+    }
 };
 
 
@@ -245,4 +277,5 @@ export {
     checkAuthController,
     getUserByEmailController,
     getUserNameController,
+    updatePasswordController,
 }
