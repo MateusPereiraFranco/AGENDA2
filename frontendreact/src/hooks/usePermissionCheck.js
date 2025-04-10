@@ -17,9 +17,13 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
 
     useEffect(() => {
         const verificar = async () => {
-            if (authLoading || !pageId) return;
 
-            if (!isAuthenticated || !tipoUsuario || !idUsuario || !fkEmpresaId) {
+            if (authLoading) return;
+
+            // Espera até que as infos de localStorage estejam disponíveis
+            if (!tipoUsuario || !idUsuario || !fkEmpresaId) return;
+
+            if (!isAuthenticated) {
                 return setAccessState({
                     loading: false,
                     granted: false,
@@ -29,6 +33,12 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
 
             // Admin tem acesso total
             if (tipoUsuario === 'admin') {
+                return setAccessState({ loading: false, granted: true, unauthenticated: false });
+            }
+
+            // TROCAR SENHA
+            //console.log("Aqui está chegando")
+            if (pageType === 'atualizar-senha') {
                 return setAccessState({ loading: false, granted: true, unauthenticated: false });
             }
 

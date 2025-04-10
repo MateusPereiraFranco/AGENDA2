@@ -31,6 +31,10 @@ const Navbar = () => {
   const { isAuthenticated, setIsAuthenticated } = useAuth(); // Use o contexto de autenticação
   const navigate = useNavigate();
 
+  const handleNavigateToChangePassword = () => {
+    navigate("/atualizar-senha");
+  };
+
   // Verifica se o usuário está autenticado ao carregar o componente
   useEffect(() => {
     const checkAuth = async () => {
@@ -124,9 +128,14 @@ const Navbar = () => {
         ))}
         {/* Botão de logout ao lado do Cart */}
         {isAuthenticated && (
-          <button className="logout-button" onClick={handleLogout}>
-            <LogoutIcon /> Logout
-          </button>
+          <>
+            <a onClick={handleNavigateToChangePassword} style={{ cursor: "pointer" }}>
+              Trocar Senha
+            </a>
+            <button className="logout-button" onClick={handleLogout}>
+              <LogoutIcon /> Logout
+            </button>
+          </>
         )}
       </div>
       <div className="navbar-menu-container">
@@ -150,14 +159,24 @@ const Navbar = () => {
             ))}
             {/* Adiciona o botão de logout no menu lateral */}
             {isAuthenticated && (
-              <ListItem disablePadding>
-                <ListItemButton onClick={handleLogout}>
-                  <ListItemIcon>
-                    <LogoutIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Logout" />
-                </ListItemButton>
-              </ListItem>
+              <>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleNavigateToChangePassword}>
+                    <ListItemIcon>
+                      <ShoppingCartRoundedIcon /> {/* Ou outro ícone como KeyRoundedIcon */}
+                    </ListItemIcon>
+                    <ListItemText primary="Trocar Senha" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleLogout}>
+                    <ListItemIcon>
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" />
+                  </ListItemButton>
+                </ListItem>
+              </>
             )}
           </List>
         </Box>

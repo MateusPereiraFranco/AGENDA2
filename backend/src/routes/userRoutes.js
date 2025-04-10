@@ -9,6 +9,7 @@ import {
     checkAuthController,
     getUserByEmailController,
     getUserNameController,
+    updatePasswordController,
 } from '../controllers/userController.js';
 import { autenticar, isAdminOrManager } from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
 
@@ -26,6 +27,8 @@ router.get('/getEmail', getUserByEmailController);
 router.post('/logout', logoutController);
 router.get('/check-auth', checkAuthController);
 router.get('/usuarioName', autenticar, getUserNameController)
+router.put('/update-password', updatePasswordController);
+
 
 
 export default router;

@@ -13,6 +13,9 @@ import { Navigate } from 'react-router-dom';
 import ProtectedUsuarioRoute from './services/ProtectedUsuarioRoute';
 import ProtectedAgendaRoute from './services/ProtectedAgendaRoute';
 import ProtectedEmpresaRoute from './services/ProtectedEmpresaRoute';
+import ProtectedUpdatePasswordRoute from './services/ProtectedUpdatePasswordRoute';
+import UpdatePassword from './components/UpdatePassword/UpdatePassword';
+
 
 function App() {
     return (
@@ -37,6 +40,9 @@ function App() {
                     </Route>
                     <Route path="/horario/:id" element={<Horario />} />
 
+                    <Route element={<ProtectedUpdatePasswordRoute />}>
+                        <Route path="/atualizar-senha" element={<UpdatePassword />} />
+                    </Route>
                     {/* Rota 404 - deve ser a última */}
                     <Route path="*" element={<NotFound />} />
                 </Routes>

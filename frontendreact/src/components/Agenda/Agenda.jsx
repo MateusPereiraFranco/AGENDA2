@@ -144,20 +144,18 @@ function Agenda() {
     navigate(`/horario/${id}`);
   };
 
-
-  const formatarData = (dataString) => {
-    const [ano, mes, dia] = dataString.split("-");
-    return `${dia}/${mes}/${ano}`;
-  };
-
-
-  const getDataClassName = (data) => {
+  const getDataClassName = (dataString) => {
+    // Converte a string "DD/MM/AAAA" para objeto Date
+    const [dia, mes, ano] = dataString.split('/');
+    const data = new Date(ano, mes - 1, dia); // mês é 0-based no JS
     
-    const today = formatarData(new Date().toISOString().split('T')[0])
-    console.log(today)
-    console.log(data)
-    if (data == today) return "data-hoje";
-    if (data < today) return "data-passado";
+    // Data atual (sem horas/minutos/segundos)
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    // Comparação correta
+    if (data.getTime() === hoje.getTime()) return "data-hoje";
+    if (data < hoje) return "data-passado";
     return "data-futuro";
   };
 

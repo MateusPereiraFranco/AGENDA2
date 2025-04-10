@@ -1,6 +1,15 @@
 import client from '../config/database.js'; // Importando a conexão com o banco de dados
 import bcrypt from 'bcrypt';
 
+
+const updatePassword = async (userId, hashedPassword) => {
+    const result = await client.query(
+        'UPDATE usuario SET senha = $1 WHERE id_usuario = $2',
+        [hashedPassword, userId]
+    );
+    return result;
+}
+
 const getUserName = async (id) => {
     try {
 
@@ -158,4 +167,5 @@ export {
     verifyPassword,
     getUsuarioById,
     getUserName,
+    updatePassword,
 }
