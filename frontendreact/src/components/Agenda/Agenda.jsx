@@ -9,6 +9,7 @@ import {
   updateAgendamento,
 } from "../../services/agendaService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
+import { fetchHorarios } from "../../services/horarioService";
 
 function Agenda() {
   const { id } = useParams();
@@ -159,6 +160,21 @@ function Agenda() {
     return "data-futuro";
   };
 
+  //pegar quantidade de pessoas agendados
+  const QuantidadeAgendados = ({ agendaId }) => {
+    const [quantidade, setQuantidade] = useState(0);
+  
+    useEffect(() => {
+      const fetchQuantidade = async () => {
+        const data = await fetchHorarios(agendaId, {});
+        setQuantidade(data ? data.length : 0);
+      };
+      fetchQuantidade();
+    }, [agendaId]);
+  
+    return <span>{quantidade}</span>;
+  };
+
 
   return (
     <div className="agenda_conteiner_geral">
@@ -199,6 +215,13 @@ function Agenda() {
       </div>
       <div className="tabela_agenda">
         <table>
+          <thead>
+            <tr>
+              <td>Data</td>
+              <td>Agendados</td>
+              <td></td>
+            </tr>
+          </thead>
           <tbody>
             {agendamentos.length > 0 ? (
               agendamentos.map((agendamento) => (
@@ -207,6 +230,7 @@ function Agenda() {
                     <td className={getDataClassName(agendamento.data)}>
                       {agendamento.data}
                     </td>
+                    <td><QuantidadeAgendados agendaId={agendamento.id_agenda} /></td>
                     <td>
                       <button
                         className="botao-vermelho"

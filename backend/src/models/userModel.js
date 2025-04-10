@@ -109,7 +109,7 @@ const getUsers = async ({ id, nome, email, senha, fk_empresa_id, tipo_usuario, p
 };
 
 // Função para adicionar um novo usuario
-const saltRounds = process.env.BCRYPT_SALT_ROUNDS;
+const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
 
 const addUser = async (nome, email, senha, fk_empresa_id, tipo_usuario) => {
     try {
