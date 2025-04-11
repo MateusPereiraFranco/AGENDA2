@@ -24,10 +24,17 @@ function Agenda() {
   const [editingAgendamento, setEditingAgendamento] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const getDataHoje = () => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    return hoje;
+  }
+
   const [searchParams, setSearchParams] = useState({
     sortBy: "data",
     order: "ASC",
-    dataInicio: new Date().toISOString().split("T")[0], // <-- data de hoje em formato yyyy-mm-dd
+    dataInicio: getDataHoje().toISOString().split("T")[0], // <-- data de hoje em formato yyyy-mm-dd
     dataFim: ""
   });
   
@@ -145,36 +152,20 @@ function Agenda() {
     navigate(`/horario/${id}`);
   };
 
+
   const getDataClassName = (dataString) => {
     // Converte a string "DD/MM/AAAA" para objeto Date
     const [dia, mes, ano] = dataString.split('/');
     const data = new Date(ano, mes - 1, dia); // mês é 0-based no JS
     
     // Data atual (sem horas/minutos/segundos)
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+    const hoje = getDataHoje()
     
     // Comparação correta
     if (data.getTime() === hoje.getTime()) return "data-hoje";
     if (data < hoje) return "data-passado";
     return "data-futuro";
   };
-
-  //pegar quantidade de pessoas agendados
-  const QuantidadeAgendados = ({ agendaId }) => {
-    const [quantidade, setQuantidade] = useState(0);
-  
-    useEffect(() => {
-      const fetchQuantidade = async () => {
-        const data = await fetchHorarios(agendaId, {});
-        setQuantidade(data ? data.length : 0);
-      };
-      fetchQuantidade();
-    }, [agendaId]);
-  
-    return <span>{quantidade}</span>;
-  };
-
 
   return (
     <div className="agenda_conteiner_geral">
@@ -230,7 +221,7 @@ function Agenda() {
                     <td className={getDataClassName(agendamento.data)}>
                       {agendamento.data}
                     </td>
-                    <td><QuantidadeAgendados agendaId={agendamento.id_agenda} /></td>
+                    <td>{agendamento.total_horarios}</td>
                     <td>
                       <button
                         className="botao-vermelho"
