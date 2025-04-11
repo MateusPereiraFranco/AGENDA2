@@ -25,6 +25,8 @@ function Usuario() {
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
   const tipo_usuario = localStorage.getItem("tipo_usuario");
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     loadUsuarios();
@@ -50,7 +52,9 @@ function Usuario() {
         setUsuarios([]);
         setError("Nenhum usuário cadastrado.");
       }
+      setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
+      setHasMorePages(false);
       console.error(error);
       setError("Erro ao carregar usuários.");
     }
@@ -168,7 +172,6 @@ function Usuario() {
         pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
       />
       <h1>{empresaNome}</h1>
-      {error && <p className="error-message">{error}</p>}
       <div className="form_usuario">
         <form onSubmit={(e) => e.preventDefault()}>
           <input
@@ -324,7 +327,7 @@ function Usuario() {
           >
             Anterior
           </button>
-          <button onClick={() => setCurrentPage(currentPage + 1)}>
+          <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}> 
             Próxima
           </button>
         </div>

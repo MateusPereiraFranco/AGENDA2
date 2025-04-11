@@ -9,7 +9,6 @@ import {
   updateAgendamento,
 } from "../../services/agendaService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
-import { fetchHorarios } from "../../services/horarioService";
 
 function Agenda() {
   const { id } = useParams();
@@ -24,6 +23,8 @@ function Agenda() {
   const [editingAgendamento, setEditingAgendamento] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const itemsPerPage = 10;
 
   const getDataHoje = () => {
     const hoje = new Date();
@@ -45,6 +46,7 @@ function Agenda() {
   }, [currentPage]);
 
   const loadAgendamentos = async () => {
+
     if (searchParams.dataInicio && searchParams.dataFim &&
       new Date(searchParams.dataFim) < new Date(searchParams.dataInicio)) {
       toast.error("A data final não pode ser anterior à data inicial");
@@ -62,7 +64,10 @@ function Agenda() {
 
       const data = await fetchAgendamentos(id, params);
       setAgendamentos(data || []);
+
+      setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
+      setHasMorePages(false);
       console.error("Erro ao carregar agendamentos:", error);
       toast.error(error.message || "Erro ao carregar agendamentos");
     }
@@ -80,6 +85,7 @@ function Agenda() {
 
   const handleSearch = () => {
     setCurrentPage(1);
+    setHasMorePages(true);
     loadAgendamentos();
   };
 
@@ -91,6 +97,7 @@ function Agenda() {
       dataFim: ""
     });
     setCurrentPage(1);
+    setHasMorePages(true);
     loadAgendamentos();
   };
 
@@ -210,7 +217,18 @@ function Agenda() {
             <tr>
               <td>Data</td>
               <td>Agendados</td>
-              <td></td>
+              <td>
+              <div className="vai_volta">
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </button>
+        <span>Página {currentPage}</span>
+        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>Próxima</button>
+      </div>
+              </td>
             </tr>
           </thead>
           <tbody>
@@ -288,7 +306,8 @@ function Agenda() {
         >
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>
+        <span>Página {currentPage}</span>
+        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>Próxima</button>
       </div>
     </div>
   );

@@ -16,6 +16,8 @@ function Empresa() {
   const [editingEmpresa, setEditingEmpresa] = useState(null); // Estado para controlar a empresa sendo editada
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
+  const [hasMorePages, setHasMorePages] = useState(true);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     loadEmpresas();
@@ -35,7 +37,10 @@ function Empresa() {
       } else {
         setEmpresas([]);
       }
+
+      setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
+      setHasMorePages(false);
       console.error(error);
       alert("Erro ao carregar empresas");
     }
@@ -247,7 +252,7 @@ function Empresa() {
         >
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>
+        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>Próxima</button>
       </div>
     </div>
   );
