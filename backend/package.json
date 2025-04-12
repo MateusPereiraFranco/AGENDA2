@@ -18,7 +18,9 @@
     "express": "^4.21.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.3"
+    "nodemailer": "^6.10.0",
+    "pg": "^8.13.3",
+    "twilio": "^5.5.2"
   },
   "description": ""
 }

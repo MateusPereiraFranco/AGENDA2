@@ -12,6 +12,7 @@ import {
     updatePasswordController,
 } from '../controllers/userController.js';
 import { autenticar, isAdminOrManager } from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
+import { requestReset, resetPassword, verifyToken } from '../controllers/resetController.js';
 
 const router = express.Router();
 
@@ -28,6 +29,11 @@ router.post('/logout', logoutController);
 router.get('/check-auth', checkAuthController);
 router.get('/usuarioName', autenticar, getUserNameController)
 router.put('/update-password', updatePasswordController);
+
+// resetPasswordRoutes
+router.post('/reset-request', requestReset);
+router.post('/verify-token', verifyToken);
+router.post('/reset-password', resetPassword);
 
 
 

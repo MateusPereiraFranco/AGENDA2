@@ -4,7 +4,6 @@ import { get_fk_empresa_id, login } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 
 function Login() {
-
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -32,41 +31,35 @@ function Login() {
     setError('');
 
     try {
-        // 1. Faz login
-        const loginResult = await login({ email, senha });
-        
-        if (!loginResult.success) {
-            throw new Error(loginResult.message);
-        }
+      const loginResult = await login({ email, senha });
 
-        // 2. Busca dados completos do usuário
-        const userData = await get_fk_empresa_id(email);
-        
-        if (!userData) {
-            throw new Error('Dados do usuário não encontrados');
-        }
+      if (!loginResult.success) {
+        throw new Error(loginResult.message);
+      }
 
-        // 3. Atualiza estado e armazenamento
-        setIsAuthenticated(true);
-        localStorage.setItem('tipo_usuario', userData.tipo_usuario);
-        localStorage.setItem('id_usuario', userData.id_usuario);
-        localStorage.setItem('fk_empresa_id', userData.fk_empresa_id);
+      const userData = await get_fk_empresa_id(email);
+      if (!userData) {
+        throw new Error('Dados do usuário não encontrados');
+      }
 
-        // 4. Redireciona
-        const redirectPath = {
-            'funcionario': `/agenda/${userData.id_usuario}`,
-            'secretario': `/usuario/${userData.fk_empresa_id}`,
-            'gerente': `/usuario/${userData.fk_empresa_id}`,
-            'admin': '/empresa'
-        }[userData.tipo_usuario];
+      setIsAuthenticated(true);
+      localStorage.setItem('tipo_usuario', userData.tipo_usuario);
+      localStorage.setItem('id_usuario', userData.id_usuario);
+      localStorage.setItem('fk_empresa_id', userData.fk_empresa_id);
 
-        navigate(redirectPath || '/');
+      const redirectPath = {
+        funcionario: `/agenda/${userData.id_usuario}`,
+        secretario: `/usuario/${userData.fk_empresa_id}`,
+        gerente: `/usuario/${userData.fk_empresa_id}`,
+        admin: '/empresa'
+      }[userData.tipo_usuario];
 
+      navigate(redirectPath || '/');
     } catch (err) {
-        console.error('Erro no login:', err);
-        setError(err.message || 'Erro ao fazer login. Tente novamente.');
+      console.error('Erro no login:', err);
+      setError(err.message || 'Erro ao fazer login. Tente novamente.');
     }
-};
+  };
 
   return (
     <div className="login-container">
@@ -92,6 +85,16 @@ function Login() {
         </div>
         <button type="submit">Entrar</button>
       </form>
+
+      <div style={{ marginTop: '10px' }}>
+        <button
+          style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => navigate('/forgot-password')}
+        >
+          Esqueci minha senha
+        </button>
+      </div>
+
       {error && <p className="error-message">{error}</p>}
     </div>
   );

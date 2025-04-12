@@ -15,6 +15,9 @@ import ProtectedAgendaRoute from './services/ProtectedAgendaRoute';
 import ProtectedEmpresaRoute from './services/ProtectedEmpresaRoute';
 import ProtectedUpdatePasswordRoute from './services/ProtectedUpdatePasswordRoute';
 import UpdatePassword from './components/UpdatePassword/UpdatePassword';
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import VerifyToken from './components/VerifyToken/VerifyToken';
+import ResetPassword from './components/ResetPassword/ResetPassword';
 
 
 function App() {
@@ -26,6 +29,10 @@ function App() {
                     {/* Rota pública (não protegida) */}
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<Login />} />
+
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/verify-token" element={<VerifyToken />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
 
                     {/* Rotas protegidas */}
                     <Route element={<ProtectedEmpresaRoute />}>
