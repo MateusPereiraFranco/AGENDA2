@@ -6,24 +6,34 @@ import crypto from 'crypto';
 export const requestReset = async (req, res) => {
     const { email } = req.body;
 
-    if (!email) return res.status(400).json({ message: 'Email é obrigatório' });
+    if (!email) {
+        return res.status(400).json({ message: 'Email é obrigatório' });
+    }
 
     const token = crypto.randomInt(100000, 999999).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 👈 UTC seguro
 
     try {
+        // Verifica se o email existe
+        const result = await client.query('SELECT id_usuario FROM usuario WHERE email = $1', [email]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
 
+        // Salva o token no banco
         await client.query(
             'INSERT INTO reset_token (email, token, expires_at) VALUES ($1, $2, $3)',
             [email, token, expiresAt]
         );
 
+        // Envia o código por e-mail
         await sendEmail(email, 'Código para redefinir sua senha', `Seu código é: ${token}`);
 
-        res.status(200).json({ message: 'Código enviado com sucesso' });
+        return res.status(200).json({ message: 'Código enviado com sucesso' });
+
     } catch (err) {
         console.error('Erro ao gerar token:', err);
-        res.status(500).json({ message: 'Erro interno do servidor' });
+        return res.status(500).json({ message: 'Erro interno do servidor' });
     }
 };
 

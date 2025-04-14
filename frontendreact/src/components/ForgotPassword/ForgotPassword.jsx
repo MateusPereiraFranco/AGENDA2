@@ -24,7 +24,9 @@ function ForgotPassword() {
       if (!response.ok) throw new Error(data.message);
 
       setMensagem('Código enviado para seu email!');
-      
+      const expiresAt = Date.now() + 10 * 60 * 1000;
+      localStorage.setItem('recovery_expires', expiresAt);
+
       // 🔐 Armazena email temporariamente e redireciona
       localStorage.setItem('recovery_email', email);
       setTimeout(() => navigate('/verify-token'), 1000); // ⏩ redireciona após 1s

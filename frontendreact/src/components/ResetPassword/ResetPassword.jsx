@@ -1,5 +1,4 @@
-// src/pages/ResetPassword.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../services/apiConfig';
 
@@ -8,7 +7,35 @@ function ResetPassword() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
+  const [tempoRestante, setTempoRestante] = useState(0);
+
   const navigate = useNavigate();
+
+  const email = localStorage.getItem('recovery_email');
+  const token = localStorage.getItem('recovery_token');
+  const expiresAt = parseInt(localStorage.getItem('recovery_expires'), 10);
+
+  useEffect(() => {
+    if (!email || !token) {
+      navigate('/forgot-password');
+    }
+
+    const updateTimer = () => {
+      const diff = Math.floor((expiresAt - Date.now()) / 1000);
+      setTempoRestante(Math.max(diff, 0));
+    };
+
+    updateTimer(); // roda na primeira vez
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [email, token, expiresAt, navigate]);
+
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec.toString().padStart(2, '0')}`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,9 +48,6 @@ function ResetPassword() {
     }
 
     try {
-      const email = localStorage.getItem('recovery_email');
-      const token = localStorage.getItem('recovery_token');
-
       const response = await fetch(`${API_URL}/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,7 +58,11 @@ function ResetPassword() {
       if (!response.ok) throw new Error(data.message);
 
       setSucesso('Senha redefinida com sucesso!');
-      setTimeout(() => navigate('/'), 2000); // Redireciona para login
+      localStorage.removeItem('recovery_email');
+      localStorage.removeItem('recovery_token');
+      localStorage.removeItem('recovery_expires');
+
+      setTimeout(() => navigate('/'), 2000); // Volta pro login
     } catch (err) {
       setErro(err.message || 'Erro ao redefinir senha');
     }
@@ -43,6 +71,13 @@ function ResetPassword() {
   return (
     <div>
       <h2>Nova Senha</h2>
+
+      {tempoRestante > 0 ? (
+        <p>Tempo restante: <strong>{formatTime(tempoRestante)}</strong></p>
+      ) : (
+        <p style={{ color: 'orange' }}>O tempo para redefinir a senha expirou. Solicite um novo código.</p>
+      )}
+
       <form onSubmit={handleSubmit}>
         <input
           type="password"
@@ -58,8 +93,11 @@ function ResetPassword() {
           onChange={(e) => setConfirmarSenha(e.target.value)}
           required
         />
-        <button type="submit">Redefinir Senha</button>
+        <button type="submit" disabled={tempoRestante <= 0}>
+          Redefinir Senha
+        </button>
       </form>
+
       {sucesso && <p style={{ color: 'green' }}>{sucesso}</p>}
       {erro && <p style={{ color: 'red' }}>{erro}</p>}
     </div>
