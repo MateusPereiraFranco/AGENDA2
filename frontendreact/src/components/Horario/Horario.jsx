@@ -172,7 +172,7 @@ function Horario() {
             maxLength={15} // (xx) xxxxx-xxxx
             required
           />
-          <button type="submit">Adicionar Horário</button>
+          <button className="botao_verde" type="submit">Adicionar Horário</button>
         </form>
       </div>
       <div className="tabela_horario">
@@ -198,7 +198,7 @@ function Horario() {
                       </button>
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <button onClick={() => setEditingHorario(horario)}>
+                        <button className="botao_verde" onClick={() => setEditingHorario(horario)}>
                           Atualizar
                         </button>
                       )}
@@ -219,7 +219,7 @@ function Horario() {
                               defaultValue={editingHorario.horario}
                               required
                             />
-                            <button type="submit">Salvar</button>
+                            <button className="botao_verde" type="submit">Salvar</button>
                             <button
                               type="button"
                               className="botao-vermelho"
@@ -245,12 +245,18 @@ function Horario() {
       </div>
       <div className="vai_volta">
         <button
+          className="botao_verde"
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Próxima</button>
+        <button 
+          className="botao_verde" 
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Próxima
+        </button>
       </div>
     </div>
   );
