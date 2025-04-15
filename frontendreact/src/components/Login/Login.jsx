@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get_fk_empresa_id, login } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
+import SenhaInput from '../../components/SenhaInput';
 
 function Login() {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
@@ -75,9 +76,8 @@ function Login() {
           />
         </div>
         <div className="form-group2">
-          <label>Senha:</label>
-          <input
-            type="password"
+          <SenhaInput
+            label="Senha:"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             required
@@ -88,7 +88,13 @@ function Login() {
 
       <div style={{ marginTop: '10px' }}>
         <button
-          style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'blue',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+          }}
           onClick={() => navigate('/forgot-password')}
         >
           Esqueci minha senha

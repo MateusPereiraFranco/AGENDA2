@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../services/apiConfig';
+import SenhaInput from '../../components/SenhaInput';
 
 function ResetPassword() {
   const [novaSenha, setNovaSenha] = useState('');
@@ -15,6 +16,8 @@ function ResetPassword() {
   const token = localStorage.getItem('recovery_token');
   const expiresAt = parseInt(localStorage.getItem('recovery_expires'), 10);
 
+  const senhasCoincidem = novaSenha === confirmarSenha && novaSenha.length > 0;
+
   useEffect(() => {
     if (!email || !token) {
       navigate('/forgot-password');
@@ -25,9 +28,8 @@ function ResetPassword() {
       setTempoRestante(Math.max(diff, 0));
     };
 
-    updateTimer(); // roda na primeira vez
+    updateTimer();
     const interval = setInterval(updateTimer, 1000);
-
     return () => clearInterval(interval);
   }, [email, token, expiresAt, navigate]);
 
@@ -42,7 +44,7 @@ function ResetPassword() {
     setErro('');
     setSucesso('');
 
-    if (novaSenha !== confirmarSenha) {
+    if (!senhasCoincidem) {
       setErro('As senhas não coincidem');
       return;
     }
@@ -62,7 +64,7 @@ function ResetPassword() {
       localStorage.removeItem('recovery_token');
       localStorage.removeItem('recovery_expires');
 
-      setTimeout(() => navigate('/'), 2000); // Volta pro login
+      setTimeout(() => navigate('/'), 2000);
     } catch (err) {
       setErro(err.message || 'Erro ao redefinir senha');
     }
@@ -75,25 +77,38 @@ function ResetPassword() {
       {tempoRestante > 0 ? (
         <p>Tempo restante: <strong>{formatTime(tempoRestante)}</strong></p>
       ) : (
-        <p style={{ color: 'orange' }}>O tempo para redefinir a senha expirou. Solicite um novo código.</p>
+        <p style={{ color: 'orange' }}>
+          O tempo para redefinir a senha expirou. Solicite um novo código.
+        </p>
       )}
 
       <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          placeholder="Nova senha"
+        <SenhaInput
           value={novaSenha}
           onChange={(e) => setNovaSenha(e.target.value)}
+          placeholder="Nova senha"
           required
         />
-        <input
-          type="password"
-          placeholder="Confirmar nova senha"
+
+        <SenhaInput
           value={confirmarSenha}
           onChange={(e) => setConfirmarSenha(e.target.value)}
+          placeholder="Confirmar nova senha"
           required
         />
-        <button type="submit" disabled={tempoRestante <= 0}>
+
+        {confirmarSenha && (
+          <p style={{ color: senhasCoincidem ? 'green' : 'red' }}>
+            {senhasCoincidem
+              ? '✔ Senhas coincidem'
+              : '✖ As senhas não coincidem'}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={tempoRestante <= 0 || !senhasCoincidem}
+        >
           Redefinir Senha
         </button>
       </form>
