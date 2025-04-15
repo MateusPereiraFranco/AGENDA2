@@ -87,6 +87,7 @@ export const addUsuario = async (usuario) => {
         });
 
         const data = await response.json();
+        console.log('Resposta da API:', data); // <- debug extra
 
         if (!response.ok) {
             throw new Error(data.error || 'Erro ao cadastrar usuário');
@@ -94,7 +95,7 @@ export const addUsuario = async (usuario) => {
 
         return data;
     } catch (error) {
-        console.error('Erro ao adicionar usuário:', error);
-        throw error; // Propaga o erro para ser tratado no componente
+        console.error('Erro ao adicionar usuário:', error.message);
+        throw error;
     }
 };

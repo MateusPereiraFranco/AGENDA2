@@ -85,18 +85,18 @@ function Usuario() {
     };
 
     try {
-        const result = await addUsuario(formData);
-        
-        if (result.success) {
-            loadUsuarios();
-            // Limpa o formulário
-            e.target.reset();
-            setError('');
-        }
+      await addUsuario(formData);
+
+      loadUsuarios();
+      e.target.reset();
+      setError('');
+      toast.success("Usuário cadastrado com sucesso!");
     } catch (error) {
-        setError(error.message); // Exibe a mensagem de erro específica
+      setError(error.message); 
+      toast.error(error.message); // Mostra 'Este e-mail já está cadastrado' se for o caso
     }
 };
+
 
   const handleDeleteUsuario = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este usuário?")) return;
