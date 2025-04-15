@@ -202,7 +202,12 @@ function Usuario() {
               <option value="secretario">Secretário</option>
               <option value="gerente">Gerente</option>
             </select>
-            <button type="submit">Adicionar Funcionário</button>
+            <button 
+              className="botao_verde"
+              type="submit"
+            >
+              Adicionar Funcionário
+            </button>
           </form>
         )}
       </div>
@@ -236,13 +241,17 @@ function Usuario() {
                       )}
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <button onClick={() => setEditingUsuario(usuario)}>
+                        <button 
+                          className="botao_verde"
+                          onClick={() => setEditingUsuario(usuario)}
+                        >
                           Atualizar
                         </button>
                       )}
                       {(usuario.tipo_usuario === "funcionario" ||
                         usuario.tipo_usuario === "gerente") && (
                         <button
+                          className="botao_verde"
                           onClick={() =>
                             handleVerFuncionario(usuario.id_usuario)
                           }
@@ -295,7 +304,12 @@ function Usuario() {
                               </select>
                               <br />
                               <div className="form-atualizacao_botao">
-                                <button type="submit">Salvar</button>
+                                <button 
+                                  className="botao_verde"
+                                  type="submit"
+                                >
+                                  Salvar
+                                </button>
                                 <button
                                   type="button"
                                   className="botao-vermelho"
@@ -322,12 +336,17 @@ function Usuario() {
         </table>
         <div className="vai_volta">
           <button
+            className="botao_verde"
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
           >
             Anterior
           </button>
-          <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}> 
+          <button 
+            className="botao_verde"
+            onClick={() => setCurrentPage(currentPage + 1)} 
+            disabled={!hasMorePages}
+          > 
             Próxima
           </button>
         </div>

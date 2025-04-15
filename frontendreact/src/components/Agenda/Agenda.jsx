@@ -30,15 +30,14 @@ function Agenda() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     return hoje;
-  }
+  };
 
   const [searchParams, setSearchParams] = useState({
     sortBy: "data",
     order: "ASC",
     dataInicio: getDataHoje().toISOString().split("T")[0], // <-- data de hoje em formato yyyy-mm-dd
-    dataFim: ""
+    dataFim: "",
   });
-  
 
   useEffect(() => {
     loadAgendamentos();
@@ -46,9 +45,11 @@ function Agenda() {
   }, [currentPage]);
 
   const loadAgendamentos = async () => {
-
-    if (searchParams.dataInicio && searchParams.dataFim &&
-      new Date(searchParams.dataFim) < new Date(searchParams.dataInicio)) {
+    if (
+      searchParams.dataInicio &&
+      searchParams.dataFim &&
+      new Date(searchParams.dataFim) < new Date(searchParams.dataInicio)
+    ) {
       toast.error("A data final não pode ser anterior à data inicial");
       return;
     }
@@ -94,7 +95,7 @@ function Agenda() {
       sortBy: "data",
       order: "ASC",
       dataInicio: "",
-      dataFim: ""
+      dataFim: "",
     });
     setCurrentPage(1);
     setHasMorePages(true);
@@ -145,7 +146,10 @@ function Agenda() {
     }
 
     try {
-      await updateAgendamento(editingAgendamento.id_agenda, { data, fk_usuario_id });
+      await updateAgendamento(editingAgendamento.id_agenda, {
+        data,
+        fk_usuario_id,
+      });
       toast.success("Agendamento atualizado!");
       loadAgendamentos();
       setEditingAgendamento(null);
@@ -159,15 +163,14 @@ function Agenda() {
     navigate(`/horario/${id}`);
   };
 
-
   const getDataClassName = (dataString) => {
     // Converte a string "DD/MM/AAAA" para objeto Date
-    const [dia, mes, ano] = dataString.split('/');
+    const [dia, mes, ano] = dataString.split("/");
     const data = new Date(ano, mes - 1, dia); // mês é 0-based no JS
-    
+
     // Data atual (sem horas/minutos/segundos)
-    const hoje = getDataHoje()
-    
+    const hoje = getDataHoje();
+
     // Comparação correta
     if (data.getTime() === hoje.getTime()) return "data-hoje";
     if (data < hoje) return "data-passado";
@@ -176,7 +179,11 @@ function Agenda() {
 
   return (
     <div className="agenda_conteiner_geral">
-      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
       <h1>{usuarioNome}</h1>
       <hr />
       <h2>Agenda</h2>
@@ -198,17 +205,17 @@ function Agenda() {
               setSearchParams({ ...searchParams, dataFim: e.target.value })
             }
           />
-          <button type="button" onClick={handleSearch}>
+          <button className="botao_verde" type="button" onClick={handleSearch}>
             Buscar
           </button>
-          <button type="button" onClick={limparFiltros}>
+          <button className="botao_verde" type="button" onClick={limparFiltros}>
             Limpar
           </button>
         </form>
         <hr />
         <form onSubmit={handleAddAgendamento}>
           <input type="date" name="data" placeholder="Data" required />
-          <button type="submit">Adicionar Agendamento</button>
+          <button className="botao_verde" type="submit">Adicionar Agendamento</button>
         </form>
       </div>
       <div className="tabela_agenda">
@@ -218,16 +225,23 @@ function Agenda() {
               <td>Data</td>
               <td>Agendados</td>
               <td>
-              <div className="vai_volta">
-        <button
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Anterior
-        </button>
-        <span>Página {currentPage}</span>
-        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>Próxima</button>
-      </div>
+                <div className="vai_volta">
+                  <button
+                    className="botao_verde"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </button>
+                  <span>Página {currentPage}</span>
+                  <button
+                    className="botao_verde"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={!hasMorePages}
+                  >
+                    Próxima
+                  </button>
+                </div>
               </td>
             </tr>
           </thead>
@@ -243,19 +257,28 @@ function Agenda() {
                     <td>
                       <button
                         className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
+                        onClick={() =>
+                          handleDeleteEmpresa(agendamento.id_agenda)
+                        }
                         disabled={deletingId === agendamento.id_agenda}
                       >
                         {deletingId === agendamento.id_agenda
                           ? "Excluindo..."
                           : "Excluir"}
                       </button>
-                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
-                        <button onClick={() => setEditingAgendamento(agendamento)}>
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
+                        <button
+                          className="botao_verde"
+                          onClick={() => setEditingAgendamento(agendamento)}
+                        >
                           Atualizar
                         </button>
                       )}
-                      <button onClick={() => handleVerAgenda(agendamento.id_agenda)}>
+                      <button
+                        className="botao_verde"
+                        onClick={() => handleVerAgenda(agendamento.id_agenda)}
+                      >
                         Ver Agenda
                       </button>
                     </td>
@@ -275,7 +298,7 @@ function Agenda() {
                               defaultValue={editingAgendamento.data}
                               required
                             />
-                            <button type="submit">Salvar</button>
+                            <button className="botao_verde" type="submit">Salvar</button>
                             <button
                               type="button"
                               className="botao-vermelho"
@@ -301,13 +324,20 @@ function Agenda() {
       </div>
       <div className="vai_volta">
         <button
+          className="botao_verde"
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Anterior
         </button>
         <span>Página {currentPage}</span>
-        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>Próxima</button>
+        <button
+          className="botao_verde"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={!hasMorePages}
+        >
+          Próxima
+        </button>
       </div>
     </div>
   );

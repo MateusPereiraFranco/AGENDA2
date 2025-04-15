@@ -148,7 +148,7 @@ function Empresa() {
           />
           <input type="text" name="cnpj" placeholder="CNPJ" required />
           <input type="text" name="email" placeholder="Email" required />
-          <button type="submit">Adicionar Empresa</button>
+          <button className="botao_verde" type="submit">Adicionar Empresa</button>
         </form>
       </div>
       <div className="tabela_empresa">
@@ -171,10 +171,13 @@ function Empresa() {
                           ? "Excluindo..."
                           : "Excluir"}
                       </button>
-                      <button onClick={() => setEditingEmpresa(empresa)}>
+                      <button 
+                        className="botao_verde"
+                        onClick={() => setEditingEmpresa(empresa)}>
                         Atualizar
                       </button>
                       <button
+                        className="botao_verde"
                         onClick={() => handleVerEmpresa(empresa.id_empresa)}
                       >
                         Ver Empresa
@@ -219,7 +222,12 @@ function Empresa() {
                               />
                               <br />
                               <div className="form-atualizacao_botao">
-                                <button type="submit">Salvar</button>
+                                <button 
+                                  type="submit"
+                                  className="botao_verde"
+                                >
+                                  Salvar
+                                </button>
                                 <button
                                   type="button"
                                   className="botao-vermelho"
@@ -247,12 +255,19 @@ function Empresa() {
       </div>
       <div className="vai_volta">
         <button
+          className="botao_verde"
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Anterior
         </button>
-        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>Próxima</button>
+        <button 
+          className="botao_verde"
+          onClick={() => setCurrentPage(currentPage + 1)} 
+          disabled={!hasMorePages}
+        >
+          Próxima
+        </button>
       </div>
     </div>
   );

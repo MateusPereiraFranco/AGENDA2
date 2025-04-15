@@ -83,11 +83,12 @@ function Login() {
             required
           />
         </div>
-        <button type="submit">Entrar</button>
+        <button className="botao_verde" type="submit">Entrar</button>
       </form>
 
       <div style={{ marginTop: '10px' }}>
         <button
+          className='botao_esqueciSenha'
           style={{
             background: 'none',
             border: 'none',
