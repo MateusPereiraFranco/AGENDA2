@@ -89,13 +89,6 @@ function Login() {
       <div style={{ marginTop: '10px' }}>
         <button
           className='botao_esqueciSenha'
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'blue',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-          }}
           onClick={() => navigate('/forgot-password')}
         >
           Esqueci minha senha
