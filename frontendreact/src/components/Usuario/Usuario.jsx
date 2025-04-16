@@ -77,26 +77,24 @@ function Usuario() {
   const handleAddUsuario = async (e) => {
     e.preventDefault();
     const formData = {
-        nome: e.target.name.value,
-        email: e.target.email.value,
+        nome: e.target.name.value.trim(),
+        email: e.target.email.value.trim(),
         senha: e.target.password.value,
         tipo_usuario: e.target.tipo_usuario.value,
         fk_empresa_id: id
     };
 
     try {
-        const result = await addUsuario(formData);
-        
-        if (result.success) {
-            loadUsuarios();
-            // Limpa o formulário
-            e.target.reset();
-            setError('');
-        }
+        await addUsuario(formData);
+        loadUsuarios();
+        e.target.reset();
+        setError('');
+        toast.success("Usuário cadastrado com sucesso!");
     } catch (error) {
-        setError(error.message); // Exibe a mensagem de erro específica
+        setError(error.message); 
+        toast.error(error.message);
     }
-};
+  };
 
   const handleDeleteUsuario = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este usuário?")) return;
@@ -194,7 +192,14 @@ function Usuario() {
         {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
           <form onSubmit={handleAddUsuario}>
             <input type="text" name="name" placeholder="Nome" required />
-            <input type="text" name="email" placeholder="Email" required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+              pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+              title="Digite um email válido"
+            />
             <input type="password" name="password" placeholder="Senha" required />
             <select name="tipo_usuario">
               <option value="cargo">Cargo</option>
