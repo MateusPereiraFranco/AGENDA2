@@ -83,7 +83,7 @@ function VerifyToken() {
   };
 
   return (
-    <div>
+    <div className='vt_conteiner'>
       <h2>Verificar Código</h2>
 
       {tempoRestante > 0 ? (
@@ -91,7 +91,7 @@ function VerifyToken() {
       ) : (
         <>
           <p style={{ color: 'orange' }}>Tempo expirado. Solicite um novo código.</p>
-          <button onClick={handleReenviarCodigo} disabled={reenviando}>
+          <button className='botao_verde' onClick={handleReenviarCodigo} disabled={reenviando}>
             {reenviando ? 'Reenviando...' : 'Reenviar código'}
           </button>
         </>
@@ -105,7 +105,7 @@ function VerifyToken() {
           onChange={(e) => setToken(e.target.value)}
           required
         />
-        <button type="submit" disabled={tempoRestante <= 0}>
+        <button className='botao_verde' type="submit" disabled={tempoRestante <= 0}>
           Verificar
         </button>
       </form>

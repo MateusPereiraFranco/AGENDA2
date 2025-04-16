@@ -12,36 +12,29 @@ function SenhaInput({
   const [mostrar, setMostrar] = useState(false);
 
   return (
-    <div style={{ position: 'relative', marginBottom: '10px' }}>
+    <div 
+      style={{
+        position: 'relative', 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px'
+      }}>
       {label && <label>{label}</label>}
       <input
         type={mostrar ? 'text' : 'password'}
+        name={name}
         value={value}
+        required={required}
         onChange={onChange}
         placeholder={placeholder}
-        required={required}
-        name={name}
-        style={{
-          paddingRight: '40px',
-          width: '100%',
-        }}
       />
-      <button
+      <button 
+        className='button_eye'
         type="button"
         onClick={() => setMostrar((prev) => !prev)}
         tabIndex={-1}
-        style={{
-          position: 'absolute',
-          right: '10px',
-          top: label ? '38px' : '50%',
-          transform: label ? 'none' : 'translateY(-50%)',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '20px',
-          padding: 0,
-          color: '#444'
-        }}
+        style={{ transform: label ? 'none' : 'translateY(-50%)'}}
       >
         {mostrar ? <HiEyeOff /> : <HiEye />}
       </button>

@@ -42,7 +42,7 @@ function ForgotPassword() {
   
 
   return (
-    <div>
+    <div className='forgot_password_conteiner'>
       <h2>Esqueci minha senha</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -52,7 +52,7 @@ function ForgotPassword() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button type="submit" disabled={isSending}>
+        <button className="botao_verde" type="submit" disabled={isSending}>
           {isSending ? 'Enviando...' : 'Enviar código'}
         </button>
       </form>

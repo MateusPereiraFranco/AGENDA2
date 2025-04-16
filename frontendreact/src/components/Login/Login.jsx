@@ -75,7 +75,7 @@ function Login() {
             required
           />
         </div>
-        <div className="form-group2">
+        <div>
           <SenhaInput
             label="Senha:"
             value={senha}
@@ -86,7 +86,7 @@ function Login() {
         <button className="botao_verde" type="submit">Entrar</button>
       </form>
 
-      <div style={{ marginTop: '10px' }}>
+      <div>
         <button
           className='botao_esqueciSenha'
           onClick={() => navigate('/forgot-password')}

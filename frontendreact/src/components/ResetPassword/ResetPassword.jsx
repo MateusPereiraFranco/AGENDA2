@@ -71,7 +71,7 @@ function ResetPassword() {
   };
 
   return (
-    <div>
+    <div className='reset_password_conteiner'>
       <h2>Nova Senha</h2>
 
       {tempoRestante > 0 ? (
@@ -106,6 +106,7 @@ function ResetPassword() {
         )}
 
         <button
+          className='botao_verde'
           type="submit"
           disabled={tempoRestante <= 0 || !senhasCoincidem}
         >
