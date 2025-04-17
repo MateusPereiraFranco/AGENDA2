@@ -75,7 +75,7 @@ export const resetPassword = async (req, res) => {
 
         const hashed = await bcrypt.hash(newPassword, parseInt(process.env.BCRYPT_SALT_ROUNDS));
         await client.query('UPDATE usuario SET senha = $1 WHERE email = $2', [hashed, email]);
-        await client.query('UPDATE reset_token SET usado = true WHERE email = $1 AND token = $2', [email, token]);
+        await client.query('DELETE FROM reset_token WHERE email = $1 AND token = $2', [email, token]);
 
         res.status(200).json({ message: 'Senha redefinida com sucesso' });
     } catch (err) {
