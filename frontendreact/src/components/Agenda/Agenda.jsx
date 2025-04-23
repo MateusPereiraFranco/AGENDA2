@@ -117,8 +117,8 @@ function Agenda() {
       loadAgendamentos();
       e.target.reset();
     } catch (error) {
-      console.error(error);
-      toast.error("Erro ao adicionar agendamento");
+      setError(error.message); 
+      toast.error(error.message);
     }
   };
 
@@ -157,8 +157,8 @@ function Agenda() {
       loadAgendamentos();
       setEditingAgendamento(null);
     } catch (error) {
-      console.error(error);
-      toast.error("Erro ao atualizar agendamento");
+      setError(error.message); 
+      toast.error(error.message);
     }
   };
 

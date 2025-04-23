@@ -83,13 +83,15 @@ export const updateAgendamento = async (id, agendamento) => {
             body: JSON.stringify(agendamento),
             credentials: 'include',
         });
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Erro ao atualizar agendamento');
+            throw new Error(data.error || 'Erro ao adicionar agenda');
         }
         return response.json();
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao atualizar agenda:', error.message);
+        throw error;
     }
 
 };
@@ -103,12 +105,15 @@ export const addAgendamento = async (agendamento) => {
             body: JSON.stringify(agendamento),
             credentials: 'include', // Inclui cookies na requisição
         });
+
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Erro ao adicionar agendamento');
+            throw new Error(data.error || 'Erro ao adicionar agenda');
         }
         return response.json();
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao adicionar agenda:', error.message);
+        throw error;
     }
 };

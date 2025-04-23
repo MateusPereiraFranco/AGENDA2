@@ -64,17 +64,22 @@ export const updateUsuario = async (id, usuario) => {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuario),
-            credentials: 'include', // Inclui cookies na requisição
+            credentials: 'include',
         });
+
+        const data = await response.json(); // 👈 importante!
+
         if (!response.ok) {
-            throw new Error('Erro ao atualizar usuário');
+            throw new Error(data.error || 'Erro ao atualizar usuário');
         }
-        return response.json();
+
+        return data;
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao atualizar usuário:', error.message);
+        throw error;
     }
 };
+
 
 // Função para adicionar um usuário
 export const addUsuario = async (usuario) => {

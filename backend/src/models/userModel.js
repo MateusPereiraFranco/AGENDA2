@@ -153,7 +153,8 @@ const updateUser = async (id, nome, email, tipo_usuario) => {
         );
         return result.rows[0];
     } catch (err) {
-        console.error('Erro ao atualizar usuario:', err);
+        // Adiciona o código de erro para tratamento no controller
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };

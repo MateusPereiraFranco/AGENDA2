@@ -107,7 +107,7 @@ const addSchedule = async (data, fk_usuario_id) => {
         );
         return result.rows[0]; // Retorna o agenda recém-cadastrado
     } catch (err) {
-        console.error('Erro ao adicionar agenda:', err);
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };
@@ -134,7 +134,7 @@ const updateSchedule = async (id, data, fk_usuario_id) => {
         );
         return result.rows[0]; // Retorna o agenda atualizado
     } catch (err) {
-        console.error('Erro ao atualizar agenda:', err);
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };
