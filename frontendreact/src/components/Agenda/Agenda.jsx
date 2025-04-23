@@ -24,6 +24,7 @@ function Agenda() {
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
+  const [loading, setLoading] = useState(false); // Novo estado
   const itemsPerPage = 10;
 
   const getDataHoje = () => {
@@ -35,7 +36,7 @@ function Agenda() {
   const [searchParams, setSearchParams] = useState({
     sortBy: "data",
     order: "ASC",
-    dataInicio: getDataHoje().toISOString().split("T")[0], // <-- data de hoje em formato yyyy-mm-dd
+    dataInicio: getDataHoje().toISOString().split("T")[0],
     dataFim: "",
   });
 
@@ -54,6 +55,8 @@ function Agenda() {
       return;
     }
 
+    setLoading(true); // inicia o carregamento
+
     try {
       const params = {
         page: currentPage,
@@ -65,12 +68,13 @@ function Agenda() {
 
       const data = await fetchAgendamentos(id, params);
       setAgendamentos(data || []);
-
       setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
       setHasMorePages(false);
       console.error("Erro ao carregar agendamentos:", error);
       toast.error(error.message || "Erro ao carregar agendamentos");
+    } finally {
+      setLoading(false); // finaliza o carregamento
     }
   };
 
@@ -105,7 +109,6 @@ function Agenda() {
   const handleAddAgendamento = async (e) => {
     e.preventDefault();
     const data = e.target.data.value;
-
     const fk_usuario_id = tipo_usuario === "funcionario" ? id_usuario : id;
 
     try {
@@ -164,14 +167,10 @@ function Agenda() {
   };
 
   const getDataClassName = (dataString) => {
-    // Converte a string "DD/MM/AAAA" para objeto Date
     const [dia, mes, ano] = dataString.split("/");
-    const data = new Date(ano, mes - 1, dia); // mês é 0-based no JS
-
-    // Data atual (sem horas/minutos/segundos)
+    const data = new Date(ano, mes - 1, dia);
     const hoje = getDataHoje();
 
-    // Comparação correta
     if (data.getTime() === hoje.getTime()) return "data-hoje";
     if (data < hoje) return "data-passado";
     return "data-futuro";
@@ -179,45 +178,33 @@ function Agenda() {
 
   return (
     <div className="agenda_conteiner_geral">
-      <ToastContainer
-        autoClose={1500}
-        pauseOnHover={false}
-        pauseOnFocusLoss={false}
-      />
+      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
       <h1>{usuarioNome}</h1>
       <hr />
       <h2>Agenda</h2>
+
       <div className="form_agenda">
         <form onSubmit={(e) => e.preventDefault()}>
           <input
             type="date"
-            placeholder="Data inicial"
             value={searchParams.dataInicio}
-            onChange={(e) =>
-              setSearchParams({ ...searchParams, dataInicio: e.target.value })
-            }
+            onChange={(e) => setSearchParams({ ...searchParams, dataInicio: e.target.value })}
           />
           <input
             type="date"
-            placeholder="Data final"
             value={searchParams.dataFim}
-            onChange={(e) =>
-              setSearchParams({ ...searchParams, dataFim: e.target.value })
-            }
+            onChange={(e) => setSearchParams({ ...searchParams, dataFim: e.target.value })}
           />
-          <button className="botao_verde" type="button" onClick={handleSearch}>
-            Buscar
-          </button>
-          <button className="botao_verde" type="button" onClick={limparFiltros}>
-            Limpar
-          </button>
+          <button className="botao_verde" type="button" onClick={handleSearch}>Buscar</button>
+          <button className="botao_verde" type="button" onClick={limparFiltros}>Limpar</button>
         </form>
         <hr />
         <form onSubmit={handleAddAgendamento}>
-          <input type="date" name="data" placeholder="Data" required />
+          <input type="date" name="data" required />
           <button className="botao_verde" type="submit">Adicionar Agendamento</button>
         </form>
       </div>
+
       <div className="tabela_agenda">
         <table>
           <thead>
@@ -246,7 +233,13 @@ function Agenda() {
             </tr>
           </thead>
           <tbody>
-            {agendamentos.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="3" style={{ textAlign: "center", padding: "1rem" }}>
+                  Carregando...
+                </td>
+              </tr>
+            ) : agendamentos.length > 0 ? (
               agendamentos.map((agendamento) => (
                 <React.Fragment key={agendamento.id_agenda}>
                   <tr>
@@ -257,17 +250,12 @@ function Agenda() {
                     <td>
                       <button
                         className="botao-vermelho"
-                        onClick={() =>
-                          handleDeleteEmpresa(agendamento.id_agenda)
-                        }
+                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
                         disabled={deletingId === agendamento.id_agenda}
                       >
-                        {deletingId === agendamento.id_agenda
-                          ? "Excluindo..."
-                          : "Excluir"}
+                        {deletingId === agendamento.id_agenda ? "Excluindo..." : "Excluir"}
                       </button>
-                      {(tipo_usuario === "gerente" ||
-                        tipo_usuario === "admin") && (
+                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <button
                           className="botao_verde"
                           onClick={() => setEditingAgendamento(agendamento)}
@@ -287,10 +275,7 @@ function Agenda() {
                     editingAgendamento.id_agenda === agendamento.id_agenda && (
                       <tr className="editando_agendamento">
                         <td colSpan="2">
-                          <form
-                            className="form-atualizacao"
-                            onSubmit={handleUpdateAgendamento}
-                          >
+                          <form className="form-atualizacao" onSubmit={handleUpdateAgendamento}>
                             <label htmlFor="data">Nova Data:</label>
                             <input
                               type="date"
@@ -314,7 +299,7 @@ function Agenda() {
               ))
             ) : (
               <tr>
-                <td colSpan="2" style={{ textAlign: "center" }}>
+                <td colSpan="3" style={{ textAlign: "center" }}>
                   Nenhum agendamento cadastrado
                 </td>
               </tr>
@@ -322,6 +307,7 @@ function Agenda() {
           </tbody>
         </table>
       </div>
+
       <div className="vai_volta">
         <button
           className="botao_verde"

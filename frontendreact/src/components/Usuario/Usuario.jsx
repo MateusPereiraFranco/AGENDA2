@@ -84,6 +84,13 @@ function Usuario() {
         fk_empresa_id: id
     };
 
+    if (formData.tipo_usuario === "cargo") {
+      const msg = "Por favor, selecione um cargo.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
     try {
         await addUsuario(formData);
         loadUsuarios();
