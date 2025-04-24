@@ -5,12 +5,8 @@ import userRoutes from './routes/userRoutes.js';
 import scheduleRoutes from './routes/scheduleRoutes.js';
 import timeRoutes from './routes/timeRoutes.js';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import './cron/cronJobs.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cookieParser()); // Habilita o uso de cookies
@@ -21,13 +17,6 @@ app.use(
         credentials: true, // Permite o envio de cookies
     })
 );
-
-/*
-app.use(express.static(path.join(__dirname, '../../frontend')));
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/index.html'));
-});
-*/
 
 app.use('/api', enterpriseRoutes);
 app.use('/api', userRoutes);

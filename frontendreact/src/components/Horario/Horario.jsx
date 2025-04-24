@@ -9,6 +9,7 @@ import {
   updateHorario,
 } from "../../services/horarioService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
+import { fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
 
 function Horario() {
   const { id } = useParams(); // Obtém o ID da agenda da URL
@@ -18,6 +19,8 @@ function Horario() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [usuarioNome, setUsuarioNome] = useState("");
+  const [nomeUsuarioLogado, setNomeUsuarioLogado] = useState("");
+  const[dataAgenda, setDataAgenda] = useState('');
   const [error, setError] = useState("");
   const [editingHorario, setEditingHorario] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
@@ -27,7 +30,8 @@ function Horario() {
 
   useEffect(() => {
     loadHorarios();
-    loadUsuarioName();
+    loadUsuarioNameLogado();
+    getFkUsuarioIdAgendaECarregaNome();
   }, [currentPage, searchParams]);
 
   const handleContatoChange = (e) => {
@@ -73,20 +77,39 @@ function Horario() {
     }
   };
 
+  const getFkUsuarioIdAgendaECarregaNome = async () => {
+    try {
+      const fk_usuario_id_agenda = await fetchAgendamentosFkUsuarioId(id);
+      const idUsuario = fk_usuario_id_agenda.fk_usuario_id;
+
+  
+      if (!idUsuario) {
+        console.error("ID do usuário da agenda não encontrado");
+        return;
+      }
+  
+      const nomeUsuario = await fetchUsuarioNome(idUsuario);
+      setUsuarioNome(nomeUsuario || "Usuário não encontrado");
+    } catch (error) {
+      console.error("Erro ao buscar ID do usuário da agenda ou nome:", error);
+      setError("Erro ao carregar detalhes do usuário.");
+    }
+  };
+
   // Usado para colocar em observação - "Agendado por 'João'".
-  const loadUsuarioName = async () => {
-        try {
-          const nomeUsuario = await fetchUsuarioNome(id_usuario);
-          if (nomeUsuario) {
-            setUsuarioNome(nomeUsuario);
-          } else {
-            setUsuarioNome("Usuario não encontrada");
-          }
-        } catch (error) {
-          console.error(error);
-          setError("Erro ao carregar detalhes do usuario.");
-        }
-      };
+  const loadUsuarioNameLogado = async () => {
+    try {
+      const nomeUsuario = await fetchUsuarioNome(id_usuario);
+      if (nomeUsuario) {
+        setNomeUsuarioLogado(nomeUsuario);
+      } else {
+        setNomeUsuarioLogado("Usuario não encontrada");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Erro ao carregar detalhes do usuario.");
+    }
+  };
 
   const formatarHorarioSemSegundos = (horarioCompleto) => {
     if (!horarioCompleto) return '';
@@ -101,7 +124,7 @@ function Horario() {
       horario: e.target.horario.value,
       nome: e.target.nome.value,
       contato: contato,
-      observacoes: `Agendado por ${usuarioNome}`,
+      observacoes: `Agendado por ${nomeUsuarioLogado}`,
       fk_agenda_id: id,
     };
     try {
@@ -158,7 +181,7 @@ function Horario() {
         pauseOnHover={false} // Fecha imediatamente ao passar o mouse
         pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
       />
-      <h1>Horários</h1>
+      <h1>{usuarioNome}</h1>
       <div className="form_horario">
         <form className="add_horario" onSubmit={handleAddHorario}>
           <input type="time" name="horario" placeholder="Horário" required />
