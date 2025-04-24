@@ -88,7 +88,11 @@ const addScheduleController = async (req, res) => {
             res.status(403).send('Você não tem permissão para criar agendamentos para este usuário');
         }
     } catch (err) {
-        console.error('Erro ao adicionar agenda:', err);
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Esta agenda já está cadastrada'
+            });
+        }
         res.status(500).send('Erro ao adicionar agenda');
     }
 };
@@ -144,7 +148,11 @@ const updateScheduleController = async (req, res) => {
             res.status(403).send('Você não tem permissão para editar agendamentos para este usuário');
         }
     } catch (err) {
-        console.error('Erro ao atualizar agenda:', err);
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Esta agenda já está cadastrada'
+            });
+        }
         res.status(500).send('Erro ao atualizar agenda');
     }
 };

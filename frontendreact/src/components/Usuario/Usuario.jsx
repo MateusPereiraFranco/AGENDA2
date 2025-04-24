@@ -84,6 +84,13 @@ function Usuario() {
         fk_empresa_id: id
     };
 
+    if (formData.tipo_usuario === "cargo") {
+      const msg = "Por favor, selecione um cargo.";
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
     try {
         await addUsuario(formData);
         loadUsuarios();
@@ -114,15 +121,15 @@ function Usuario() {
 
   const handleUpdateUsuario = async (e) => {
     e.preventDefault();
-    const nome = e.target.nome.value;
-    const email = e.target.email.value;
+    const nome = e.target.nome.value.trim();
+    const email = e.target.email.value.trim();
     const tipo_usuario = e.target.tipo_usuario.value;
-
+  
     if (!nome || !email || !tipo_usuario) {
       setError("Todos os campos são obrigatórios!");
       return;
     }
-
+  
     try {
       await updateUsuario(editingUsuario.id_usuario, {
         nome,
@@ -130,11 +137,14 @@ function Usuario() {
         tipo_usuario,
       });
       loadUsuarios();
-      setEditingUsuario(null); // Fechar o formulário de edição após a atualização
+      setEditingUsuario(null);
+      setError('');
+      toast.success(`Usuário ${nome} atualizado com sucesso!`);
     } catch (error) {
-      setError("Erro ao atualizar usuário.");
+      setError(error.message); 
+      toast.error(error.message);
     }
-  };
+  };  
 
   const handleVerFuncionario = (id) => {
     navigate(`/agenda/${id}`);

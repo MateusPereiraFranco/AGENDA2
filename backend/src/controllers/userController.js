@@ -262,6 +262,11 @@ const updateUserController = async (req, res) => {
         }
         res.status(200).json({ message: 'Usuario atualizado com sucesso!', user });
     } catch (err) {
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Este e-mail já está cadastrado'
+            });
+        }
         console.error('Erro ao atualizar usuario:', err);
         res.status(500).send('Erro ao atualizar usuario');
     }
