@@ -9,15 +9,12 @@ import {
   updateHorario,
 } from "../../services/horarioService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
-<<<<<<< HEAD
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
-=======
 import { fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
->>>>>>> cfa1893139fab9c64ee264802d338a58de8f3e55
 
 function Horario() {
   const { id } = useParams();
@@ -87,15 +84,6 @@ function Horario() {
     }
   };
 
-<<<<<<< HEAD
-  const loadUsuarioName = async () => {
-    try {
-      const nomeUsuario = await fetchUsuarioNome(id_usuario);
-      if (nomeUsuario) {
-        setUsuarioNome(nomeUsuario);
-      } else {
-        setUsuarioNome("Usuario não encontrada");
-=======
   const getFkUsuarioIdAgendaECarregaNome = async () => {
     try {
       const fk_usuario_id_agenda = await fetchAgendamentosFkUsuarioId(id);
@@ -123,7 +111,6 @@ function Horario() {
         setNomeUsuarioLogado(nomeUsuario);
       } else {
         setNomeUsuarioLogado("Usuario não encontrada");
->>>>>>> cfa1893139fab9c64ee264802d338a58de8f3e55
       }
     } catch (error) {
       console.error(error);
