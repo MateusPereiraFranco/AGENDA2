@@ -9,6 +9,7 @@ const searchSchema = Joi.object({
     nome: Joi.string().optional(),
     contato: Joi.string().optional(),
     observacoes: Joi.string().optional(),
+    agendadoPor: Joi.string().optional(),
     page: Joi.number().integer().positive().default(1),
     limit: Joi.number().integer().positive().default(10),
     sortBy: Joi.string().valid('id_horario', 'horario', 'nome').default('id_horario'),
@@ -53,13 +54,13 @@ const getTimesController = async (req, res) => {
 
 // Controlador para adicionar um nova horario
 const addTimeController = async (req, res) => {
-    const { fk_agenda_id, horario, nome, contato, observacoes } = req.body; // Recebe os dados do corpo da requisição
+    const { fk_agenda_id, horario, nome, contato, observacoes, agendadoPor } = req.body; // Recebe os dados do corpo da requisição
     if (!fk_agenda_id || !horario || !nome) {
         return res.status(400).send('Nome, fk_agenda_id e horario são obrigatórios');
     }
 
     try {
-        const newTime = await addTime(fk_agenda_id, horario, nome, contato, observacoes); // Chama o modelo para adicionar a horario
+        const newTime = await addTime(fk_agenda_id, horario, nome, contato, observacoes, agendadoPor); // Chama o modelo para adicionar a horario
         res.status(201).json(newTime); // Retorna a horario criada
     } catch (err) {
         console.error('Erro ao adicionar horario:', err);
@@ -105,13 +106,13 @@ const deleteTimeController = async (req, res) => {
 
 const updateTimeController = async (req, res) => {
     const { id } = req.params;
-    const { fk_agenda_id, horario, nome, contato, observacoes } = req.body; // Recebe os dados do corpo da requisição
+    const { fk_agenda_id, horario, nome, contato, observacoes, agendadoPor } = req.body; // Recebe os dados do corpo da requisição
     if (!id || !fk_agenda_id || !horario || !nome) {
         return res.status(400).send('ID, fk_agenda_id, horario, nome são obrigatório para atualização');
     }
 
     try {
-        const time = await updateTime(id, fk_agenda_id, horario, nome, contato, observacoes); // Chama o modelo para atualizar o horario
+        const time = await updateTime(id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor); // Chama o modelo para atualizar o horario
         if (!time) {
             return res.status(404).send('Horario não encontrado');
         }
