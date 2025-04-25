@@ -13,6 +13,7 @@ function Empresa() {
   const [empresas, setEmpresas] = useState([]);
   const [searchParams, setSearchParams] = useState({ nome: "", cnpj: "" });
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState("");
   const [editingEmpresa, setEditingEmpresa] = useState(null); // Estado para controlar a empresa sendo editada
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function Empresa() {
     } catch (error) {
       setHasMorePages(false);
       console.error(error);
-      alert("Erro ao carregar empresas");
+      setError("Erro ao carregar usuários.");
     }
   };
 
@@ -57,20 +58,22 @@ function Empresa() {
       e.target.name.value = "";
       e.target.cnpj.value = "";
       e.target.email.value = "";
+      setError('');
+      toast.success(`Empresa ${nome} cadastrado com sucesso!`);
     } catch (error) {
-      console.error(error);
-      alert("Erro ao adicionar empresa");
+      setError(error.message); 
+      toast.error(error.message);
     }
   };
 
-  const handleDeleteEmpresa = async (id) => {
+  const handleDeleteEmpresa = async (id, nome) => {
     if (!window.confirm("Tem certeza que deseja excluir esta empresa?")) return;
 
     setDeletingId(id);
     try {
       await deleteEmpresa(id);
       await loadEmpresas();
-      toast.success("Empresa excluída");
+      toast.success(`Empresa ${nome} excluída`);
     } catch (error) {
       console.error(error);
       toast.error("Erro ao excluir empresa");
@@ -94,10 +97,12 @@ function Empresa() {
       await updateEmpresa(editingEmpresa.id_empresa, { nome, cnpj, email });
       loadEmpresas();
       setEditingEmpresa(null); // Fechar o formulário de edição após a atualização
-      alert("Empresa atualizada com sucesso!");
+      setError('');
+      toast.success(`Empresa ${nome} atualizado com sucesso!`);
     } catch (error) {
       console.error(error);
-      alert("Erro ao atualizar empresa");
+      setError(error.message); 
+      toast.error(error.message);
     }
   };
 
@@ -164,7 +169,7 @@ function Empresa() {
                     <td>
                       <button
                         className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(empresa.id_empresa)}
+                        onClick={() => handleDeleteEmpresa(empresa.id_empresa, empresa.nome)}
                         disabled={deletingId === empresa.id_empresa}
                       >
                         {deletingId === empresa.id_empresa
@@ -263,7 +268,7 @@ function Empresa() {
         </button>
         <button 
           className="botao_verde"
-          onClick={() => setCurrentPage(currentPage + 1)} 
+          onClick={() => setCurrentPage(currentPage + 1)}
           disabled={!hasMorePages}
         >
           Próxima

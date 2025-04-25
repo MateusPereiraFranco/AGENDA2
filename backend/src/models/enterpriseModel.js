@@ -71,7 +71,7 @@ const addEnterprise = async (nome, cnpj, telefone, email) => {
         );
         return result.rows[0]; // Retorna o empresa recém-cadastrado
     } catch (err) {
-        console.error('Erro ao adicionar empresa:', err);
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };
@@ -98,7 +98,7 @@ const updateEnterprise = async (id, nome, cnpj, telefone, email) => {
         );
         return result.rows[0]; // Retorna o empresa atualizado
     } catch (err) {
-        console.error('Erro ao atualizar empresa:', err);
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };

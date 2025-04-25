@@ -102,21 +102,21 @@ function Usuario() {
         loadUsuarios();
         e.target.reset();
         setError('');
-        toast.success("Usuário cadastrado com sucesso!");
+        toast.success(`Usuário ${formData.nome} cadastrado com sucesso!`);
     } catch (error) {
         setError(error.message); 
         toast.error(error.message);
     }
   };
 
-  const handleDeleteUsuario = async (id) => {
+  const handleDeleteUsuario = async (id, nome) => {
     if (!window.confirm("Tem certeza que deseja excluir este usuário?")) return;
 
     setDeletingId(id);
     try {
       await deleteUsuario(id);
       await loadUsuarios();
-      toast.success("Usuário excluído");
+      toast.success(`Usuário ${nome} excluído com sucesso!`);
     } catch (error) {
       console.error(error);
       toast.error("Erro ao excluir usuário");
@@ -251,7 +251,7 @@ function Usuario() {
                         <button
                           className="botao-vermelho"
                           onClick={() =>
-                            handleDeleteUsuario(usuario.id_usuario)
+                            handleDeleteUsuario(usuario.id_usuario, usuario.nome)
                           }
                           disabled={deletingId === usuario.id_usuario}
                         >
