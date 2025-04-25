@@ -14,7 +14,7 @@ export const getTimeById = async (id) => {
     }
 };
 
-const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes, page = 1, limit = 10, sortBy = 'id_horario', order = 'ASC' } = {}) => {
+const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, page = 1, limit = 10, sortBy = 'id_horario', order = 'ASC' } = {}) => {
     try {
         let query = 'SELECT * FROM horario';
         const params = [];
@@ -45,6 +45,10 @@ const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes,
             conditions.push('observacoes ILIKE $' + (params.length + 1));
             params.push(`%${observacoes}%`);
         }
+        if (agendadoPor) {
+            conditions.push('agendadoPor ILIKE $' + (params.length + 1));
+            params.push(`%${agendadoPor}%`);
+        }
 
         // Adiciona condições à query, se houver
         if (conditions.length > 0) {
@@ -68,11 +72,11 @@ const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes,
 };
 
 // Função para adicionar um novo horario
-const addTime = async (fk_agenda_id, horario, nome, contato, observacoes) => {
+const addTime = async (fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) => {
     try {
         const result = await client.query(
-            'INSERT INTO horario (fk_agenda_id, horario, nome, contato, observacoes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [fk_agenda_id, horario, nome, contato, observacoes]
+            'INSERT INTO horario (fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [fk_agenda_id, horario, nome, contato, observacoes, agendadoPor]
         );
         return result.rows[0]; // Retorna o horario recém-cadastrado
     } catch (err) {
@@ -95,11 +99,11 @@ const deleteTime = async (id) => {
 };
 
 
-const updateTime = async (id, fk_agenda_id, horario, nome, contato, observacoes) => {
+const updateTime = async (id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) => {
     try {
         const result = await client.query(
-            'UPDATE horario SET fk_agenda_id = $1, horario = $2, nome = $3, contato = $4, observacoes =$5 WHERE id_horario = $6 RETURNING *',
-            [fk_agenda_id, horario, nome, contato, observacoes, id]
+            'UPDATE horario SET fk_agenda_id = $1, horario = $2, nome = $3, contato = $4, observacoes =$5, agendadoPor =$6 WHERE id_horario = $7 RETURNING *',
+            [fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, id]
         );
         return result.rows[0]; // Retorna o horario atualizado
     } catch (err) {

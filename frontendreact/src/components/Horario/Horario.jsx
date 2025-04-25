@@ -130,7 +130,8 @@ function Horario() {
       horario: e.target.horario.value,
       nome: e.target.nome.value,
       contato: contato,
-      observacoes: `Agendado por ${nomeUsuarioLogado}`,
+      observacoes: e.target.observacoes.value,
+      agendadoPor: `Agendado por ${nomeUsuarioLogado}`,
       fk_agenda_id: id,
     };
     try {
@@ -195,12 +196,12 @@ function Horario() {
           <input
             type="text"
             name="contato"
-            placeholder="Contato"
+            placeholder="Contato (Opcional)"
             value={contato}
             onChange={handleContatoChange}
             maxLength={15}
-            required
           />
+          <input type="text" name="observacoes" placeholder="Observação (Opcional)" />
           <button className="botao_verde" type="submit">Adicionar Horário</button>
         </form>
       </div>
