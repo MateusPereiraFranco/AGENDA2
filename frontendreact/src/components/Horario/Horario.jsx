@@ -9,9 +9,14 @@ import {
   updateHorario,
 } from "../../services/horarioService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 function Horario() {
-  const { id } = useParams(); // Obtém o ID da agenda da URL
+  const { id } = useParams();
   const [horarios, setHorarios] = useState([]);
   const [searchParams, setSearchParams] = useState({
     sortBy: "horario"
@@ -24,16 +29,24 @@ function Horario() {
   const tipo_usuario = localStorage.getItem("tipo_usuario");
   const id_usuario = localStorage.getItem("id_usuario");
   const [contato, setContato] = useState("");
+  const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
 
   useEffect(() => {
     loadHorarios();
     loadUsuarioName();
   }, [currentPage, searchParams]);
 
+  const toggleDetalhes = (id) => {
+    setDetalhesVisiveis((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   const handleContatoChange = (e) => {
-    const input = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+    const input = e.target.value.replace(/\D/g, '');
     let formattedInput = "";
-    
+
     if (input.length > 0) {
       formattedInput = `(${input.substring(0, 2)}`;
     }
@@ -43,29 +56,23 @@ function Horario() {
     if (input.length > 7) {
       formattedInput += `-${input.substring(7, 11)}`;
     }
-    
+
     setContato(formattedInput);
   };
 
   const loadHorarios = async () => {
     try {
-      // Cria uma cópia do searchParams para evitar mutação direta
       const params = { ...searchParams };
-
-      // Remove o campo "nome" se estiver vazio
       if (params.nome === "") {
         delete params.nome;
       }
-
-      // Adiciona a página atual aos parâmetros
       params.page = currentPage;
 
-      // Busca os usuários com os parâmetros atualizados
       const data = await fetchHorarios(id, params);
       if (data) {
         setHorarios(data);
       } else {
-        setHorarios([]); // Define a lista de usuários como vazia se não houver dados
+        setHorarios([]);
       }
     } catch (error) {
       console.error(error);
@@ -73,27 +80,25 @@ function Horario() {
     }
   };
 
-  // Usado para colocar em observação - "Agendado por 'João'".
   const loadUsuarioName = async () => {
-        try {
-          const nomeUsuario = await fetchUsuarioNome(id_usuario);
-          if (nomeUsuario) {
-            setUsuarioNome(nomeUsuario);
-          } else {
-            setUsuarioNome("Usuario não encontrada");
-          }
-        } catch (error) {
-          console.error(error);
-          setError("Erro ao carregar detalhes do usuario.");
-        }
-      };
+    try {
+      const nomeUsuario = await fetchUsuarioNome(id_usuario);
+      if (nomeUsuario) {
+        setUsuarioNome(nomeUsuario);
+      } else {
+        setUsuarioNome("Usuario não encontrada");
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Erro ao carregar detalhes do usuario.");
+    }
+  };
 
   const formatarHorarioSemSegundos = (horarioCompleto) => {
     if (!horarioCompleto) return '';
     const partes = horarioCompleto.split(':');
     return `${partes[0]}:${partes[1]}`;
   };
-
 
   const handleAddHorario = async (e) => {
     e.preventDefault();
@@ -134,7 +139,7 @@ function Horario() {
 
   const handleUpdateHorario = async (e) => {
     e.preventDefault();
-    const horario = e.target.data.value;
+    const horario = e.target.horario.value;
 
     if (!horario) {
       alert("O campo é obrigatório!");
@@ -144,7 +149,7 @@ function Horario() {
     try {
       await updateHorario(editingHorario.id_horario, { horario });
       loadHorarios();
-      setEditingHorario(null); // Fecha o formulário de edição
+      setEditingHorario(null);
     } catch (error) {
       console.error(error);
       alert("Erro ao atualizar horario");
@@ -155,8 +160,8 @@ function Horario() {
     <div className="horarios_container_geral">
       <ToastContainer
         autoClose={1500}
-        pauseOnHover={false} // Fecha imediatamente ao passar o mouse
-        pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
       />
       <h1>Horários</h1>
       <div className="form_horario">
@@ -169,7 +174,7 @@ function Horario() {
             placeholder="Contato"
             value={contato}
             onChange={handleContatoChange}
-            maxLength={15} // (xx) xxxxx-xxxx
+            maxLength={15}
             required
           />
           <button className="botao_verde" type="submit">Adicionar Horário</button>
@@ -181,12 +186,18 @@ function Horario() {
             {horarios.length > 0 ? (
               horarios.map((horario) => (
                 <React.Fragment key={horario.id_horario}>
-                  <tr key={horario.id_horario}>
+                  <tr>
                     <td>{formatarHorarioSemSegundos(horario.horario)}</td>
                     <td>{horario.nome}</td>
-                    <td>{horario.contato}</td>
-                    <td>{horario.observacoes}</td>
                     <td>
+                      <button onClick={() => toggleDetalhes(horario.id_horario)}>
+                        {detalhesVisiveis[horario.id_horario] ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </button>
+                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                        <button className="botao_verde" onClick={() => setEditingHorario(horario)}>
+                          <BorderColorIcon />
+                        </button>
+                      )}
                       <button
                         className="botao-vermelho"
                         onClick={() => handleDeleteHorario(horario.id_horario)}
@@ -194,25 +205,29 @@ function Horario() {
                       >
                         {deletingId === horario.id_horario
                           ? "Excluindo..."
-                          : "Excluir"}
+                          : <CloseIcon />}
                       </button>
-                      {(tipo_usuario === "gerente" ||
-                        tipo_usuario === "admin") && (
-                        <button className="botao_verde" onClick={() => setEditingHorario(horario)}>
-                          Atualizar
-                        </button>
-                      )}
                     </td>
                   </tr>
+                  {detalhesVisiveis[horario.id_horario] && (
+                    <tr>
+                        <td colSpan='4'>
+                          <div className="info_horario">
+                          <p><strong>Contato:</strong> {horario.contato}</p>
+                          <p><strong>Obs:</strong> {horario.observacoes}</p>
+                          </div>
+                        </td>
+                    </tr>
+                  )}
                   {editingHorario &&
                     editingHorario.id_horario === horario.id_horario && (
                       <tr className="editando_agendamento">
-                        <td colSpan="2">
+                        <td colSpan="5">
                           <form
                             className="form-atualizacao"
                             onSubmit={handleUpdateHorario}
                           >
-                            <label htmlFor="horario">Novo horario:</label>
+                            <label htmlFor="horario">Novo horário:</label>
                             <input
                               type="time"
                               name="horario"
