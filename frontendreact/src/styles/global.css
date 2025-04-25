@@ -51,6 +51,7 @@ button {
 }
 .botao_verde {
   color: white;
+  border-radius: 5px;
   box-shadow: 2px 2px var(--shadows);
   background-color: var(--button-bg);
 }
@@ -60,11 +61,12 @@ button {
 }
 button.botao-vermelho {
   color: white;
+  box-shadow: 2px 2px var(--shadows);
   background-color: var(--button-vermelho-bg);
 }
 button.botao-vermelho:hover {
-  background-color: var(--button-vermelho-hover-bg);
   box-shadow: 2px 2px rgba(0, 0, 0, 0.100);
+  background-color: var(--button-vermelho-hover-bg);
 }
 
 table {
@@ -382,9 +384,15 @@ nav:hover{
   max-width: 800px;
 }
 .tabela_horario button {
-  width: 40%;
+  width: 30%;
   min-width: 100px;
   max-width: 300px;
+}
+
+.info_horario {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
 }
 
 .tabela_agenda table {
@@ -420,11 +428,18 @@ nav:hover{
   color: #f2f2f2;
 }
 
+.vai_volta {
+  width: 350px;
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+}
+
 .vai_volta button {
   width: 7%;
   height: 25px;
-  margin-top: 20px;
-  margin-right: 10px;
   min-width: 100px;
 }
 

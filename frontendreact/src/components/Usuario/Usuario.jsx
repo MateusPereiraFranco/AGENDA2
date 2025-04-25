@@ -9,6 +9,12 @@ import {
   updateUsuario,
 } from "../../services/usuarioService";
 import { fetchEmpresaNome } from "../../services/empresaService";
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+
 
 function Usuario() {
   const { id } = useParams();

@@ -9,6 +9,11 @@ import {
   updateAgendamento,
 } from "../../services/agendaService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+
 
 function Agenda() {
   const { id } = useParams();
@@ -247,26 +252,26 @@ function Agenda() {
                     </td>
                     <td>{agendamento.total_horarios}</td>
                     <td>
-                      <button
-                        className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
-                        disabled={deletingId === agendamento.id_agenda}
-                      >
-                        {deletingId === agendamento.id_agenda ? "Excluindo..." : "Excluir"}
-                      </button>
                       {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <button
                           className="botao_verde"
                           onClick={() => setEditingAgendamento(agendamento)}
                         >
-                          Atualizar
+                          <BorderColorIcon />
                         </button>
                       )}
                       <button
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}
                       >
-                        Ver Agenda
+                        <VisibilityIcon />
+                      </button>
+                      <button
+                        className="botao-vermelho"
+                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
+                        disabled={deletingId === agendamento.id_agenda}
+                      >
+                        {deletingId === agendamento.id_agenda ? "Excluindo..." : <CloseIcon />}
                       </button>
                     </td>
                   </tr>
@@ -282,13 +287,13 @@ function Agenda() {
                               defaultValue={editingAgendamento.data}
                               required
                             />
-                            <button className="botao_verde" type="submit">Salvar</button>
+                            <button className="botao_verde" type="submit"><CheckIcon /></button>
                             <button
                               type="button"
                               className="botao-vermelho"
                               onClick={() => setEditingAgendamento(null)}
                             >
-                              Cancelar
+                              <CloseIcon />
                             </button>
                           </form>
                         </td>
