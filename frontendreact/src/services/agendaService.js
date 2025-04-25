@@ -111,7 +111,6 @@ export const addAgendamento = async (agendamento) => {
         if (!response.ok) {
             throw new Error(data.error || 'Erro ao adicionar agenda');
         }
-        console.log("estou aqui amigo")
         return data;
     } catch (error) {
         console.error('Erro ao adicionar agenda:', error.message);
