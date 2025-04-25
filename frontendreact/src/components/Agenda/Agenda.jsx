@@ -20,7 +20,6 @@ function Agenda() {
   const navigate = useNavigate();
 
   const tipo_usuario = localStorage.getItem("tipo_usuario");
-  const id_usuario = localStorage.getItem("id_usuario");
 
   const [agendamentos, setAgendamentos] = useState([]);
   const [usuarioNome, setUsuarioNome] = useState("");
@@ -114,7 +113,7 @@ function Agenda() {
   const handleAddAgendamento = async (e) => {
     e.preventDefault();
     const data = e.target.data.value;
-    const fk_usuario_id = tipo_usuario === "funcionario" ? id_usuario : id;
+    const fk_usuario_id = id;
 
     try {
       await addAgendamento({ data, fk_usuario_id });
