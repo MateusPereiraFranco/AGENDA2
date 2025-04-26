@@ -14,25 +14,26 @@ import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
+
 
 function Horario() {
   const { id } = useParams();
   const [horarios, setHorarios] = useState([]);
-  const [searchParams, setSearchParams] = useState({
-    sortBy: "horario"
-  });
+  const [searchParams, setSearchParams] = useState({ sortBy: "horario" });
   const [currentPage, setCurrentPage] = useState(1);
   const [usuarioNome, setUsuarioNome] = useState("");
   const [nomeUsuarioLogado, setNomeUsuarioLogado] = useState("");
-  const[dataAgenda, setDataAgenda] = useState('');
+  const [dataAgenda, setDataAgenda] = useState('');
   const [error, setError] = useState("");
-  const [editingHorario, setEditingHorario] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const tipo_usuario = localStorage.getItem("tipo_usuario");
-  const id_usuario = localStorage.getItem("id_usuario");
   const [contato, setContato] = useState("");
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
+  
+  const tipo_usuario = localStorage.getItem("tipo_usuario");
+  const id_usuario = localStorage.getItem("id_usuario");
 
   useEffect(() => {
     loadHorarios();
@@ -40,12 +41,15 @@ function Horario() {
     getFkUsuarioIdAgendaECarregaNome();
   }, [currentPage, searchParams]);
 
-  const toggleDetalhes = (id) => {
-    setDetalhesVisiveis((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+  // Função genérica para toggles
+  const toggleStateById = (id, setState) => {
+    setState(prev => {
+      return { ...prev, [id]: !prev[id] };
+    });
   };
+
+  const toggleDetalhes = (id) => toggleStateById(id, setDetalhesVisiveis);
+
 
   const handleContatoChange = (e) => {
     const input = e.target.value.replace(/\D/g, '');
@@ -73,11 +77,7 @@ function Horario() {
       params.page = currentPage;
 
       const data = await fetchHorarios(id, params);
-      if (data) {
-        setHorarios(data);
-      } else {
-        setHorarios([]);
-      }
+      setHorarios(data || []);
     } catch (error) {
       console.error(error);
       alert("Erro ao carregar usuários");
@@ -89,12 +89,11 @@ function Horario() {
       const fk_usuario_id_agenda = await fetchAgendamentosFkUsuarioId(id);
       const idUsuario = fk_usuario_id_agenda.fk_usuario_id;
 
-  
       if (!idUsuario) {
         console.error("ID do usuário da agenda não encontrado");
         return;
       }
-  
+
       const nomeUsuario = await fetchUsuarioNome(idUsuario);
       setUsuarioNome(nomeUsuario || "Usuário não encontrado");
     } catch (error) {
@@ -103,18 +102,13 @@ function Horario() {
     }
   };
 
-  // Usado para colocar em observação - "Agendado por 'João'".
   const loadUsuarioNameLogado = async () => {
     try {
       const nomeUsuario = await fetchUsuarioNome(id_usuario);
-      if (nomeUsuario) {
-        setNomeUsuarioLogado(nomeUsuario);
-      } else {
-        setNomeUsuarioLogado("Usuario não encontrada");
-      }
+      setNomeUsuarioLogado(nomeUsuario || "Usuário não encontrado");
     } catch (error) {
       console.error(error);
-      setError("Erro ao carregar detalhes do usuario.");
+      setError("Erro ao carregar detalhes do usuário.");
     }
   };
 
@@ -131,24 +125,22 @@ function Horario() {
       nome: e.target.nome.value,
       contato: contato,
       observacoes: e.target.observacoes.value,
-      agendadoPor: `Agendado por ${nomeUsuarioLogado}`,
+      agendadoPor: `${nomeUsuarioLogado}`,
       fk_agenda_id: id,
     };
     try {
       await addHorario(horario);
       loadHorarios();
-      e.target.horario.value = "";
-      e.target.nome.value = "";
+      e.target.reset();
       setContato("");
     } catch (error) {
-      console.error(error);
-      alert("Erro ao adicionar horário");
+      setError(error.message);
+      toast.error(error.message);
     }
   };
 
   const handleDeleteHorario = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir o horário?")) return;
-
     setDeletingId(id);
     try {
       await deleteHorario(id);
@@ -162,24 +154,6 @@ function Horario() {
     }
   };
 
-  const handleUpdateHorario = async (e) => {
-    e.preventDefault();
-    const horario = e.target.horario.value;
-
-    if (!horario) {
-      alert("O campo é obrigatório!");
-      return;
-    }
-
-    try {
-      await updateHorario(editingHorario.id_horario, { horario });
-      loadHorarios();
-      setEditingHorario(null);
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao atualizar horario");
-    }
-  };
 
   return (
     <div className="horarios_container_geral">
@@ -218,59 +192,26 @@ function Horario() {
                       <button onClick={() => toggleDetalhes(horario.id_horario)}>
                         {detalhesVisiveis[horario.id_horario] ? <VisibilityOffIcon /> : <VisibilityIcon />}
                       </button>
-                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
-                        <button className="botao_verde" onClick={() => setEditingHorario(horario)}>
-                          <BorderColorIcon />
-                        </button>
-                      )}
                       <button
                         className="botao-vermelho"
                         onClick={() => handleDeleteHorario(horario.id_horario)}
                         disabled={deletingId === horario.id_horario}
                       >
-                        {deletingId === horario.id_horario
-                          ? "Excluindo..."
-                          : <CloseIcon />}
+                        {deletingId === horario.id_horario ? "Excluindo..." : <DeleteIcon />}
                       </button>
                     </td>
                   </tr>
                   {detalhesVisiveis[horario.id_horario] && (
                     <tr>
-                        <td colSpan='4'>
-                          <div className="info_horario">
+                      <td colSpan="4">
+                        <div className="info_horario">
                           <p><strong>Contato:</strong> {horario.contato}</p>
                           <p><strong>Obs:</strong> {horario.observacoes}</p>
-                          </div>
-                        </td>
+                          <p><strong>Agendado Por:</strong> {horario.agendadopor}</p>
+                        </div>
+                      </td>
                     </tr>
                   )}
-                  {editingHorario &&
-                    editingHorario.id_horario === horario.id_horario && (
-                      <tr className="editando_agendamento">
-                        <td colSpan="5">
-                          <form
-                            className="form-atualizacao"
-                            onSubmit={handleUpdateHorario}
-                          >
-                            <label htmlFor="horario">Novo horário:</label>
-                            <input
-                              type="time"
-                              name="horario"
-                              defaultValue={editingHorario.horario}
-                              required
-                            />
-                            <button className="botao_verde" type="submit">Salvar</button>
-                            <button
-                              type="button"
-                              className="botao-vermelho"
-                              onClick={() => setEditingHorario(null)}
-                            >
-                              Cancelar
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                    )}
                 </React.Fragment>
               ))
             ) : (

@@ -80,7 +80,7 @@ const addTime = async (fk_agenda_id, horario, nome, contato, observacoes, agenda
         );
         return result.rows[0]; // Retorna o horario recém-cadastrado
     } catch (err) {
-        console.error('Erro ao adicionar horario:', err);
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };
@@ -107,7 +107,7 @@ const updateTime = async (id, fk_agenda_id, horario, nome, contato, observacoes,
         );
         return result.rows[0]; // Retorna o horario atualizado
     } catch (err) {
-        console.error('Erro ao atualizar horario:', err);
+        err.code = err.code || 'INTERNAL_ERROR';
         throw err;
     }
 };

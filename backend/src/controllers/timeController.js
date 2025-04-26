@@ -63,8 +63,12 @@ const addTimeController = async (req, res) => {
         const newTime = await addTime(fk_agenda_id, horario, nome, contato, observacoes, agendadoPor); // Chama o modelo para adicionar a horario
         res.status(201).json(newTime); // Retorna a horario criada
     } catch (err) {
-        console.error('Erro ao adicionar horario:', err);
-        res.status(500).send('Erro ao adicionar horario');
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Este horário já está cadastrada'
+            });
+        }
+        res.status(500).send('Erro ao adicionar horário');
     }
 };
 
@@ -118,8 +122,12 @@ const updateTimeController = async (req, res) => {
         }
         res.status(200).json({ message: 'Horario atualizado com sucesso!', time }); // Retorna horario atualizado
     } catch (err) {
-        console.error('Erro ao atualizar horario:', err);
-        res.status(500).send('Erro ao atualizar horario:');
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Este horário já está cadastrada'
+            });
+        }
+        res.status(500).send('Erro ao atualizar horário');
     }
 };
 

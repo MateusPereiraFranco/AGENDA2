@@ -27,13 +27,15 @@ export const addHorario = async (horario) => {
             body: JSON.stringify(horario),
             credentials: 'include',
         });
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Erro ao adicionar horário');
+            throw new Error(data.error || 'Erro ao adicionar horário');
         }
-        return response.json();
+        return data;
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao adicionar horário:', error.message);
+        throw error;
     }
 };
 
@@ -65,13 +67,15 @@ export const updateHorario = async (id, horario) => {
             body: JSON.stringify(horario),
             credentials: 'include',
         });
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Erro ao atualizar horario');
+            throw new Error(data.error || 'Erro ao adicionar horário');
         }
-        return response.json();
+        return data;
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao adicionar horário:', error.message);
+        throw error;
     }
 
 };

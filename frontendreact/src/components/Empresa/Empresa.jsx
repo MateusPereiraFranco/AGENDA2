@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import {
   fetchEmpresas,
   addEmpresa,
@@ -174,18 +181,18 @@ function Empresa() {
                       >
                         {deletingId === empresa.id_empresa
                           ? "Excluindo..."
-                          : "Excluir"}
+                          : <DeleteIcon />}
                       </button>
                       <button 
                         className="botao_verde"
                         onClick={() => setEditingEmpresa(empresa)}>
-                        Atualizar
+                        <BorderColorIcon />
                       </button>
                       <button
                         className="botao_verde"
                         onClick={() => handleVerEmpresa(empresa.id_empresa)}
                       >
-                        Ver Empresa
+                        <VisibilityIcon />
                       </button>
                     </td>
                   </tr>
@@ -231,14 +238,14 @@ function Empresa() {
                                   type="submit"
                                   className="botao_verde"
                                 >
-                                  Salvar
+                                  <CheckIcon />
                                 </button>
                                 <button
                                   type="button"
                                   className="botao-vermelho"
                                   onClick={() => setEditingEmpresa(null)}
                                 >
-                                  Cancelar
+                                  <CloseIcon />
                                 </button>
                               </div>
                             </form>
