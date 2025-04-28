@@ -5,6 +5,7 @@ import {
     getSchedulesController,
     updateScheduleController,
     getFkUserScheduleByIdController,
+    getDataAgendamentoController,
 } from '../controllers/scheduleController.js';
 import { autenticar, canAccessAgenda } from '../middlewares/authMiddleware.js';
 
@@ -16,5 +17,6 @@ router.post('/addSchedule', autenticar, canAccessAgenda, addScheduleController);
 router.delete('/deleteSchedule', autenticar, canAccessAgenda, deleteScheduleController);
 router.put('/updateSchedule/:id', autenticar, canAccessAgenda, updateScheduleController);
 router.get('/schedule/:id', autenticar, getFkUserScheduleByIdController);
+router.get('/scheduleData/:id', autenticar, getDataAgendamentoController);
 
 export default router;

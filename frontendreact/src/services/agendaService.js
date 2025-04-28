@@ -19,6 +19,24 @@ export const fetchAgendamentosFkUsuarioId = async (id) => {
     return response.json();
 }
 
+export const fetchAgendamentoData = async (id) => {
+
+    const response = await fetch(`${API_URL}/scheduleData/${id}`, {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+    }
+
+    return response.json();
+};
+
 // Função para buscar agendamentos de um usuário
 export const fetchAgendamentos = async (userId, searchParams = {}) => {
     try {

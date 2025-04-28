@@ -17,6 +17,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import EditOffIcon from '@mui/icons-material/EditOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 function Agenda() {
@@ -207,8 +208,6 @@ function Agenda() {
       <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
       <h1>{usuarioNome}</h1>
       <hr />
-      <h2>Agenda</h2>
-
       <div className="form_agenda">
         <form onSubmit={(e) => e.preventDefault()}>
           <input
@@ -235,27 +234,12 @@ function Agenda() {
         <table>
           <thead>
             <tr>
+              <td colSpan='4'><h2>AGENDA</h2></td>
+            </tr>
+            <tr>
               <td>Data</td>
               <td>Agendados</td>
-              <td>
-                <div className="vai_volta">
-                  <button
-                    className="botao_verde"
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Anterior
-                  </button>
-                  <span>Página {currentPage}</span>
-                  <button
-                    className="botao_verde"
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={!hasMorePages}
-                  >
-                    Próxima
-                  </button>
-                </div>
-              </td>
+              <td >Valor</td>
             </tr>
           </thead>
           <tbody>
@@ -286,7 +270,8 @@ function Agenda() {
                           className="botao_azul"
                           onClick={() => toggleStateById(agendamento.id_agenda, setEditingAgendamento)}
                         >
-                          <BorderColorIcon />
+                          {editingAgendamento === agendamento.id_agenda ? <EditOffIcon /> : <BorderColorIcon />}
+                          
                         </button>
                       )}
                       <button

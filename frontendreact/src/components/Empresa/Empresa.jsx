@@ -11,6 +11,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import EditOffIcon from '@mui/icons-material/EditOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import {
@@ -20,12 +21,14 @@ import {
   deleteEmpresa,
 } from "../../services/empresaService";
 
+// ...imports mantidos...
+
 function Empresa() {
   const [empresas, setEmpresas] = useState([]);
   const [searchParams, setSearchParams] = useState({ nome: "", cnpj: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState("");
-  const [editingEmpresa, setEditingEmpresa] = useState(null); // Estado para controlar a empresa sendo editada
+  const [editingEmpresaId, setEditingEmpresaId] = useState(null); // <- apenas ID
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
   const [hasMorePages, setHasMorePages] = useState(true);
@@ -54,8 +57,11 @@ function Empresa() {
     } catch (error) {
       setHasMorePages(false);
       console.error(error);
-      setError("Erro ao carregar usuários.");
     }
+  };
+
+  const toggleEditingEmpresa = (id) => {
+    setEditingEmpresaId(prevId => prevId === id ? null : id);
   };
 
   const handleAddEmpresa = async (e) => {
@@ -70,7 +76,7 @@ function Empresa() {
       e.target.cnpj.value = "";
       e.target.email.value = "";
       setError('');
-      toast.success(`Empresa ${nome} cadastrado com sucesso!`);
+      toast.success(`Empresa ${nome} cadastrada com sucesso!`);
     } catch (error) {
       setError(error.message); 
       toast.error(error.message);
@@ -105,11 +111,11 @@ function Empresa() {
     }
 
     try {
-      await updateEmpresa(editingEmpresa.id_empresa, { nome, cnpj, email });
+      await updateEmpresa(editingEmpresaId, { nome, cnpj, email });
       loadEmpresas();
-      setEditingEmpresa(null); // Fechar o formulário de edição após a atualização
+      setEditingEmpresaId(null);
       setError('');
-      toast.success(`Empresa ${nome} atualizado com sucesso!`);
+      toast.success(`Empresa ${nome} atualizada com sucesso!`);
     } catch (error) {
       console.error(error);
       setError(error.message); 
@@ -131,12 +137,9 @@ function Empresa() {
 
   return (
     <div className="conteiner_empresas_geral">
-      <ToastContainer
-        autoClose={1500}
-        pauseOnHover={false} // Fecha imediatamente ao passar o mouse
-        pauseOnFocusLoss={false} // Fecha mesmo quando a janela perde foco
-      />
-      <h1>Lista de Empresas</h1>
+      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
+      <h1>TEM UM HORÁRIO</h1>
+
       <div className="form_empresa">
         <form>
           <input
@@ -156,24 +159,24 @@ function Empresa() {
         </form>
         <hr />
         <form onSubmit={handleAddEmpresa}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Nome da Empresa"
-            required
-          />
+          <input type="text" name="name" placeholder="Nome da Empresa" required />
           <input type="text" name="cnpj" placeholder="CNPJ" required />
           <input type="text" name="email" placeholder="Email" required />
           <button className="botao_verde" type="submit">Adicionar Empresa</button>
         </form>
       </div>
+
+      <hr />
+      <h2>EMPRESAS</h2>
+      <hr />
+
       <div className="tabela_empresa">
         <table>
           <tbody>
             {empresas.length > 0 ? (
               empresas.map((empresa) => (
-                <>
-                  <tr key={empresa.id_empresa}>
+                <React.Fragment key={empresa.id_empresa}>
+                  <tr>
                     <td>{empresa.nome}</td>
                     <td>{empresa.cnpj}</td>
                     <td>{empresa.email}</td>
@@ -183,15 +186,13 @@ function Empresa() {
                         onClick={() => handleDeleteEmpresa(empresa.id_empresa, empresa.nome)}
                         disabled={deletingId === empresa.id_empresa}
                       >
-                        {deletingId === empresa.id_empresa
-                          ? "Excluindo..."
-                          : <DeleteIcon />}
+                        {deletingId === empresa.id_empresa ? "Excluindo..." : <DeleteIcon />}
                       </button>
                       <button 
                         className="botao_azul"
-                        onClick={() => setEditingEmpresa(empresa)}
+                        onClick={() => toggleEditingEmpresa(empresa.id_empresa)}
                       >
-                        <BorderColorIcon />
+                        {editingEmpresaId === empresa.id_empresa ? <EditOffIcon /> : <BorderColorIcon />}
                       </button>
                       <button
                         className="botao_verde"
@@ -201,64 +202,56 @@ function Empresa() {
                       </button>
                     </td>
                   </tr>
-                  {editingEmpresa &&
-                    editingEmpresa.id_empresa === empresa.id_empresa && (
-                      <tr>
-                        <td colSpan="4">
-                            <h2>Editar Empresa</h2>
-                          <div className="edit-empresa-form">
-                            <form
-                              className="form-atualizacao"
-                              onSubmit={handleUpdateEmpresa}
-                            >
-                              <label htmlFor="nome">Nome:</label>
-                              <input
-                                type="text"
-                                id="nome"
-                                name="nome"
-                                defaultValue={editingEmpresa.nome}
-                                required
-                              />
 
-                              <label htmlFor="cnpj">CNPJ:</label>
-                              <input
-                                type="text"
-                                id="cnpj"
-                                name="cnpj"
-                                defaultValue={editingEmpresa.cnpj}
-                                required
-                              />
-
-                              <label htmlFor="email">Email:</label>
-                              <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                defaultValue={editingEmpresa.email}
-                                required
-                              />
-                              <br />
-                              <div className="form-atualizacao_botao">
-                                <button 
-                                  type="submit"
-                                  className="botao_verde"
-                                >
-                                  <CheckIcon />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="botao-vermelho"
-                                  onClick={() => setEditingEmpresa(null)}
-                                >
-                                  <CloseIcon />
-                                </button>
-                              </div>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                </>
+                  {editingEmpresaId === empresa.id_empresa && (
+                    <tr>
+                      <td colSpan="4">
+                        <h2>Editar Empresa</h2>
+                        <div className="edit-empresa-form">
+                          <form className="form-atualizacao" onSubmit={handleUpdateEmpresa}>
+                            <label htmlFor="nome">Nome:</label>
+                            <input
+                              type="text"
+                              id="nome"
+                              name="nome"
+                              defaultValue={empresa.nome}
+                              required
+                            />
+                            <label htmlFor="cnpj">CNPJ:</label>
+                            <input
+                              type="text"
+                              id="cnpj"
+                              name="cnpj"
+                              defaultValue={empresa.cnpj}
+                              required
+                            />
+                            <label htmlFor="email">Email:</label>
+                            <input
+                              type="email"
+                              id="email"
+                              name="email"
+                              defaultValue={empresa.email}
+                              required
+                            />
+                            <br />
+                            <div className="form-atualizacao_botao">
+                              <button type="submit" className="botao_verde">
+                                <CheckIcon />
+                              </button>
+                              <button
+                                type="button"
+                                className="botao-vermelho"
+                                onClick={() => setEditingEmpresaId(null)}
+                              >
+                                <CloseIcon />
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr>
@@ -270,6 +263,7 @@ function Empresa() {
           </tbody>
         </table>
       </div>
+
       <div className="vai_volta">
         <button
           className="botao_verde"
@@ -291,3 +285,4 @@ function Empresa() {
 }
 
 export default Empresa;
+

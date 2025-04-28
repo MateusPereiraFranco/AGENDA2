@@ -18,6 +18,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import EditOffIcon from '@mui/icons-material/EditOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
@@ -212,9 +213,17 @@ function Usuario() {
           </form>
         )}
       </div>
-
+      
       <div className="tabela_usuario">
         <table>
+          <thead>
+            <tr>
+             <td colSpan="4" style={{ textAlign: "center" }}>
+               <h2>FUNCIONÁRIOS</h2>
+             </td>
+              
+            </tr>
+          </thead>
           <tbody>
             {usuarios.length > 0 ? (
               usuarios.map((usuario) => (
@@ -230,7 +239,7 @@ function Usuario() {
                             {deletingId === usuario.id_usuario ? "Excluindo..." : <DeleteIcon />}
                           </button>
                           <button className="botao_azul" onClick={() => toggleStateById(usuario.id_usuario, setEditingId)}>
-                            {editingId === usuario.id_usuario ? <VisibilityOffIcon /> : <BorderColorIcon />}
+                            {editingId === usuario.id_usuario ? <EditOffIcon /> : <BorderColorIcon />}
                           </button>
                         </>
                       )}

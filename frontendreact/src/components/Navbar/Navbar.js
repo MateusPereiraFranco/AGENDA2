@@ -127,10 +127,10 @@ const Navbar = () => {
               Trocar Senha
             </a>
 
-              <button class="logout-button" onClick={handleLogout}>
-                <LogoutIcon className="logout_icon"/>
-                <span>Logout</span>
-              </button>
+            <button className="logout-button" onClick={handleLogout}>
+              <LogoutIcon className="logout_icon" />
+              <span>Logout</span>
+            </button>
 
           </>
         )}

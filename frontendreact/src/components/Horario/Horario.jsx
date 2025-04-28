@@ -19,7 +19,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
+import { fetchAgendamentoData, fetchAgendamentos, fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
 
 
 function Horario() {
@@ -32,17 +32,19 @@ function Horario() {
   const [dataAgenda, setDataAgenda] = useState('');
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [hasMorePages, setHasMorePages] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [contato, setContato] = useState("");
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
-  
-  const tipo_usuario = localStorage.getItem("tipo_usuario");
+  const itemsPerPage = 10;
+
   const id_usuario = localStorage.getItem("id_usuario");
 
   useEffect(() => {
     loadHorarios();
     loadUsuarioNameLogado();
     getFkUsuarioIdAgendaECarregaNome();
+    getDataAgenda();
   }, [currentPage, searchParams]);
 
   // Função genérica para toggles
@@ -68,7 +70,6 @@ function Horario() {
     if (input.length > 7) {
       formattedInput += `-${input.substring(7, 11)}`;
     }
-
     setContato(formattedInput);
   };
 
@@ -82,9 +83,20 @@ function Horario() {
 
       const data = await fetchHorarios(id, params);
       setHorarios(data || []);
+      setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
+      setHasMorePages(false);
       console.error(error);
-      alert("Erro ao carregar usuários");
+    }
+  };
+
+  const getDataAgenda = async () => {
+    try {
+      const data = await fetchAgendamentoData(id);
+      setDataAgenda(data.data || "Data não encontrada");
+    }
+    catch (error) {
+      console.error("Erro ao buscar data da agenda:", error);
     }
   };
 
@@ -158,7 +170,6 @@ function Horario() {
     }
   };
 
-
   return (
     <div className="horarios_container_geral">
       <ToastContainer
@@ -167,6 +178,7 @@ function Horario() {
         pauseOnFocusLoss={false}
       />
       <h1>{usuarioNome}</h1>
+      <hr />
       <div className="form_horario">
         <form className="add_horario" onSubmit={handleAddHorario}>
           <input type="time" name="horario" placeholder="Horário" required />
@@ -185,6 +197,11 @@ function Horario() {
       </div>
       <div className="tabela_horario">
         <table>
+          <thead>
+            <tr>
+              <td colSpan='4'><h2>{dataAgenda}</h2></td>
+            </tr>
+          </thead>
           <tbody>
             {horarios.length > 0 ? (
               horarios.map((horario) => (
@@ -239,6 +256,7 @@ function Horario() {
         <button 
           className="botao_verde" 
           onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={!hasMorePages}
         >
           <KeyboardArrowRightIcon className="seta_icon" />
         </button>

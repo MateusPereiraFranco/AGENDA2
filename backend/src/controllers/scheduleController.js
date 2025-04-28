@@ -1,4 +1,4 @@
-import { getSchedules, addSchedule, deleteSchedule, updateSchedule, getScheduleById, getFkUserScheduleById } from "../models/scheduleModel.js";
+import { getSchedules, addSchedule, deleteSchedule, updateSchedule, getScheduleById, getFkUserScheduleById, getDataAgendamento } from "../models/scheduleModel.js";
 
 import Joi from 'joi';
 
@@ -36,6 +36,40 @@ export const getFkUserScheduleByIdController = async (req, res) => {
         res.json({
             success: true,
             fk_usuario_id: fkUsuarioId
+        });
+    } catch (err) {
+        console.error('Erro no controller ao buscar agendamento:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+};
+
+export const getDataAgendamentoController = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID do agendamento é obrigatório'
+            });
+        }
+
+        const data = await getDataAgendamento(id);
+
+        if (!data) {
+            return res.status(404).json({
+                success: false,
+                message: 'Agendamento não encontrado'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: data
         });
     } catch (err) {
         console.error('Erro no controller ao buscar agendamento:', err);
