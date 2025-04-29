@@ -131,7 +131,7 @@ function Horario() {
       nome: e.target.nome.value,
       contato: contato,
       observacoes: e.target.observacoes.value,
-      agendadoPor: `Agendado por ${nomeUsuarioLogado}`,
+      agendadoPor: 'Agendado por' + {nomeUsuarioLogado},
       fk_agenda_id: id,
     };
     try {
@@ -240,6 +240,7 @@ function Horario() {
                           <div className="info_horario">
                           <p><strong>Contato:</strong> {horario.contato}</p>
                           <p><strong>Obs:</strong> {horario.observacoes}</p>
+                          <p>{horario.agendadoPor}</p>
                           </div>
                         </td>
                     </tr>
