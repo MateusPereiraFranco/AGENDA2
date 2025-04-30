@@ -6,6 +6,20 @@ import scheduleRoutes from './routes/scheduleRoutes.js';
 import timeRoutes from './routes/timeRoutes.js';
 import cors from 'cors';
 import './cron/cronJobs.js';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+
+// Exemplo: máximo de 100 requisições a cada 15 minutos
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: {
+        status: 429,
+        error: 'Muitas requisições - tente novamente em alguns minutos.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 
 const app = express();
@@ -17,6 +31,17 @@ app.use(
         credentials: true, // Permite o envio de cookies
     })
 );
+app.use('/api', apiLimiter);
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", 'https://apis.google.com'],
+            objectSrc: ["'none'"],
+        },
+    },
+    crossOriginResourcePolicy: { policy: "same-origin" },
+}));
 
 app.use('/api', enterpriseRoutes);
 app.use('/api', userRoutes);

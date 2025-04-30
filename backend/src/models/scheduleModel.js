@@ -1,9 +1,9 @@
-import client from '../config/database.js'; // Importando a conexão com o banco de dados
+import pool from '../config/database.js'; // Importando a conexão com o banco de dados
 
 // Função para buscar um agendamento pelo ID
 const getScheduleById = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT id_agenda, TO_CHAR(data, \'DD/MM/YYYY\') as data, fk_usuario_id FROM agenda WHERE id_agenda = $1',
             [id]
         );
@@ -16,7 +16,7 @@ const getScheduleById = async (id) => {
 
 const getFkUserScheduleById = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT fk_usuario_id FROM agenda WHERE id_agenda = $1',
             [id]
         );
@@ -34,7 +34,7 @@ const getFkUserScheduleById = async (id) => {
 
 const getDataAgendamento = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT TO_CHAR(data, \'DD/MM/YYYY\') as data FROM agenda WHERE id_agenda = $1',
             [id]
         );
@@ -107,7 +107,7 @@ const getSchedules = async ({
         query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
         params.push(limit, offset);
 
-        const result = await client.query(query, params);
+        const result = await pool.query(query, params);
         return result.rows;
     } catch (err) {
         console.error('Erro ao buscar agendas:', err);
@@ -119,7 +119,7 @@ const getSchedules = async ({
 // Função para adicionar um nova agenda
 const addSchedule = async (data, fk_usuario_id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'INSERT INTO agenda (data, fk_usuario_id) VALUES ($1, $2) RETURNING *',
             [data, fk_usuario_id]
         );
@@ -132,7 +132,7 @@ const addSchedule = async (data, fk_usuario_id) => {
 
 const deleteSchedule = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'DELETE FROM agenda WHERE id_agenda = ($1) RETURNING *',
             [id]
         );
@@ -146,7 +146,7 @@ const deleteSchedule = async (id) => {
 
 const updateSchedule = async (id, data, fk_usuario_id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'UPDATE agenda SET data = $1, fk_usuario_id = $2 WHERE id_agenda = $3 RETURNING *',
             [data, fk_usuario_id, id]
         );

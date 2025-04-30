@@ -1,12 +1,12 @@
 import cron from 'node-cron';
-import client from '../config/database.js';
+import pool from '../config/database.js';
 
 
 // Limpa tokens expirados ou já usados a cada hora
 cron.schedule('0 0 * * *', async () => {
     console.log('⏰ Rodando limpeza de reset_token...');
     try {
-        const result = await client.query(`
+        const result = await pool.query(`
             DELETE FROM reset_token
             WHERE expires_at < NOW() OR usado = TRUE;
         `);

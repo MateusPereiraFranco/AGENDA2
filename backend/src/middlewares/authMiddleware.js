@@ -3,25 +3,19 @@ import { getUsuarioById } from '../models/userModel.js'
 import { getFkUserScheduleById } from '../models/scheduleModel.js';
 
 const autenticar = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.cookies.access_token;
 
-    if (!token) {
-        return res.status(401).json({ message: 'Não autorizado' });
-    }
+    if (!token) return res.status(401).json({ message: 'Não autenticado' });
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = {
-            id_usuario: decoded.id,
-            email: decoded.email,
-            tipo_usuario: decoded.tipo_usuario,
-            fk_empresa_id: decoded.fk_empresa_id // Adicione esta linha
-        };
+        req.user = decoded;
         next();
     } catch (err) {
-        return res.status(401).json({ message: 'Token inválido' });
+        return res.status(401).json({ message: 'Token expirado. Use refresh token.' });
     }
 };
+
 
 const isAdminOrManager = async (req, res, next) => {
     const allowedRoles = ['admin', 'gerente', 'secretario'];
@@ -54,11 +48,14 @@ const isAdminOrManager = async (req, res, next) => {
                     idUser = req.body.id
                 }
                 else {
-                    res.status(403).json({
+                    return res.status(403).json({
                         message: 'Acesso negado. nenhum id passado.'
                     });
                 }
                 const user = await getUsuarioById(idUser);
+                if (!user) {
+                    return res.status(404).json({ message: 'Usuário não encontrado' });
+                }
                 targetCompanyId = user.fk_empresa_id
             }
             else {
@@ -68,7 +65,7 @@ const isAdminOrManager = async (req, res, next) => {
             }
 
         } else {
-            res.status(403).json({
+            return res.status(403).json({
                 message: 'Acesso negado. Apenas gerente pode deletar, adicionar e atualizar.'
             });
         }
@@ -105,14 +102,14 @@ const canAccessAgenda = async (req, res, next) => {
             if (req.query.fk_usuario_id) {
                 targetUserId = req.query.fk_usuario_id;
             } else {
-                return null
+                return res.status(400).json({ message: 'Busca inválida' });
             }
         } else if (req.method === 'PUT') {
             if (req.body.fk_usuario_id) {
                 targetUserId = req.body.fk_usuario_id;
             }
             else {
-                res.status(403).json({
+                return res.status(403).json({
                     message: 'Acesso negado. nenhum id passado.'
                 });
             }
@@ -123,12 +120,19 @@ const canAccessAgenda = async (req, res, next) => {
                     targetUserId = await getFkUserScheduleById(req.body.id);
                 } catch (error) {
                     console.error('Erro ao buscar fk_usuario_id:', error);
+                    return res.status(400).json({ message: 'ID de usuário alvo não fornecido' });
                 }
             }
         } else if (req.method === 'POST') {
             if (req.body.fk_usuario_id) {
                 targetUserId = req.body.fk_usuario_id
             }
+        }
+
+        if (!targetUserId) {
+            return res.status(403).json({
+                message: 'ID de usuário alvo não fornecido'
+            });
         }
 
         // O usuario pode acessar a própria agenda

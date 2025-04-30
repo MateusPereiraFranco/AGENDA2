@@ -1,9 +1,9 @@
-import client from '../config/database.js'; // Importando a conexão com o banco de dados
+import pool from '../config/database.js'; // Importando a conexão com o banco de dados
 
 const getEnterpriseName = async (id) => {
     try {
 
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT nome FROM empresa WHERE id_empresa = $1',
             [id]
         );
@@ -54,7 +54,7 @@ const getEnterprises = async ({ id, nome, cnpj, telefone, email, page = 1, limit
         query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
         params.push(limit, offset);
 
-        const result = await client.query(query, params);
+        const result = await pool.query(query, params);
         return result.rows;
     } catch (err) {
         console.error('Erro ao buscar empresas:', err);
@@ -65,7 +65,7 @@ const getEnterprises = async ({ id, nome, cnpj, telefone, email, page = 1, limit
 // Função para adicionar um nova empresa
 const addEnterprise = async (nome, cnpj, telefone, email) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'INSERT INTO empresa (nome, cnpj, telefone, email) VALUES ($1, $2, $3, $4) RETURNING *',
             [nome, cnpj, telefone, email]
         );
@@ -78,7 +78,7 @@ const addEnterprise = async (nome, cnpj, telefone, email) => {
 
 const deleteEnterprise = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'DELETE FROM empresa WHERE id_empresa = ($1) RETURNING *',
             [id]
         );
@@ -92,7 +92,7 @@ const deleteEnterprise = async (id) => {
 
 const updateEnterprise = async (id, nome, cnpj, telefone, email) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'UPDATE empresa SET nome = $1, cnpj = $2, telefone = $3, email = $4 WHERE id_empresa = $5 RETURNING *',
             [nome, cnpj, telefone, email, id]
         );

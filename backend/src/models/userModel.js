@@ -1,9 +1,9 @@
-import client from '../config/database.js'; // Importando a conexão com o banco de dados
+import pool from '../config/database.js'; // Importando a conexão com o banco de dados
 import bcrypt from 'bcrypt';
 
 
 const updatePassword = async (userId, hashedPassword) => {
-    const result = await client.query(
+    const result = await pool.query(
         'UPDATE usuario SET senha = $1 WHERE id_usuario = $2',
         [hashedPassword, userId]
     );
@@ -13,7 +13,7 @@ const updatePassword = async (userId, hashedPassword) => {
 const getUserName = async (id) => {
     try {
 
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT nome FROM usuario WHERE id_usuario = $1',
             [id]
         );
@@ -27,7 +27,7 @@ const getUserName = async (id) => {
 
 const getUsuarioById = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT id_usuario, fk_empresa_id FROM usuario WHERE id_usuario = $1',
             [id]
         );
@@ -41,7 +41,7 @@ const getUsuarioById = async (id) => {
 // Função para buscar um usuário por email
 const getUserByEmail = async (email) => {
     try {
-        const result = await client.query('SELECT * FROM usuario WHERE email = $1', [email]);
+        const result = await pool.query('SELECT * FROM usuario WHERE email = $1', [email]);
         return result.rows[0]; // Retorna o usuário encontrado
     } catch (err) {
         console.error('Erro ao buscar usuário por email:', err);
@@ -100,7 +100,7 @@ const getUsers = async ({ id, nome, email, senha, fk_empresa_id, tipo_usuario, p
         query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
         params.push(limit, offset);
 
-        const result = await client.query(query, params);
+        const result = await pool.query(query, params);
         return result.rows;
     } catch (err) {
         console.error('Erro ao buscar usuários:', err);
@@ -115,7 +115,7 @@ const addUser = async (nome, email, senha, fk_empresa_id, tipo_usuario) => {
     try {
         const hashedSenha = await bcrypt.hash(senha, saltRounds);
 
-        const result = await client.query(
+        const result = await pool.query(
             `INSERT INTO usuario 
             (nome, email, senha, fk_empresa_id, tipo_usuario) 
             VALUES ($1, $2, $3, $4, $5) 
@@ -133,7 +133,7 @@ const addUser = async (nome, email, senha, fk_empresa_id, tipo_usuario) => {
 
 const deleteUser = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'DELETE FROM usuario WHERE id_usuario = ($1) RETURNING *',
             [id]
         );
@@ -147,7 +147,7 @@ const deleteUser = async (id) => {
 
 const updateUser = async (id, nome, email, tipo_usuario) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'UPDATE usuario SET nome = $1, email = $2, tipo_usuario = $3 WHERE id_usuario = $4 RETURNING *',
             [nome, email, tipo_usuario, id]
         );

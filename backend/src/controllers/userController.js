@@ -1,6 +1,7 @@
 import { getUsers, addUser, deleteUser, updateUser, getUserByEmail, verifyPassword, getUserName, updatePassword } from "../models/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import pool from '../config/database.js';
 
 import Joi from 'joi';
 
@@ -36,6 +37,7 @@ const checkAuthController = async (req, res) => {
                 id: decoded.id,
                 email: decoded.email,
                 tipo_usuario: decoded.tipo_usuario,
+                fk_empresa_id: decoded.fk_empresa_id,
             },
         });
     } catch (err) {
@@ -45,6 +47,44 @@ const checkAuthController = async (req, res) => {
     }
 };
 
+
+const refreshTokenController = async (req, res) => {
+    const refreshToken = req.cookies.refresh_token;
+
+    if (!refreshToken) return res.status(401).json({ message: 'Refresh token não fornecido' });
+
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+        // Verifica se o token está revogado
+        const { rows } = await pool.query(`
+            SELECT * FROM refresh_token WHERE token = $1 AND revoked = FALSE AND expires_at > NOW()`,
+            [refreshToken]);
+
+        if (rows.length === 0) return res.status(403).json({ message: 'Refresh token inválido ou expirado' });
+
+        const newAccessToken = jwt.sign({
+            id: decoded.id,
+            email: decoded.email,
+            tipo_usuario: decoded.tipo_usuario
+        }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+        res.cookie('access_token', newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000,
+        });
+
+        res.status(200).json({ message: 'Access token renovado' });
+
+    } catch (err) {
+        console.error('Erro ao renovar token:', err);
+        res.status(403).json({ message: 'Token inválido ou expirado' });
+    }
+};
+
+
 const loginController = async (req, res) => {
     const { email, senha } = req.body;
 
@@ -53,35 +93,39 @@ const loginController = async (req, res) => {
     }
 
     try {
-        // Busca o usuário pelo email
         const user = await getUserByEmail(email);
-        if (!user) {
-            return res.status(401).json({ message: 'Email ou senha incorretos' });
-        }
+        if (!user) return res.status(401).json({ message: 'Email ou senha incorretos' });
 
-        // Verifica a senha
         const senhaValida = await verifyPassword(senha, user.senha);
-        if (!senhaValida) {
-            return res.status(401).json({ message: 'Email ou senha incorretos' });
-        }
+        if (!senhaValida) return res.status(401).json({ message: 'Email ou senha incorretos' });
 
-        // Gera um token JWT
-        const token = jwt.sign(
-            { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario, fk_empresa_id: user.fk_empresa_id },
-            process.env.JWT_SECRET,
-            { expiresIn: '3h' }
-        );
+        // Tokens
+        const payload = { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario, fk_empresa_id: user.fk_empresa_id };
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
+        // Salva refresh no banco
+        await pool.query(`
+            INSERT INTO refresh_token (user_id, token, expires_at)
+            VALUES ($1, $2, NOW() + INTERVAL '7 days')`,
+            [user.id_usuario, refreshToken]);
 
-        // Configura o cookie seguro
-        res.cookie('token', token, {
-            httpOnly: true, // Impede acesso via JavaScript
-            secure: process.env.NODE_ENV === 'production', // Só envia o cookie em HTTPS em produção
-            sameSite: 'strict', // Protege contra ataques CSRF
-            maxAge: 10800000, // Expira em 3 hora (em milissegundos)
+        // Envia access no cookie HTTP-only
+        res.cookie('access_token', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000,
         });
 
-        // Retorna uma resposta de sucesso sem o token no corpo
+        // Envia refresh no cookie separado
+        res.cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
         res.status(200).json({ message: 'Login bem-sucedido', user: { id: user.id_usuario, email: user.email } });
 
     } catch (err) {
@@ -91,13 +135,26 @@ const loginController = async (req, res) => {
 };
 
 
-const logoutController = (req, res) => {
-    res.clearCookie('token'); // Remove o cookie
+
+const logoutController = async (req, res) => {
+    const refreshToken = req.cookies.refresh_token;
+
+    if (refreshToken) {
+        try {
+            await pool.query(`UPDATE refresh_token SET revoked = TRUE WHERE token = $1`, [refreshToken]);
+        } catch (err) {
+            console.error('Erro ao revogar token:', err);
+        }
+    }
+
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
     res.status(200).json({ message: 'Logout bem-sucedido' });
 };
 
 const updatePasswordController = async (req, res) => {
-    const token = req.cookies.token;
+    const token = req.cookies.access_token; // Corrigido nome do cookie
+
     if (!token) {
         return res.status(401).json({ message: 'Não autenticado' });
     }
@@ -109,8 +166,12 @@ const updatePasswordController = async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verifica o access token
         const user = await getUserByEmail(decoded.email);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
 
         const valid = await verifyPassword(currentPassword, user.senha);
         if (!valid) {
@@ -118,7 +179,7 @@ const updatePasswordController = async (req, res) => {
         }
 
         const hashedNewPassword = await bcrypt.hash(newPassword, parseInt(process.env.BCRYPT_SALT_ROUNDS));
-        await updatePassword(decoded.id, hashedNewPassword);
+        await updatePassword(user.id_usuario, hashedNewPassword); // Usa id do banco
 
         return res.status(200).json({ message: 'Senha atualizada com sucesso' });
     } catch (err) {
@@ -283,4 +344,5 @@ export {
     getUserByEmailController,
     getUserNameController,
     updatePasswordController,
+    refreshTokenController,
 }

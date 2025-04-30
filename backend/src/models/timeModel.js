@@ -1,9 +1,9 @@
-import client from '../config/database.js'; // Importando a conexão com o banco de dados
+import pool from '../config/database.js'; // Importando a conexão com o banco de dados
 
 
 export const getTimeById = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'SELECT * FROM horario WHERE id_horario = $1',
             [id]
         );
@@ -63,7 +63,7 @@ const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes,
         query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
         params.push(limit, offset);
 
-        const result = await client.query(query, params);
+        const result = await pool.query(query, params);
         return result.rows;
     } catch (err) {
         console.error('Erro ao buscar horários:', err);
@@ -74,7 +74,7 @@ const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes,
 // Função para adicionar um novo horario
 const addTime = async (fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'INSERT INTO horario (fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
             [fk_agenda_id, horario, nome, contato, observacoes, agendadoPor]
         );
@@ -87,7 +87,7 @@ const addTime = async (fk_agenda_id, horario, nome, contato, observacoes, agenda
 
 const deleteTime = async (id) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'DELETE FROM horario WHERE id_horario = ($1) RETURNING *',
             [id]
         );
@@ -101,7 +101,7 @@ const deleteTime = async (id) => {
 
 const updateTime = async (id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) => {
     try {
-        const result = await client.query(
+        const result = await pool.query(
             'UPDATE horario SET fk_agenda_id = $1, horario = $2, nome = $3, contato = $4, observacoes =$5, agendadoPor =$6 WHERE id_horario = $7 RETURNING *',
             [fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, id]
         );

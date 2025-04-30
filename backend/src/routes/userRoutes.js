@@ -10,7 +10,9 @@ import {
     getUserByEmailController,
     getUserNameController,
     updatePasswordController,
+    refreshTokenController
 } from '../controllers/userController.js';
+
 import { autenticar, isAdminOrManager } from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
 import { requestReset, resetPassword, verifyToken } from '../controllers/resetController.js';
 
@@ -30,6 +32,7 @@ router.get('/check-auth', checkAuthController);
 router.get('/usuarioName', autenticar, getUserNameController)
 router.put('/update-password', updatePasswordController);
 
+router.post('/refresh-token', refreshTokenController);
 // resetPasswordRoutes
 router.post('/reset-request', requestReset);
 router.post('/verify-token', verifyToken);
