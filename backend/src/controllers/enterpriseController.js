@@ -45,9 +45,17 @@ const addEnterpriseController = async (req, res) => {
     try {
         const newEnterprise = await addEnterprise(nome, cnpj, telefone, email);
         res.status(201).json(newEnterprise);
+
     } catch (err) {
-        console.error('Erro ao adicionar empresa:', err);
-        res.status(500).send('Erro ao adicionar empresa');
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Este CNPJ já está cadastrado'
+            });
+        }
+
+        res.status(500).json({
+            error: 'Erro ao cadastrar empresa'
+        });
     }
 };
 
@@ -89,6 +97,11 @@ const updateEnterpriseController = async (req, res) => {
 
         res.status(200).json({ message: 'Empresa atualizada com sucesso!', enterprise });
     } catch (err) {
+        if (err.code === '23505') {
+            return res.status(409).json({
+                error: 'Este CNPJ já está cadastrado'
+            });
+        }
         console.error('Erro ao atualizar empresa:', err);
         res.status(500).send('Erro ao atualizar empresa');
     }

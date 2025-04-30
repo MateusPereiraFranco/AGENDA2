@@ -66,28 +66,29 @@ function Login() {
     <div className="login-container">
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        <div className="form-group1">
-          <label>Email:</label>
+        <div>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder='E-mail'
             required
           />
         </div>
         <div>
           <SenhaInput
-            label="Senha:"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
+            placeholder='Senha'
             required
           />
         </div>
-        <button className="botao_verde" type="submit">Entrar</button>
+        <button id='botaoAtuSen' className="botao_verde" type="submit">Entrar</button>
       </form>
 
       <div>
         <button
+          id='botaoAtuSen'
           className='botao_esqueciSenha'
           onClick={() => navigate('/forgot-password')}
         >

@@ -18,7 +18,6 @@ function SenhaInput({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '12px'
       }}>
       {label && <label>{label}</label>}
       <input

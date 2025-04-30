@@ -50,13 +50,16 @@ export const addEmpresa = async (empresa) => {
             body: JSON.stringify(empresa),
             credentials: 'include',
         });
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Erro ao adicionar empresa');
+            throw new Error(data.error || 'Erro ao cadastrar usuário');
         }
-        return response.json();
+
+        return data;
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao adicionar empresa:', error.message);
+        throw error;
     }
 };
 
@@ -69,13 +72,16 @@ export const updateEmpresa = async (id, empresa) => {
             body: JSON.stringify(empresa),
             credentials: 'include',
         });
+        const data = await response.json(); // 👈 importante!
+
         if (!response.ok) {
-            throw new Error('Erro ao atualizar empresa');
+            throw new Error(data.error || 'Erro ao atualizar empresa');
         }
-        return response.json();
+
+        return data;
     } catch (error) {
-        handleError(error);
-        return null;
+        console.error('Erro ao atualizar empresa:', error.message);
+        throw error;
     }
 };
 

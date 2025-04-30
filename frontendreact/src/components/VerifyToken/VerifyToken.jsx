@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../../services/apiConfig';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../services/apiConfig";
 
 function VerifyToken() {
-  const [token, setToken] = useState('');
-  const [erro, setErro] = useState('');
-  const [mensagem, setMensagem] = useState('');
+  const [token, setToken] = useState("");
+  const [erro, setErro] = useState("");
+  const [mensagem, setMensagem] = useState("");
   const [tempoRestante, setTempoRestante] = useState(0);
   const [reenviando, setReenviando] = useState(false);
 
   const navigate = useNavigate();
-  const email = localStorage.getItem('recovery_email');
-  const expiresAt = parseInt(localStorage.getItem('recovery_expires'), 10); // 🧠 agora usa o valor real
+  const email = localStorage.getItem("recovery_email");
+  const expiresAt = parseInt(localStorage.getItem("recovery_expires"), 10); // 🧠 agora usa o valor real
 
   useEffect(() => {
     if (!email || !expiresAt) {
-      navigate('/forgot-password');
+      navigate("/forgot-password");
     }
 
     const updateTimer = () => {
@@ -31,40 +31,40 @@ function VerifyToken() {
   const formatTime = (seconds) => {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
+    return `${min}:${sec.toString().padStart(2, "0")}`;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro('');
-    setMensagem('');
+    setErro("");
+    setMensagem("");
 
     try {
       const response = await fetch(`${API_URL}/verify-token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, token }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
 
-      localStorage.setItem('recovery_token', token);
-      navigate('/reset-password');
+      localStorage.setItem("recovery_token", token);
+      navigate("/reset-password");
     } catch (err) {
-      setErro(err.message || 'Erro ao verificar código');
+      setErro(err.message || "Erro ao verificar código");
     }
   };
 
   const handleReenviarCodigo = async () => {
-    setErro('');
-    setMensagem('');
+    setErro("");
+    setMensagem("");
     setReenviando(true);
 
     try {
       const response = await fetch(`${API_URL}/reset-request`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
@@ -72,27 +72,35 @@ function VerifyToken() {
       if (!response.ok) throw new Error(data.message);
 
       const novoExpira = Date.now() + 10 * 60 * 1000;
-      localStorage.setItem('recovery_expires', novoExpira);
+      localStorage.setItem("recovery_expires", novoExpira);
 
-      setMensagem('Novo código enviado para seu email.');
+      setMensagem("Novo código enviado para seu email.");
     } catch (err) {
-      setErro(err.message || 'Erro ao reenviar código');
+      setErro(err.message || "Erro ao reenviar código");
     } finally {
       setReenviando(false);
     }
   };
 
   return (
-    <div className='vt_conteiner'>
+    <div className="vt_conteiner">
       <h2>Verificar Código</h2>
 
       {tempoRestante > 0 ? (
-        <p>Tempo restante: <strong>{formatTime(tempoRestante)}</strong></p>
+        <p>
+          Tempo restante: <strong>{formatTime(tempoRestante)}</strong>
+        </p>
       ) : (
         <>
-          <p style={{ color: 'orange' }}>Tempo expirado. Solicite um novo código.</p>
-          <button className='botao_verde' onClick={handleReenviarCodigo} disabled={reenviando}>
-            {reenviando ? 'Reenviando...' : 'Reenviar código'}
+          <p style={{ color: "orange" }}>
+            Tempo expirado. Solicite um novo código.
+          </p>
+          <button
+            className="botao_verde"
+            onClick={handleReenviarCodigo}
+            disabled={reenviando}
+          >
+            {reenviando ? "Reenviando..." : "Reenviar código"}
           </button>
         </>
       )}
@@ -105,13 +113,18 @@ function VerifyToken() {
           onChange={(e) => setToken(e.target.value)}
           required
         />
-        <button className='botao_verde' type="submit" disabled={tempoRestante <= 0}>
+        <button
+          id="botaoAtuSen"
+          className="botao_verde"
+          type="submit"
+          disabled={tempoRestante <= 0}
+        >
           Verificar
         </button>
       </form>
 
-      {mensagem && <p style={{ color: 'green' }}>{mensagem}</p>}
-      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+      {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
+      {erro && <p style={{ color: "red" }}>{erro}</p>}
     </div>
   );
 }

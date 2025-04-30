@@ -9,11 +9,15 @@ import {
   updateAgendamento,
 } from "../../services/agendaService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
+
+//icons
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
-
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function Agenda() {
   const { id } = useParams();
@@ -28,8 +32,18 @@ function Agenda() {
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
-  const [loading, setLoading] = useState(false); // Novo estado
+  const [loading, setLoading] = useState(false);
   const itemsPerPage = 10;
+
+  const toggleStateById = (id, setState) => {
+    setState(prev => {
+      if (prev === null || typeof prev !== 'object') {
+        return prev === id ? null : id;
+      } else {
+        return { ...prev, [id]: !prev[id] };
+      }
+    });
+  };
 
   const getDataHoje = () => {
     const hoje = new Date();
@@ -59,7 +73,7 @@ function Agenda() {
       return;
     }
 
-    setLoading(true); // inicia o carregamento
+    setLoading(true);
 
     try {
       const params = {
@@ -78,7 +92,7 @@ function Agenda() {
       console.error("Erro ao carregar agendamentos:", error);
       toast.error(error.message || "Erro ao carregar agendamentos");
     } finally {
-      setLoading(false); // finaliza o carregamento
+      setLoading(false);
     }
   };
 
@@ -121,7 +135,7 @@ function Agenda() {
       loadAgendamentos();
       e.target.reset();
     } catch (error) {
-      setError(error.message); 
+      setError(error.message);
       toast.error(error.message);
     }
   };
@@ -145,7 +159,6 @@ function Agenda() {
   const handleUpdateAgendamento = async (e) => {
     e.preventDefault();
     const data = e.target.data.value;
-    const fk_usuario_id = editingAgendamento.fk_usuario_id;
 
     if (!data) {
       toast.error("O campo de data é obrigatório!");
@@ -153,15 +166,24 @@ function Agenda() {
     }
 
     try {
-      await updateAgendamento(editingAgendamento.id_agenda, {
+      const agendamentoParaAtualizar = agendamentos.find(
+        (ag) => ag.id_agenda === editingAgendamento
+      );
+
+      if (!agendamentoParaAtualizar) {
+        toast.error("Agendamento não encontrado!");
+        return;
+      }
+
+      await updateAgendamento(editingAgendamento, {
         data,
-        fk_usuario_id,
+        fk_usuario_id: agendamentoParaAtualizar.fk_usuario_id,
       });
       toast.success("Agendamento atualizado!");
       loadAgendamentos();
       setEditingAgendamento(null);
     } catch (error) {
-      setError(error.message); 
+      setError(error.message);
       toast.error(error.message);
     }
   };
@@ -251,11 +273,18 @@ function Agenda() {
                       {agendamento.data}
                     </td>
                     <td>{agendamento.total_horarios}</td>
-                    <td>
+                    <td className="botaoNoCanto">
+                      <button
+                        className="botao-vermelho"
+                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
+                        disabled={deletingId === agendamento.id_agenda}
+                      >
+                        {deletingId === agendamento.id_agenda ? "Excluindo..." : <DeleteIcon />}
+                      </button>
                       {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <button
-                          className="botao_verde"
-                          onClick={() => setEditingAgendamento(agendamento)}
+                          className="botao_azul"
+                          onClick={() => toggleStateById(agendamento.id_agenda, setEditingAgendamento)}
                         >
                           <BorderColorIcon />
                         </button>
@@ -264,29 +293,23 @@ function Agenda() {
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}
                       >
-                        <VisibilityIcon />
-                      </button>
-                      <button
-                        className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
-                        disabled={deletingId === agendamento.id_agenda}
-                      >
-                        {deletingId === agendamento.id_agenda ? "Excluindo..." : <CloseIcon />}
+                        <KeyboardArrowRightIcon />
                       </button>
                     </td>
                   </tr>
-                  {editingAgendamento &&
-                    editingAgendamento.id_agenda === agendamento.id_agenda && (
-                      <tr className="editando_agendamento">
-                        <td colSpan="2">
-                          <form className="form-atualizacao" onSubmit={handleUpdateAgendamento}>
-                            <label htmlFor="data">Nova Data:</label>
-                            <input
-                              type="date"
-                              name="data"
-                              defaultValue={editingAgendamento.data}
-                              required
-                            />
+                  {editingAgendamento === agendamento.id_agenda && (
+                    <tr>
+                      <td colSpan="3">
+                        <form className="form-atualizacao" onSubmit={handleUpdateAgendamento}>
+                          <label htmlFor="data">Nova Data:</label>
+                          <input
+                            type="date"
+                            name="data"
+                            defaultValue={agendamento.data}
+                            required
+                          />
+                          <br />
+                          <div className="form-atualizacao_botao">
                             <button className="botao_verde" type="submit"><CheckIcon /></button>
                             <button
                               type="button"
@@ -295,10 +318,11 @@ function Agenda() {
                             >
                               <CloseIcon />
                             </button>
-                          </form>
-                        </td>
-                      </tr>
-                    )}
+                          </div>
+                        </form>
+                      </td>
+                    </tr>
+                  )}
                 </React.Fragment>
               ))
             ) : (
@@ -318,7 +342,7 @@ function Agenda() {
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Anterior
+          <KeyboardArrowLeftIcon className="seta_icon" />
         </button>
         <span>Página {currentPage}</span>
         <button
@@ -326,7 +350,7 @@ function Agenda() {
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={!hasMorePages}
         >
-          Próxima
+          <KeyboardArrowRightIcon className="seta_icon" />
         </button>
       </div>
     </div>

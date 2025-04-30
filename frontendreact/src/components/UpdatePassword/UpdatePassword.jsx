@@ -78,6 +78,7 @@ const UpdatePassword = () => {
         )}
 
         <button
+          id = 'botaoAtuSen'
           className='botao_verde'
           type="submit"
           disabled={!senhasCoincidem}

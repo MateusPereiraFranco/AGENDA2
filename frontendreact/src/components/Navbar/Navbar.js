@@ -12,8 +12,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import LogoutIcon from "@mui/icons-material/Logout"; // Ícone para o logout
 import PhoneRoundedIcon from "@mui/icons-material/PhoneRounded";
-import CommentRoundedIcon from "@mui/icons-material/CommentRounded";
-import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
+import KeyIcon from '@mui/icons-material/Key';
 import {
   Box,
   Drawer,
@@ -104,11 +103,6 @@ const Navbar = () => {
       path: "/about",
     },
     {
-      text: "Testimonials",
-      icon: <CommentRoundedIcon />,
-      path: "/testimonials",
-    },
-    {
       text: "Contact",
       icon: <PhoneRoundedIcon />,
       path: "/contact",
@@ -132,9 +126,12 @@ const Navbar = () => {
             <a onClick={handleNavigateToChangePassword} style={{ cursor: "pointer" }}>
               Trocar Senha
             </a>
-            <button className="logout-button" onClick={handleLogout}>
-              <LogoutIcon /> Logout
-            </button>
+
+              <button class="logout-button" onClick={handleLogout}>
+                <LogoutIcon className="logout_icon"/>
+                <span>Logout</span>
+              </button>
+
           </>
         )}
       </div>
@@ -163,7 +160,7 @@ const Navbar = () => {
                 <ListItem disablePadding>
                   <ListItemButton onClick={handleNavigateToChangePassword}>
                     <ListItemIcon>
-                      <ShoppingCartRoundedIcon /> {/* Ou outro ícone como KeyRoundedIcon */}
+                      <KeyIcon /> {/* Ou outro ícone como KeyRoundedIcon */}
                     </ListItemIcon>
                     <ListItemText primary="Trocar Senha" />
                   </ListItemButton>

@@ -150,6 +150,7 @@ function ResetPassword() {
         )}
 
         <button
+          id='botaoAtuSen'
           className='botao_verde'
           type="submit"
           disabled={tempoRestante <= 0 || !senhasCoincidem}

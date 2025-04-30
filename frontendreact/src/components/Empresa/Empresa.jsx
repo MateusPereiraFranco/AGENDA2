@@ -2,6 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+//icons
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import {
   fetchEmpresas,
   addEmpresa,
@@ -13,6 +24,7 @@ function Empresa() {
   const [empresas, setEmpresas] = useState([]);
   const [searchParams, setSearchParams] = useState({ nome: "", cnpj: "" });
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState("");
   const [editingEmpresa, setEditingEmpresa] = useState(null); // Estado para controlar a empresa sendo editada
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
@@ -42,7 +54,7 @@ function Empresa() {
     } catch (error) {
       setHasMorePages(false);
       console.error(error);
-      alert("Erro ao carregar empresas");
+      setError("Erro ao carregar usuários.");
     }
   };
 
@@ -57,20 +69,22 @@ function Empresa() {
       e.target.name.value = "";
       e.target.cnpj.value = "";
       e.target.email.value = "";
+      setError('');
+      toast.success(`Empresa ${nome} cadastrado com sucesso!`);
     } catch (error) {
-      console.error(error);
-      alert("Erro ao adicionar empresa");
+      setError(error.message); 
+      toast.error(error.message);
     }
   };
 
-  const handleDeleteEmpresa = async (id) => {
+  const handleDeleteEmpresa = async (id, nome) => {
     if (!window.confirm("Tem certeza que deseja excluir esta empresa?")) return;
 
     setDeletingId(id);
     try {
       await deleteEmpresa(id);
       await loadEmpresas();
-      toast.success("Empresa excluída");
+      toast.success(`Empresa ${nome} excluída`);
     } catch (error) {
       console.error(error);
       toast.error("Erro ao excluir empresa");
@@ -94,10 +108,12 @@ function Empresa() {
       await updateEmpresa(editingEmpresa.id_empresa, { nome, cnpj, email });
       loadEmpresas();
       setEditingEmpresa(null); // Fechar o formulário de edição após a atualização
-      alert("Empresa atualizada com sucesso!");
+      setError('');
+      toast.success(`Empresa ${nome} atualizado com sucesso!`);
     } catch (error) {
       console.error(error);
-      alert("Erro ao atualizar empresa");
+      setError(error.message); 
+      toast.error(error.message);
     }
   };
 
@@ -161,35 +177,36 @@ function Empresa() {
                     <td>{empresa.nome}</td>
                     <td>{empresa.cnpj}</td>
                     <td>{empresa.email}</td>
-                    <td>
+                    <td className="botaoNoCanto">
                       <button
                         className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(empresa.id_empresa)}
+                        onClick={() => handleDeleteEmpresa(empresa.id_empresa, empresa.nome)}
                         disabled={deletingId === empresa.id_empresa}
                       >
                         {deletingId === empresa.id_empresa
                           ? "Excluindo..."
-                          : "Excluir"}
+                          : <DeleteIcon />}
                       </button>
                       <button 
-                        className="botao_verde"
-                        onClick={() => setEditingEmpresa(empresa)}>
-                        Atualizar
+                        className="botao_azul"
+                        onClick={() => setEditingEmpresa(empresa)}
+                      >
+                        <BorderColorIcon />
                       </button>
                       <button
                         className="botao_verde"
                         onClick={() => handleVerEmpresa(empresa.id_empresa)}
                       >
-                        Ver Empresa
+                        <KeyboardArrowRightIcon className="seta_icon" />
                       </button>
                     </td>
                   </tr>
                   {editingEmpresa &&
                     editingEmpresa.id_empresa === empresa.id_empresa && (
-                      <tr className="editando_empresa">
+                      <tr>
                         <td colSpan="4">
-                          <div className="edit-empresa-form">
                             <h2>Editar Empresa</h2>
+                          <div className="edit-empresa-form">
                             <form
                               className="form-atualizacao"
                               onSubmit={handleUpdateEmpresa}
@@ -226,14 +243,14 @@ function Empresa() {
                                   type="submit"
                                   className="botao_verde"
                                 >
-                                  Salvar
+                                  <CheckIcon />
                                 </button>
                                 <button
                                   type="button"
                                   className="botao-vermelho"
                                   onClick={() => setEditingEmpresa(null)}
                                 >
-                                  Cancelar
+                                  <CloseIcon />
                                 </button>
                               </div>
                             </form>
@@ -259,14 +276,14 @@ function Empresa() {
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Anterior
+          <KeyboardArrowLeftIcon className="seta_icon" />
         </button>
         <button 
           className="botao_verde"
-          onClick={() => setCurrentPage(currentPage + 1)} 
+          onClick={() => setCurrentPage(currentPage + 1)}
           disabled={!hasMorePages}
         >
-          Próxima
+          <KeyboardArrowRightIcon className="seta_icon" />
         </button>
       </div>
     </div>
