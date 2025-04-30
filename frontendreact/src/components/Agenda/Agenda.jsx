@@ -15,6 +15,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import EditOffIcon from '@mui/icons-material/EditOff';
@@ -263,7 +264,7 @@ function Agenda() {
                         onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
                         disabled={deletingId === agendamento.id_agenda}
                       >
-                        {deletingId === agendamento.id_agenda ? "Excluindo..." : <DeleteIcon />}
+                        {deletingId === agendamento.id_agenda ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
                       </button>
                       {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <button

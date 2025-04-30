@@ -476,6 +476,21 @@ nav:hover{
   min-width: 100px;
 }
 
+.loading {
+  animation: spin 1s linear infinite;
+  transform-origin: center; /* Gira no próprio eixo */
+}
+
+/* bagui que gira */
+@keyframes spin {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
 /* Responsividade */
 /*Navbar*/
 @media (max-width: 1000px) {

@@ -15,6 +15,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
@@ -236,7 +237,7 @@ function Usuario() {
                       {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <>
                           <button className="botao-vermelho" onClick={() => handleDeleteUsuario(usuario.id_usuario, usuario.nome)} disabled={deletingId === usuario.id_usuario}>
-                            {deletingId === usuario.id_usuario ? "Excluindo..." : <DeleteIcon />}
+                            {deletingId === usuario.id_usuario ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
                           </button>
                           <button className="botao_azul" onClick={() => toggleStateById(usuario.id_usuario, setEditingId)}>
                             {editingId === usuario.id_usuario ? <EditOffIcon /> : <BorderColorIcon />}
