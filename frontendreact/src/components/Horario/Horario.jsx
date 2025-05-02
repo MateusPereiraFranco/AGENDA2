@@ -13,6 +13,7 @@ import { fetchUsuarioNome } from "../../services/usuarioService";
 //icons
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -215,7 +216,7 @@ function Horario() {
                         onClick={() => handleDeleteHorario(horario.id_horario)}
                         disabled={deletingId === horario.id_horario}
                       >
-                        {deletingId === horario.id_horario ? "Excluindo..." : <DeleteIcon />}
+                        {deletingId === horario.id_horario ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
                       </button>
                       <button className="botao_azul" onClick={() => toggleDetalhes(horario.id_horario)}>
                         {detalhesVisiveis[horario.id_horario] ? <VisibilityOffIcon /> : <VisibilityIcon />}

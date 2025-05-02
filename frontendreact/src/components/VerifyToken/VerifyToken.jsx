@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../services/apiConfig";
+import RotateRightIcon from '@mui/icons-material/RotateRight';
 
 function VerifyToken() {
   const [token, setToken] = useState("");
@@ -88,7 +89,7 @@ function VerifyToken() {
 
       {tempoRestante > 0 ? (
         <p>
-          Tempo restante: <strong>{formatTime(tempoRestante)}</strong>
+          Tempo restante: <RotateRightIcon className="loading" /><strong>{formatTime(tempoRestante)}</strong>
         </p>
       ) : (
         <>
@@ -96,6 +97,7 @@ function VerifyToken() {
             Tempo expirado. Solicite um novo código.
           </p>
           <button
+            id='botaoAtuSen'
             className="botao_verde"
             onClick={handleReenviarCodigo}
             disabled={reenviando}

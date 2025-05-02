@@ -8,6 +8,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
@@ -186,7 +187,7 @@ function Empresa() {
                         onClick={() => handleDeleteEmpresa(empresa.id_empresa, empresa.nome)}
                         disabled={deletingId === empresa.id_empresa}
                       >
-                        {deletingId === empresa.id_empresa ? "Excluindo..." : <DeleteIcon />}
+                        {deletingId === empresa.id_empresa ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
                       </button>
                       <button 
                         className="botao_azul"
