@@ -75,10 +75,8 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
 // Função para deletar um agendamento
 export const deleteAgendamento = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/deleteSchedule`, {
+        const response = await fetch(`${API_URL}/deleteSchedule/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id }),
             credentials: 'include',
         });
         if (!response.ok) {

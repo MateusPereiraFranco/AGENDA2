@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { getUsuarioById } from '../models/userModel.js'
-import { getFkUserScheduleById } from '../models/scheduleModel.js';
+
 
 const autenticar = (req, res, next) => {
     const token = req.cookies.access_token;
@@ -86,89 +86,74 @@ const isAdminOrManager = async (req, res, next) => {
     }
 };
 
-const canAccessAgenda = async (req, res, next) => {
-    try {
-        const user = req.user;
+import pool from '../config/database.js';
 
-        // Admin tem acesso irrestrito
-        if (user.tipo_usuario === 'admin') {
-            return next();
-        }
+export const checkAcesso = (tipoRecurso) => {
+    return async (req, res, next) => {
+        const { id: userId, tipo_usuario, fk_empresa_id } = req.user;
+        let targetUserId = null;
 
-        // Obter o ID do usuário alvo da agenda
-        let targetUserId;
+        try {
+            if (tipo_usuario === 'admin') return next(); // acesso total
 
-        if (req.method === 'GET') {
-            if (req.query.fk_usuario_id) {
-                targetUserId = req.query.fk_usuario_id;
-            } else {
-                return res.status(400).json({ message: 'Busca inválida' });
-            }
-        } else if (req.method === 'PUT') {
-            if (req.body.fk_usuario_id) {
-                targetUserId = req.body.fk_usuario_id;
-            }
-            else {
-                return res.status(403).json({
-                    message: 'Acesso negado. nenhum id passado.'
-                });
-            }
+            switch (tipoRecurso) {
+                case 'agenda': {
+                    const inputUserId = req.query.fk_usuario_id || req.body.fk_usuario_id || req.params.id;
+                    console.log(req.query, req.body, req.params)
+                    if (!inputUserId) {
+                        return res.status(400).json({ message: 'ID do usuário não fornecido para agenda' });
+                    }
 
-        } else if (req.method === 'DELETE') {
-            if (req.body.id) {
-                try {
-                    targetUserId = await getFkUserScheduleById(req.body.id);
-                } catch (error) {
-                    console.error('Erro ao buscar fk_usuario_id:', error);
-                    return res.status(400).json({ message: 'ID de usuário alvo não fornecido' });
+                    const { rows } = await pool.query(
+                        'SELECT id_usuario, fk_empresa_id FROM usuario WHERE id_usuario = $1',
+                        [inputUserId]
+                    );
+
+                    if (rows.length === 0) return res.status(404).json({ message: 'Usuário da agenda não encontrado' });
+
+                    targetUserId = rows[0].id;
+                    const targetEmpresaId = rows[0].fk_empresa_id;
+
+                    if ((tipo_usuario === 'gerente' || tipo_usuario === 'secretario') && targetEmpresaId === fk_empresa_id) return next();
+                    if (tipo_usuario === 'funcionario' && parseInt(inputUserId) === userId) return next();
+
+                    break;
                 }
+
+                case 'horario': {
+                    const horarioId = req.params.id || req.body.horarioId || req.query.horarioId;
+                    if (!horarioId) return res.status(400).json({ message: 'ID do horário não fornecido' });
+
+                    const { rows } = await pool.query(`
+                        SELECT u.id_usuario AS usuario_id, u.fk_empresa_id
+                        FROM horario h
+                        JOIN agenda a ON h.fk_agenda_id = a.id_agenda
+                        JOIN usuario u ON a.fk_usuario_id = u.id_usuario
+                        WHERE h.id_horario = $1
+                    `, [horarioId]);
+
+                    if (rows.length === 0) return res.status(404).json({ message: 'Horário não encontrado' });
+
+                    const { usuario_id, fk_empresa_id: targetEmpresaId } = rows[0];
+
+                    if ((tipo_usuario === 'gerente' || tipo_usuario === 'secretario') && targetEmpresaId === fk_empresa_id) return next();
+                    if (tipo_usuario === 'funcionario' && usuario_id === userId) return next();
+
+                    break;
+                }
+
+                default:
+                    return res.status(400).json({ message: 'Tipo de recurso inválido para verificação de acesso' });
             }
-        } else if (req.method === 'POST') {
-            if (req.body.fk_usuario_id) {
-                targetUserId = req.body.fk_usuario_id
-            }
+
+            return res.status(403).json({ message: 'Acesso não autorizado' });
+
+        } catch (err) {
+            console.error(`Erro no middleware checkAcesso(${tipoRecurso}):`, err);
+            return res.status(500).json({ message: 'Erro interno no servidor' });
         }
-
-        if (!targetUserId) {
-            return res.status(403).json({
-                message: 'ID de usuário alvo não fornecido'
-            });
-        }
-
-        // O usuario pode acessar a própria agenda
-        if (targetUserId == user.id_usuario) {
-            return next();
-        }
-
-        // Para gerentes/secretários, verifica se é da mesma empresa
-        if (['gerente', 'secretario'].includes(user.tipo_usuario)) {
-            const targetUser = await getUsuarioById(targetUserId);
-
-            if (!targetUser) {
-                return res.status(404).json({ message: 'Usuário não encontrado' });
-            }
-
-            if (targetUser.fk_empresa_id == user.fk_empresa_id) {
-                return next();
-            }
-        }
-
-        // Se for funcionário tentando acessar outra agenda
-        if (user.tipo_usuario === 'funcionario') {
-            return res.status(403).json({
-                message: 'Acesso negado. Você só pode acessar sua própria agenda.'
-            });
-        }
-
-        // Se nenhuma das condições acima for atendida
-        return res.status(403).json({
-            message: 'Acesso negado. Você não tem permissão para acessar esta agenda.'
-        });
-
-    } catch (error) {
-        console.error('Erro no middleware canAccessAgenda:', error);
-        return res.status(500).json({ message: 'Erro ao verificar permissões' });
-    }
+    };
 };
 
-export { autenticar, isAdminOrManager, canAccessAgenda };
+
+export { autenticar, isAdminOrManager };

@@ -134,7 +134,7 @@ const addScheduleController = async (req, res) => {
 
 // Controlador para adicionar um novo agenda
 const deleteScheduleController = async (req, res) => {
-    const { id } = req.body; // Recebe o ID do agendamento a ser deletado
+    const { id } = req.params; // Recebe o ID do agendamento a ser deletado
     const usuarioAutenticado = req.user;
 
     if (!id) {

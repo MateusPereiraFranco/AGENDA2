@@ -20,7 +20,7 @@ const searchSchema = Joi.object({
 
 const checkAuthController = async (req, res) => {
     // Extrai o token do cookie
-    const token = req.cookies.token;
+    const token = req.cookies.access_token;
 
     if (!token) {
         return res.status(401).json({ authenticated: false, message: 'Token não fornecido' });

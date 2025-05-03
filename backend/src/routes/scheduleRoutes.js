@@ -7,16 +7,16 @@ import {
     getFkUserScheduleByIdController,
     getDataAgendamentoController,
 } from '../controllers/scheduleController.js';
-import { autenticar, canAccessAgenda } from '../middlewares/authMiddleware.js';
+import { autenticar, checkAcesso } from '../middlewares/authMiddleware.js';
 
 
 const router = express.Router();
 
-router.get('/schedules', autenticar, canAccessAgenda, getSchedulesController);
-router.post('/addSchedule', autenticar, canAccessAgenda, addScheduleController);
-router.delete('/deleteSchedule', autenticar, canAccessAgenda, deleteScheduleController);
-router.put('/updateSchedule/:id', autenticar, canAccessAgenda, updateScheduleController);
-router.get('/schedule/:id', autenticar, getFkUserScheduleByIdController);
-router.get('/scheduleData/:id', autenticar, getDataAgendamentoController);
+router.get('/schedules', autenticar, checkAcesso('agenda'), getSchedulesController);
+router.post('/addSchedule', autenticar, checkAcesso('agenda'), addScheduleController);
+router.delete('/deleteSchedule/:id', autenticar, checkAcesso('agenda'), deleteScheduleController);
+router.put('/updateSchedule/:id', autenticar, checkAcesso('agenda'), updateScheduleController);
+router.get('/schedule/:id', autenticar, checkAcesso('horario'), getFkUserScheduleByIdController);
+router.get('/scheduleData/:id', autenticar, checkAcesso('horario'), getDataAgendamentoController);
 
 export default router;
