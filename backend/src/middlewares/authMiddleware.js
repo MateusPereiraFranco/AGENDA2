@@ -91,31 +91,31 @@ import pool from '../config/database.js';
 export const checkAcesso = (tipoRecurso) => {
     return async (req, res, next) => {
         const { id: userId, tipo_usuario, fk_empresa_id } = req.user;
-        let targetUserId = null;
 
         try {
             if (tipo_usuario === 'admin') return next(); // acesso total
 
             switch (tipoRecurso) {
                 case 'agenda': {
-                    const inputUserId = req.query.fk_usuario_id || req.body.fk_usuario_id || req.params.id;
-                    console.log(req.query, req.body, req.params)
-                    if (!inputUserId) {
-                        return res.status(400).json({ message: 'ID do usuário não fornecido para agenda' });
+                    const agendaId = req.params.id || req.body.id || req.query.id;
+
+                    if (!agendaId) {
+                        return res.status(400).json({ message: 'ID da agenda não fornecido' });
                     }
 
-                    const { rows } = await pool.query(
-                        'SELECT id_usuario, fk_empresa_id FROM usuario WHERE id_usuario = $1',
-                        [inputUserId]
-                    );
+                    const { rows } = await pool.query(`
+                        SELECT u.id_usuario, u.fk_empresa_id
+                        FROM agenda a
+                        JOIN usuario u ON a.fk_usuario_id = u.id_usuario
+                        WHERE a.id_agenda = $1
+                    `, [agendaId]);
 
-                    if (rows.length === 0) return res.status(404).json({ message: 'Usuário da agenda não encontrado' });
+                    if (rows.length === 0) return res.status(404).json({ message: 'Agenda não encontrada' });
 
-                    targetUserId = rows[0].id;
-                    const targetEmpresaId = rows[0].fk_empresa_id;
+                    const { id_usuario: targetUserId, fk_empresa_id: targetEmpresaId } = rows[0];
 
                     if ((tipo_usuario === 'gerente' || tipo_usuario === 'secretario') && targetEmpresaId === fk_empresa_id) return next();
-                    if (tipo_usuario === 'funcionario' && parseInt(inputUserId) === userId) return next();
+                    if (tipo_usuario === 'funcionario' && targetUserId === userId) return next();
 
                     break;
                 }

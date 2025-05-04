@@ -12,7 +12,7 @@ import { generalLimiter, writeLimiter } from '../middlewares/rateLimitMiddleware
 const router = express.Router();
 
 // Leitura
-router.get('/times', autenticar, checkAcesso('horario'), generalLimiter, getTimesController);
+router.get('/times', autenticar, generalLimiter, getTimesController);
 
 // Escrita
 router.post('/addTime', autenticar, checkAcesso('horario'), writeLimiter, addTimeController);

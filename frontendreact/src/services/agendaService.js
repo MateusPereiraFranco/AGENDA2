@@ -99,27 +99,33 @@ export const updateAgendamento = async (id, agendamento) => {
             body: JSON.stringify(agendamento),
             credentials: 'include',
         });
+
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error || 'Erro ao adicionar agenda');
+            throw new Error(data.error || 'Erro ao atualizar agenda');
         }
         return data;
     } catch (error) {
         console.error('Erro ao atualizar agenda:', error.message);
         throw error;
     }
-
 };
 
+
 // Função para adicionar um agendamento
-export const addAgendamento = async (agendamento) => {
+export const addAgendamento = async (agendamento, fk_usuario_id) => {
     try {
+        const payload = {
+            ...agendamento,
+            fk_usuario_id
+        };
+
         const response = await fetch(`${API_URL}/addSchedule`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(agendamento),
-            credentials: 'include', // Inclui cookies na requisição
+            body: JSON.stringify(payload),
+            credentials: 'include',
         });
 
         const data = await response.json();
@@ -133,3 +139,4 @@ export const addAgendamento = async (agendamento) => {
         throw error;
     }
 };
+

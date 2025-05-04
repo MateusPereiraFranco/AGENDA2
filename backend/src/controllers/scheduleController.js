@@ -1,3 +1,4 @@
+import pool from "../config/database.js";
 import { getSchedules, addSchedule, deleteSchedule, updateSchedule, getScheduleById, getFkUserScheduleById, getDataAgendamento } from "../models/scheduleModel.js";
 
 import Joi from 'joi';
@@ -81,9 +82,10 @@ export const getDataAgendamentoController = async (req, res) => {
     }
 };
 
+
+
 const getSchedulesController = async (req, res) => {
     try {
-        // Valida os parâmetros de busca
         const { error, value } = searchSchema.validate(req.query);
         if (error) {
             return res.status(400).json({
@@ -92,13 +94,43 @@ const getSchedulesController = async (req, res) => {
             });
         }
 
-        // O middleware já adicionou os filtros necessários
-        const schedules = await getSchedules(value);
+        const loggedUser = req.user;
+        const agendaUserId = value.fk_usuario_id;
+        if (!agendaUserId) {
+            return res.status(400).json({ message: 'ID do usuário da agenda é obrigatório' });
+        }
 
-        res.status(200).json(schedules || []);
+        if (!loggedUser.id || !loggedUser.fk_empresa_id || !loggedUser.tipo_usuario) {
+            return res.status(401).json({ message: 'Dados do usuário autenticado estão incompletos' });
+        }
+
+        // 2. Obtenha info do dono da agenda
+        const agendaUserResult = await pool.query(
+            'SELECT id_usuario, fk_empresa_id FROM usuario WHERE id_usuario = $1',
+            [agendaUserId]
+        );
+
+        const agendaUser = agendaUserResult.rows[0];
+
+        if (!agendaUser) return res.status(404).json({ message: 'Usuário da agenda não encontrado' });
+
+        // 3. Regras de permissão
+        const mesmaEmpresa = loggedUser.fk_empresa_id === agendaUser.fk_empresa_id;
+        const isGerenteOuSecretario = ['gerente', 'secretario'].includes(loggedUser.tipo_usuario);
+        const isProprioUsuario = loggedUser.id === agendaUser.id_usuario;
+
+        const podeVer = (mesmaEmpresa && isGerenteOuSecretario) || isProprioUsuario || loggedUser.tipo_usuario === 'admin';
+
+        if (!podeVer) {
+            return res.status(403).json({ message: 'Você não tem permissão para visualizar essa agenda' });
+        }
+
+        // 4. Buscar agendas
+        const schedules = await getSchedules({ ...value, fk_usuario_id: agendaUserId });
+        return res.status(200).json(schedules || []);
     } catch (err) {
         console.error('Erro no getSchedulesController:', err);
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Erro ao buscar agendas',
             error: err.message
         });
@@ -106,90 +138,123 @@ const getSchedulesController = async (req, res) => {
 };
 
 
+
 // Controlador para adicionar um nova agenda
 const addScheduleController = async (req, res) => {
-    const { data, fk_usuario_id } = req.body; // Recebe os dados do corpo da requisição
+    const { data } = req.body;
+    const { fk_usuario_id } = req.body;
+
     const usuarioAutenticado = req.user;
 
-    if (!data || !fk_usuario_id) {
-        return res.status(400).send('data e fk_usuario_id são obrigatórios');
+    if (!data) {
+        return res.status(400).send('A data é obrigatória');
     }
+
+    const isAdmin = usuarioAutenticado.tipo_usuario === 'admin';
+    const isManagerOrSecretary = ['gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
+    const mesmoUsuario = usuarioAutenticado.id == fk_usuario_id;
+
     try {
-        if (usuarioAutenticado.id_usuario == fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
-            const newSchedule = await addSchedule(data, fk_usuario_id);
-            res.status(201).json(newSchedule);
-        } else {
-            res.status(403).send('Você não tem permissão para criar agendamentos para este usuário');
+        if (!mesmoUsuario || !admin) {
+
+            const { rows } = await pool.query(`
+                SELECT fk_empresa_id FROM usuario WHERE id_usuario = $1
+            `, [fk_usuario_id]);
+
+            if (rows.length === 0) return res.status(404).send('Usuário de destino não encontrado');
+
+            const targetEmpresaId = rows[0].fk_empresa_id;
+            const mesmaEmpresa = usuarioAutenticado.fk_empresa_id === targetEmpresaId;
+
+            const podeCriarAgenda = (isManagerOrSecretary && mesmaEmpresa);
+            console.log('Permissão: ', podeCriarAgenda, isAdmin, mesmoUsuario, isManagerOrSecretary, mesmaEmpresa);
+
+            if (!podeCriarAgenda) {
+                return res.status(403).send('Você não tem permissão para criar agendamentos para outros usuários');
+            }
         }
+
+        const newSchedule = await addSchedule(data, fk_usuario_id);
+        return res.status(201).json(newSchedule);
     } catch (err) {
         if (err.code === '23505') {
-            return res.status(409).json({
-                error: 'Esta agenda já está cadastrada'
-            });
+            return res.status(409).json({ error: 'Esta agenda já está cadastrada' });
         }
-        res.status(500).send('Erro ao adicionar agenda');
+        console.error('Erro ao adicionar agenda:', err);
+        return res.status(500).send('Erro interno ao adicionar agenda');
     }
 };
 
 
+
 // Controlador para adicionar um novo agenda
 const deleteScheduleController = async (req, res) => {
-    const { id } = req.params; // Recebe o ID do agendamento a ser deletado
+    const { id } = req.params;
     const usuarioAutenticado = req.user;
 
     if (!id) {
-        return res.status(400).send('ID é obrigatório para exclusão');
+        return res.status(400).send('ID do agendamento é obrigatório para exclusão');
     }
 
     try {
-        // Busca o agendamento pelo ID
         const schedule = await getScheduleById(id);
+
         if (!schedule) {
-            return res.status(404).send('Agenda não encontrada');
+            return res.status(404).send('Agendamento não encontrado');
         }
 
-        // Verifica se o usuário tem permissão para deletar o agendamento
-        if (usuarioAutenticado.id_usuario === schedule.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
-            const deletedSchedule = await deleteSchedule(id);
-            res.status(200).json({ message: 'Agenda excluída com sucesso!', schedule: deletedSchedule });
+        const isDono = usuarioAutenticado.id_usuario === schedule.fk_usuario_id;
+        const isPrivilegiado = ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
+
+        if (isDono || isPrivilegiado) {
+            const deleted = await deleteSchedule(id);
+            return res.status(200).json({ message: 'Agendamento excluído com sucesso', schedule: deleted });
         } else {
-            res.status(403).send('Você não tem permissão para excluir agendamentos para este usuário');
+            return res.status(403).send('Você não tem permissão para excluir este agendamento');
         }
+
     } catch (err) {
-        console.error('Erro ao excluir agenda:', err);
-        res.status(500).send('Erro ao excluir agenda');
+        console.error('Erro ao excluir agendamento:', err);
+        return res.status(500).send('Erro interno ao tentar excluir agendamento');
     }
 };
 
 
 const updateScheduleController = async (req, res) => {
     const { id } = req.params;
-    const { data, fk_usuario_id } = req.body;
+    const { data } = req.body;
     const usuarioAutenticado = req.user;
 
-    if (!id || !data || !fk_usuario_id) {
-        return res.status(400).send('ID, data e fk_usuario_id são obrigatórios para atualização');
+    if (!id || !data) {
+        return res.status(400).send('ID e data são obrigatórios para atualização');
     }
 
     try {
-        if (usuarioAutenticado.id === fk_usuario_id || ['admin', 'gerente'].includes(usuarioAutenticado.tipo_usuario)) {
-            const schedule = await updateSchedule(id, data, fk_usuario_id);
-            if (!schedule) {
-                return res.status(404).send('Agenda não encontrada');
-            }
-            res.status(200).json({ message: 'Agenda atualizado com sucesso!', schedule });
-        } else {
-            res.status(403).send('Você não tem permissão para editar agendamentos para este usuário');
+        const schedule = await getScheduleById(id);
+
+        if (!schedule) {
+            return res.status(404).send('Agendamento não encontrado');
         }
+
+        const isDono = usuarioAutenticado.id_usuario === schedule.fk_usuario_id;
+        const isPrivilegiado = ['admin', 'gerente'].includes(usuarioAutenticado.tipo_usuario);
+
+        if (isDono || isPrivilegiado) {
+            const updatedSchedule = await updateSchedule(id, data, schedule.fk_usuario_id);
+            return res.status(200).json({ message: 'Agenda atualizada com sucesso!', schedule: updatedSchedule });
+        } else {
+            return res.status(403).send('Você não tem permissão para editar este agendamento');
+        }
+
     } catch (err) {
         if (err.code === '23505') {
-            return res.status(409).json({
-                error: 'Esta agenda já está cadastrada'
-            });
+            return res.status(409).json({ error: 'Esta agenda já está cadastrada' });
         }
-        res.status(500).send('Erro ao atualizar agenda');
+        console.error('Erro ao atualizar agenda:', err);
+        return res.status(500).send('Erro interno ao atualizar agenda');
     }
 };
+
 
 export {
     getSchedulesController,

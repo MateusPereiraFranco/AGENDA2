@@ -12,11 +12,11 @@ import { autenticar, checkAcesso } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/schedules', autenticar, checkAcesso('agenda'), getSchedulesController);
-router.post('/addSchedule', autenticar, checkAcesso('agenda'), addScheduleController);
+router.get('/schedules', autenticar, getSchedulesController);
+router.post('/addSchedule', autenticar, addScheduleController);
 router.delete('/deleteSchedule/:id', autenticar, checkAcesso('agenda'), deleteScheduleController);
 router.put('/updateSchedule/:id', autenticar, checkAcesso('agenda'), updateScheduleController);
-router.get('/schedule/:id', autenticar, checkAcesso('horario'), getFkUserScheduleByIdController);
-router.get('/scheduleData/:id', autenticar, checkAcesso('horario'), getDataAgendamentoController);
+router.get('/schedule/:id', autenticar, checkAcesso('agenda'), getFkUserScheduleByIdController);
+router.get('/scheduleData/:id', autenticar, checkAcesso('agenda'), getDataAgendamentoController);
 
 export default router;

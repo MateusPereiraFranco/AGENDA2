@@ -129,10 +129,9 @@ function Agenda() {
   const handleAddAgendamento = async (e) => {
     e.preventDefault();
     const data = e.target.data.value;
-    const fk_usuario_id = id;
 
     try {
-      await addAgendamento({ data, fk_usuario_id });
+      await addAgendamento({ data}, id);
       toast.success("Agendamento adicionado com sucesso!");
       loadAgendamentos();
       e.target.reset();
@@ -168,18 +167,9 @@ function Agenda() {
     }
 
     try {
-      const agendamentoParaAtualizar = agendamentos.find(
-        (ag) => ag.id_agenda === editingAgendamento
-      );
-
-      if (!agendamentoParaAtualizar) {
-        toast.error("Agendamento não encontrado!");
-        return;
-      }
 
       await updateAgendamento(editingAgendamento, {
-        data,
-        fk_usuario_id: agendamentoParaAtualizar.fk_usuario_id,
+        data
       });
       toast.success("Agendamento atualizado!");
       loadAgendamentos();
