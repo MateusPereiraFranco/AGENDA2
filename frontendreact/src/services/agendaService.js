@@ -63,7 +63,6 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
             const errorData = await response.json();
             throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
         }
-
         return response.json();
     } catch (error) {
         console.error('Erro no fetchAgendamentos:', error);

@@ -32,7 +32,6 @@ function Horario() {
   const [nomeUsuarioLogado, setNomeUsuarioLogado] = useState("");
   const [dataAgenda, setDataAgenda] = useState('');
   const [error, setError] = useState("");
-  const [editingId, setEditingId] = useState(null);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [contato, setContato] = useState("");
@@ -146,7 +145,7 @@ function Horario() {
       fk_agenda_id: id,
     };
     try {
-      await addHorario(horario);
+      await addHorario({horario}, id_usuario);
       loadHorarios();
       e.target.reset();
       setContato("");

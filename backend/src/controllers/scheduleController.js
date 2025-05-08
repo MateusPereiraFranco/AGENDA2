@@ -153,9 +153,10 @@ const addScheduleController = async (req, res) => {
     const isAdmin = usuarioAutenticado.tipo_usuario === 'admin';
     const isManagerOrSecretary = ['gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
     const mesmoUsuario = usuarioAutenticado.id == fk_usuario_id;
+    console.log(mesmoUsuario, usuarioAutenticado.id, fk_usuario_id);
 
     try {
-        if (!mesmoUsuario || !admin) {
+        if (!mesmoUsuario && !isAdmin) {
 
             const { rows } = await pool.query(`
                 SELECT fk_empresa_id FROM usuario WHERE id_usuario = $1
@@ -188,30 +189,21 @@ const addScheduleController = async (req, res) => {
 
 
 // Controlador para adicionar um novo agenda
+// middleware checkAcesso('agenda') já verifica se o usuário tem permissão para deletar a agenda
 const deleteScheduleController = async (req, res) => {
     const { id } = req.params;
-    const usuarioAutenticado = req.user;
 
     if (!id) {
         return res.status(400).send('ID do agendamento é obrigatório para exclusão');
     }
 
     try {
-        const schedule = await getScheduleById(id);
 
-        if (!schedule) {
+        const deleted = await deleteSchedule(id);
+        if (!deleted) {
             return res.status(404).send('Agendamento não encontrado');
         }
-
-        const isDono = usuarioAutenticado.id_usuario === schedule.fk_usuario_id;
-        const isPrivilegiado = ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
-
-        if (isDono || isPrivilegiado) {
-            const deleted = await deleteSchedule(id);
-            return res.status(200).json({ message: 'Agendamento excluído com sucesso', schedule: deleted });
-        } else {
-            return res.status(403).send('Você não tem permissão para excluir este agendamento');
-        }
+        return res.status(200).json({ message: 'Agendamento excluído com sucesso', schedule: deleted });
 
     } catch (err) {
         console.error('Erro ao excluir agendamento:', err);
@@ -220,31 +212,21 @@ const deleteScheduleController = async (req, res) => {
 };
 
 
+// middleware checkAcesso('agenda') já verifica se o usuário tem permissão para atualizar a agenda
 const updateScheduleController = async (req, res) => {
     const { id } = req.params;
     const { data } = req.body;
-    const usuarioAutenticado = req.user;
 
     if (!id || !data) {
         return res.status(400).send('ID e data são obrigatórios para atualização');
     }
 
     try {
-        const schedule = await getScheduleById(id);
-
-        if (!schedule) {
+        const updatedSchedule = await updateSchedule(id, data, schedule.fk_usuario_id);
+        if (!updatedSchedule) {
             return res.status(404).send('Agendamento não encontrado');
         }
-
-        const isDono = usuarioAutenticado.id_usuario === schedule.fk_usuario_id;
-        const isPrivilegiado = ['admin', 'gerente'].includes(usuarioAutenticado.tipo_usuario);
-
-        if (isDono || isPrivilegiado) {
-            const updatedSchedule = await updateSchedule(id, data, schedule.fk_usuario_id);
-            return res.status(200).json({ message: 'Agenda atualizada com sucesso!', schedule: updatedSchedule });
-        } else {
-            return res.status(403).send('Você não tem permissão para editar este agendamento');
-        }
+        return res.status(200).json({ message: 'Agenda atualizada com sucesso!', schedule: updatedSchedule });
 
     } catch (err) {
         if (err.code === '23505') {

@@ -72,11 +72,11 @@ const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes,
 };
 
 // Função para adicionar um novo horario
-const addTime = async (fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) => {
+const addTime = async (horario) => {
     try {
         const result = await pool.query(
             'INSERT INTO horario (fk_agenda_id, horario, nome, contato, observacoes, agendadoPor) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [fk_agenda_id, horario, nome, contato, observacoes, agendadoPor]
+            [horario.fk_agenda_id, horario.horario, horario.nome, horario.contato, horario.observacoes, horario.agendadoPor]
         );
         return result.rows[0]; // Retorna o horario recém-cadastrado
     } catch (err) {
