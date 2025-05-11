@@ -1,7 +1,7 @@
 // src/hooks/usePermissionCheck.js
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { fetchUsuarios } from '../services/usuarioService';
+import { getPermissionStatus } from '../services/permissionService';
 
 export const usePermissionCheck = ({ pageType, pageId }) => {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -13,10 +13,7 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
 
     useEffect(() => {
         const verificar = async () => {
-            if (authLoading || !user) return; // ✅ Aguarda o usuário ser carregado
-
-            const { tipo_usuario, id_usuario, fk_empresa_id } = user;
-            console.log('user', user);
+            if (authLoading || !user) return;
 
             if (!isAuthenticated) {
                 return setAccessState({
@@ -25,77 +22,14 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
                     unauthenticated: true,
                 });
             }
+            try {
+                const granted = await getPermissionStatus(pageType, pageId);
 
-            if (tipo_usuario === 'admin') {
-                return setAccessState({ loading: false, granted: true, unauthenticated: false });
+                setAccessState({ loading: false, granted: granted, unauthenticated: false });
+            } catch (error) {
+                console.error('Erro ao verificar permissão:', error);
+                setAccessState({ loading: false, granted: false, unauthenticated: false });
             }
-
-            if (pageType === 'atualizar-senha') {
-                return setAccessState({ loading: false, granted: true, unauthenticated: false });
-            }
-
-            if (pageType === 'agenda') {
-                if (id_usuario.toString() === pageId.toString()) {
-                    return setAccessState({ loading: false, granted: true, unauthenticated: false });
-                }
-
-                if (['gerente', 'secretario'].includes(tipo_usuario)) {
-                    try {
-                        const res = await fetchUsuarios(fk_empresa_id, { id: pageId });
-                        const usuario = res?.[0];
-                        if (usuario && usuario.fk_empresa_id == fk_empresa_id) {
-                            return setAccessState({ loading: false, granted: true, unauthenticated: false });
-                        }
-                    } catch (e) { }
-                    return setAccessState({ loading: false, granted: false, unauthenticated: false });
-                }
-
-                return setAccessState({ loading: false, granted: false, unauthenticated: false });
-            }
-
-            if (pageType === 'usuario') {
-
-                if (tipo_usuario === 'funcionario') {
-
-                    return setAccessState({ loading: false, granted: false, unauthenticated: false });
-                }
-
-                if (['gerente', 'secretario'].includes(tipo_usuario)) {
-                    if (fk_empresa_id.toString() === pageId.toString()) {
-                        return setAccessState({
-                            loading: false,
-                            granted: true,
-                            unauthenticated: false,
-                        });
-                    }
-                }
-
-                return setAccessState({ loading: false, granted: false, unauthenticated: false });
-            }
-
-            if (pageType === 'empresa') {
-                if (tipo_usuario !== 'admin') {
-                    return setAccessState({ loading: false, granted: false, unauthenticated: false });
-                }
-
-                return setAccessState({
-                    loading: false,
-                    granted: pageId === fk_empresa_id,
-                    unauthenticated: false,
-                });
-            }
-
-            if (pageType === 'horario') {
-
-                return setAccessState({
-                    loading: false,
-                    granted: pageId === fk_empresa_id,
-                    unauthenticated: false,
-                });
-            }
-
-
-            return setAccessState({ loading: false, granted: false, unauthenticated: false });
         };
 
         verificar();

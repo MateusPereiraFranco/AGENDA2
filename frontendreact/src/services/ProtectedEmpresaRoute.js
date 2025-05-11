@@ -1,17 +1,25 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { usePermissionCheck } from '../hooks/usePermissionCheck';
 
 const ProtectedEmpresaRoute = () => {
-    const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+    const { user, isLoading: authLoading } = useAuth();
 
-    if (authLoading) {
-        return <div>Carregando página da empresa...</div>;
+    const { accessLoading, granted, unauthenticated } = usePermissionCheck({
+        pageType: 'empresa',
+        pageId: user.id_usuario,
+    });
+
+    if (authLoading || accessLoading) {
+        return <div>Carregando...</div>;
     }
 
-    const isAdmin = user.tipo_usuario == 'admin';
+    if (unauthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-    return isAuthenticated && isAdmin ? <Outlet /> : <Navigate to="/notfound" replace />;
+    return granted ? <Outlet /> : <Navigate to="/notfound" replace />;
 };
 
 export default ProtectedEmpresaRoute;

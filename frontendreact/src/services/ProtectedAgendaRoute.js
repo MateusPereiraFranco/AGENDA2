@@ -7,7 +7,6 @@ const ProtectedAgendaRoute = () => {
 
     const { id } = useParams();
     const { isLoading: authLoading } = useAuth();
-    console.log('ID da agenda:', id); // 👈 Verifica o ID da agenda
 
     const { accessLoading, granted, unauthenticated } = usePermissionCheck({
         pageType: 'agenda',

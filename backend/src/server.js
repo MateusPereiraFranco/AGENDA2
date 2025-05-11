@@ -4,6 +4,7 @@ import enterpriseRoutes from './routes/enterpriseRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import scheduleRoutes from './routes/scheduleRoutes.js';
 import timeRoutes from './routes/timeRoutes.js';
+import permissionRoutes from './routes/permissionRoutes.js';
 import cors from 'cors';
 import './cron/cronJobs.js';
 import rateLimit from 'express-rate-limit';
@@ -47,6 +48,7 @@ app.use('/api', enterpriseRoutes);
 app.use('/api', userRoutes);
 app.use('/api', scheduleRoutes);
 app.use('/api', timeRoutes);
+app.use('/api', permissionRoutes);
 
 
 // Middleware de tratamento de erros

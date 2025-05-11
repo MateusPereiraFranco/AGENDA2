@@ -82,8 +82,6 @@ export const getDataAgendamentoController = async (req, res) => {
     }
 };
 
-
-
 const getSchedulesController = async (req, res) => {
     try {
         const { error, value } = searchSchema.validate(req.query);

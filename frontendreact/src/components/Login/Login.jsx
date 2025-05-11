@@ -22,7 +22,6 @@ function Login() {
         gerente: `/usuario/${fk_empresa_id}`,
         admin: '/empresa'
       }[tipo_usuario];
-      console.log('Redirecionando para:', redirectPath);
 
       navigate(redirectPath || '/');
     }
