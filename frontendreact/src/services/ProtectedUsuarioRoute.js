@@ -1,16 +1,19 @@
 import React from 'react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 import { usePermissionCheck } from '../hooks/usePermissionCheck';
+import { useAuth } from '../context/AuthContext';
 
 const ProtectedUsuarioRoute = () => {
     const { id } = useParams();
-    const { authLoading, accessLoading, granted, unauthenticated } = usePermissionCheck({
+    const { isLoading: authLoading } = useAuth();
+
+    const { accessLoading, granted, unauthenticated } = usePermissionCheck({
         pageType: 'usuario',
-        pageId: id,
+        pageId: id, // 👈 Seguro, pode ser undefined/null
     });
 
     if (authLoading || accessLoading) {
-        return <div>Carregando usuários...</div>;
+        return <div>Carregando...</div>;
     }
 
     if (unauthenticated) {

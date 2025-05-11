@@ -27,7 +27,7 @@ import { flushSync } from 'react-dom';
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
-  const { isAuthenticated, setIsAuthenticated } = useAuth(); // Use o contexto de autenticação
+  const { isAuthenticated, setIsAuthenticated, user, setUser } = useAuth(); // Use o contexto de autenticação
   const navigate = useNavigate();
 
   const handleNavigateToChangePassword = () => {
@@ -71,16 +71,10 @@ const Navbar = () => {
       });
 
       if (response.ok) {
-        // Limpa localStorage
-        localStorage.removeItem("tipo_usuario");
-        localStorage.removeItem("id_usuario");
-        localStorage.removeItem("fk_empresa_id");
-
-        // Atualiza o estado antes da navegação
         flushSync(() => {
           setIsAuthenticated(false);
+          setUser(null); // limpa o usuário do contexto
         });
-
         navigate("/login");
       } else {
         console.error("Erro ao fazer logout:", response.statusText);

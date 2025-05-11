@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -20,17 +20,19 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useAuth } from "../../context/AuthContext";
 
 function Agenda() {
-  const { id } = useParams();
-  const navigate = useNavigate();
 
-  const tipo_usuario = localStorage.getItem("tipo_usuario");
+  const { user } = useAuth();
+  const { tipo_usuario, id_usuario } = user || {};
+
+  const navigate = useNavigate();
 
   const [agendamentos, setAgendamentos] = useState([]);
   const [usuarioNome, setUsuarioNome] = useState("");
   const [error, setError] = useState("");
-  const [editingAgendamento, setEditingAgendamento] = useState(null);
+  const [editingAgendamentoId, setEditingAgendamentoId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
@@ -86,7 +88,7 @@ function Agenda() {
         ...(searchParams.dataFim && { dataFim: searchParams.dataFim }),
       };
 
-      const data = await fetchAgendamentos(id, params);
+      const data = await fetchAgendamentos(id_usuario, params);
       setAgendamentos(data || []);
       setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
@@ -100,7 +102,7 @@ function Agenda() {
 
   const loadUsuarioName = async () => {
     try {
-      const nomeUsuario = await fetchUsuarioNome(id);
+      const nomeUsuario = await fetchUsuarioNome(id_usuario);
       setUsuarioNome(nomeUsuario || "Usuário não encontrado");
     } catch (error) {
       console.error(error);
@@ -131,7 +133,7 @@ function Agenda() {
     const data = e.target.data.value;
 
     try {
-      await addAgendamento({ data}, id);
+      await addAgendamento({ data }, id_usuario);
       toast.success("Agendamento adicionado com sucesso!");
       loadAgendamentos();
       e.target.reset();
@@ -168,12 +170,12 @@ function Agenda() {
 
     try {
 
-      await updateAgendamento(editingAgendamento, {
+      await updateAgendamento(editingAgendamentoId, {
         data
       });
       toast.success("Agendamento atualizado!");
       loadAgendamentos();
-      setEditingAgendamento(null);
+      setEditingAgendamentoId(null);
     } catch (error) {
       setError(error.message);
       toast.error(error.message);
@@ -259,10 +261,10 @@ function Agenda() {
                       {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <button
                           className="botao_azul"
-                          onClick={() => toggleStateById(agendamento.id_agenda, setEditingAgendamento)}
+                          onClick={() => toggleStateById(agendamento.id_agenda, setEditingAgendamentoId)}
                         >
-                          {editingAgendamento === agendamento.id_agenda ? <EditOffIcon /> : <BorderColorIcon />}
-                          
+                          {editingAgendamentoId === agendamento.id_agenda ? <EditOffIcon /> : <BorderColorIcon />}
+
                         </button>
                       )}
                       <button
@@ -273,7 +275,7 @@ function Agenda() {
                       </button>
                     </td>
                   </tr>
-                  {editingAgendamento === agendamento.id_agenda && (
+                  {editingAgendamentoId === agendamento.id_agenda && (
                     <tr>
                       <td colSpan="3">
                         <form className="form-atualizacao" onSubmit={handleUpdateAgendamento}>
@@ -290,7 +292,7 @@ function Agenda() {
                             <button
                               type="button"
                               className="botao-vermelho"
-                              onClick={() => setEditingAgendamento(null)}
+                              onClick={() => setEditingAgendamentoId(null)}
                             >
                               <CloseIcon />
                             </button>

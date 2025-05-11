@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -21,12 +21,13 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useAuth } from "../../context/AuthContext";
 
 
 function Usuario() {
-  const { id } = useParams();
+  const { user } = useAuth();
+  const { tipo_usuario, fk_empresa_id } = user || {};
   const navigate = useNavigate();
-  const tipo_usuario = localStorage.getItem("tipo_usuario");
 
   const [usuarios, setUsuarios] = useState([]);
   const [searchParams, setSearchParams] = useState({ nome: "", tipo_usuario: "", sortBy: "tipo_usuario, nome" });
@@ -51,7 +52,7 @@ function Usuario() {
       if (params.tipo_usuario === "") delete params.tipo_usuario;
       params.page = currentPage;
 
-      const data = await fetchUsuarios(id, params);
+      const data = await fetchUsuarios(fk_empresa_id, params);
       if (data) {
         const ordem = { gerente: 1, funcionario: 2, secretario: 3 };
         setUsuarios(data.sort((a, b) => ordem[a.tipo_usuario] - ordem[b.tipo_usuario]));
@@ -70,7 +71,7 @@ function Usuario() {
 
   const loadEmpresa = async () => {
     try {
-      const nomeEmpresa = await fetchEmpresaNome(id);
+      const nomeEmpresa = await fetchEmpresaNome(fk_empresa_id);
       setEmpresaNome(nomeEmpresa || "Empresa não encontrada");
     } catch (error) {
       console.error(error);
@@ -95,7 +96,7 @@ function Usuario() {
       email: e.target.email.value.trim(),
       senha: e.target.password.value,
       tipo_usuario: e.target.tipo_usuario.value,
-      fk_empresa_id: id,
+      fk_empresa_id: fk_empresa_id,
     };
 
     if (formData.tipo_usuario === "cargo") {
@@ -214,15 +215,15 @@ function Usuario() {
           </form>
         )}
       </div>
-      
+
       <div className="tabela_usuario">
         <table>
           <thead>
             <tr>
-             <td colSpan="4" style={{ textAlign: "center" }}>
-               <h2>FUNCIONÁRIOS</h2>
-             </td>
-              
+              <td colSpan="4" style={{ textAlign: "center" }}>
+                <h2>FUNCIONÁRIOS</h2>
+              </td>
+
             </tr>
           </thead>
           <tbody>

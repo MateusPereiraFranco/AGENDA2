@@ -21,10 +21,15 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchAgendamentoData, fetchAgendamentos, fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
+import { useAuth } from "../../context/AuthContext";
 
 
 function Horario() {
+
+  const { user } = useAuth();
+  const { id_usuario } = user || {};
   const { id } = useParams();
+
   const [horarios, setHorarios] = useState([]);
   const [searchParams, setSearchParams] = useState({ sortBy: "horario" });
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,8 +42,6 @@ function Horario() {
   const [contato, setContato] = useState("");
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
   const itemsPerPage = 10;
-
-  const id_usuario = localStorage.getItem("id_usuario");
 
   useEffect(() => {
     loadHorarios();
@@ -145,7 +148,7 @@ function Horario() {
       fk_agenda_id: id,
     };
     try {
-      await addHorario({horario}, id_usuario);
+      await addHorario({ horario }, id_usuario);
       loadHorarios();
       e.target.reset();
       setContato("");
@@ -160,7 +163,7 @@ function Horario() {
     setDeletingId(id);
     try {
       await deleteHorario(id);
-      await loadHorarios();
+      loadHorarios();
       toast.success("Horário excluído");
     } catch (error) {
       console.error(error);
@@ -253,8 +256,8 @@ function Horario() {
         >
           <KeyboardArrowLeftIcon className="seta_icon" />
         </button>
-        <button 
-          className="botao_verde" 
+        <button
+          className="botao_verde"
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={!hasMorePages}
         >

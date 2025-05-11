@@ -7,7 +7,7 @@ import {
     getEnterpriseNameController
 } from '../controllers/enterpriseController.js';
 
-import { autenticar } from '../middlewares/authMiddleware.js';
+import { authenticateToken } from '../middlewares/authMiddleware.js';
 import { generalLimiter, writeLimiter } from '../middlewares/rateLimitMiddleware.js';
 
 const router = express.Router();
@@ -21,12 +21,12 @@ const isAdmin = (req, res, next) => {
 };
 
 // Leitura
-router.get('/enterprises', autenticar, generalLimiter, isAdmin, getEnterprisesController);
-router.get('/enterpriseName', autenticar, generalLimiter, getEnterpriseNameController);
+router.get('/enterprises', authenticateToken, generalLimiter, isAdmin, getEnterprisesController);
+router.get('/enterpriseName', authenticateToken, generalLimiter, getEnterpriseNameController);
 
 // Escrita
-router.post('/addEnterprise', autenticar, writeLimiter, isAdmin, addEnterpriseController);
-router.delete('/deleteEnterprise', autenticar, writeLimiter, isAdmin, deleteEnterpriseController);
-router.put('/updateEnterprise/:id', autenticar, writeLimiter, isAdmin, updateEnterpriseController);
+router.post('/addEnterprise', authenticateToken, writeLimiter, isAdmin, addEnterpriseController);
+router.delete('/deleteEnterprise', authenticateToken, writeLimiter, isAdmin, deleteEnterpriseController);
+router.put('/updateEnterprise/:id', authenticateToken, writeLimiter, isAdmin, updateEnterpriseController);
 
 export default router;

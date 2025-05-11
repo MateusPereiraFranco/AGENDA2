@@ -79,7 +79,7 @@ function Empresa() {
       setError('');
       toast.success(`Empresa ${nome} cadastrada com sucesso!`);
     } catch (error) {
-      setError(error.message); 
+      setError(error.message);
       toast.error(error.message);
     }
   };
@@ -119,7 +119,7 @@ function Empresa() {
       toast.success(`Empresa ${nome} atualizada com sucesso!`);
     } catch (error) {
       console.error(error);
-      setError(error.message); 
+      setError(error.message);
       toast.error(error.message);
     }
   };
@@ -189,7 +189,7 @@ function Empresa() {
                       >
                         {deletingId === empresa.id_empresa ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
                       </button>
-                      <button 
+                      <button
                         className="botao_azul"
                         onClick={() => toggleEditingEmpresa(empresa.id_empresa)}
                       >
@@ -273,7 +273,7 @@ function Empresa() {
         >
           <KeyboardArrowLeftIcon className="seta_icon" />
         </button>
-        <button 
+        <button
           className="botao_verde"
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={!hasMorePages}

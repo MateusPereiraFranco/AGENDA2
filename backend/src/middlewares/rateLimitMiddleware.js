@@ -9,7 +9,7 @@ const defaultKeyGenerator = (req) => {
 // 1. Limite para login, reset de senha, refresh token, etc (sensível)
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 10,
+    max: 100000000,
     message: 'Muitas tentativas - tente novamente mais tarde.',
     keyGenerator: defaultKeyGenerator,
     standardHeaders: true,
@@ -19,7 +19,7 @@ export const authLimiter = rateLimit({
 // 2. Limite para consultas/listagens normais
 export const generalLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minuto
-    max: 500,
+    max: 30000000000,
     message: 'Limite de requisições excedido - tente novamente em instantes.',
     keyGenerator: defaultKeyGenerator,
     standardHeaders: true,
@@ -29,7 +29,7 @@ export const generalLimiter = rateLimit({
 // 3. Limite para escritas (inserção, deleção, edição)
 export const writeLimiter = rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutos
-    max: 50,
+    max: 5000000000,
     message: 'Muitas ações em pouco tempo. Aguarde um pouco antes de continuar.',
     keyGenerator: defaultKeyGenerator,
     standardHeaders: true,

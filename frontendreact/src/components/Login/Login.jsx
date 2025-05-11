@@ -5,55 +5,54 @@ import { useAuth } from '../../context/AuthContext';
 import SenhaInput from '../../components/SenhaInput';
 
 function Login() {
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, user, setUser } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Login.jsx
   useEffect(() => {
-    if (isAuthenticated) {
-      const tipoUsuario = localStorage.getItem('tipo_usuario');
-      const idUsuario = localStorage.getItem('id_usuario');
-      const fk_empresa_id = localStorage.getItem('fk_empresa_id');
+    if (isAuthenticated && user) {
+      const { tipo_usuario, id_usuario, fk_empresa_id } = user;
 
-      if (tipoUsuario === 'funcionario') {
-        navigate(`/agenda/${idUsuario}`);
-      } else if (tipoUsuario === 'secretario' || tipoUsuario === 'gerente') {
-        navigate(`/usuario/${fk_empresa_id}`);
-      } else if (tipoUsuario === 'admin') {
-        navigate('/empresa');
-      }
+      const redirectPath = {
+        funcionario: `/agenda/${id_usuario}`,
+        secretario: `/usuario/${fk_empresa_id}`,
+        gerente: `/usuario/${fk_empresa_id}`,
+        admin: '/empresa'
+      }[tipo_usuario];
+      console.log('Redirecionando para:', redirectPath);
+
+      navigate(redirectPath || '/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
+
       const loginResult = await login({ email, senha });
 
       if (!loginResult.success) {
         throw new Error(loginResult.message);
       }
 
-      const userData = await get_fk_empresa_id(email);
-      if (!userData) {
-        throw new Error('Dados do usuário não encontrados');
-      }
+      const userCompleto = loginResult.user;
 
+      // ✅ Salva no contexto o user completo
       setIsAuthenticated(true);
-      localStorage.setItem('tipo_usuario', userData.tipo_usuario);
-      localStorage.setItem('id_usuario', userData.id_usuario);
-      localStorage.setItem('fk_empresa_id', userData.fk_empresa_id);
+      setUser(userCompleto);
 
       const redirectPath = {
-        funcionario: `/agenda/${userData.id_usuario}`,
-        secretario: `/usuario/${userData.fk_empresa_id}`,
-        gerente: `/usuario/${userData.fk_empresa_id}`,
+        funcionario: `/agenda/${userCompleto.id_usuario}`,
+        secretario: `/usuario/${userCompleto.fk_empresa_id}`,
+        gerente: `/usuario/${userCompleto.fk_empresa_id}`,
         admin: '/empresa'
-      }[userData.tipo_usuario];
+      }[userCompleto.tipo_usuario];
 
       navigate(redirectPath || '/');
     } catch (err) {
@@ -61,6 +60,7 @@ function Login() {
       setError(err.message || 'Erro ao fazer login. Tente novamente.');
     }
   };
+
 
   return (
     <div className="login-container">

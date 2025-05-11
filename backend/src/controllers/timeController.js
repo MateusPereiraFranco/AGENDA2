@@ -33,20 +33,19 @@ const getTimesController = async (req, res) => {
             if (!agenda) {
                 return res.status(404).send('Agenda não encontrada');
             }
+            console.log('Agenda:', agenda);
+            console.log('Usuário autenticado:', usuarioAutenticado);
 
             // Verifica se o usuário é o dono da agenda ou tem permissão de admin/gerente/secretário
-            if (usuarioAutenticado.id_usuario !== agenda.fk_usuario_id && !['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+            if (usuarioAutenticado.id !== agenda.fk_usuario_id && !['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
                 return res.status(403).send('Você não tem permissão para acessar os horários desta agenda');
             }
         }
 
         const times = await getTimes(value);
 
-        if (times.length === 0) {
-            return res.status(404).send('Nenhum horário encontrado');
-        }
+        return res.status(200).json(times || []);
 
-        res.status(200).json(times);
     } catch (err) {
         console.error('Erro ao buscar horários:', err);
         res.status(500).send('Erro ao buscar horários');
@@ -72,7 +71,7 @@ const addTimeController = async (req, res) => {
         const targetEmpresaId = rows[0].fk_empresa_id;
         const isAdmin = usuarioAutenticado.tipo_usuario === 'admin';
         const isManagerOrSecretary = ['gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
-        const mesmoUsuario = usuarioAutenticado.id_usuario === fk_usuario_id;
+        const mesmoUsuario = usuarioAutenticado.id === fk_usuario_id;
         const mesmaEmpresa = usuarioAutenticado.fk_empresa_id === targetEmpresaId;
 
         const podeCriarHorario = isAdmin || mesmoUsuario || (isManagerOrSecretary && mesmaEmpresa);
@@ -94,7 +93,6 @@ const addTimeController = async (req, res) => {
 const deleteTimeController = async (req, res) => {
     const { id } = req.params; // Recebe o ID do horário a ser deletado
     const usuarioAutenticado = req.user;
-    console.log(usuarioAutenticado);
 
     if (!id) {
         return res.status(400).send('ID é obrigatório para exclusão');
@@ -114,7 +112,7 @@ const deleteTimeController = async (req, res) => {
         }
 
         // Verifica se o usuário tem permissão para deletar o horário
-        if (usuarioAutenticado.id_usuario === agenda.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
+        if (usuarioAutenticado.id === agenda.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
             const deletedTime = await deleteTime(id);
             res.status(200).json({ message: 'Horário excluído com sucesso!', time: deletedTime });
         } else {

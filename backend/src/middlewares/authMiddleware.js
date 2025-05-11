@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { getUsuarioById } from '../models/userModel.js'
 
 
-const autenticar = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
     const token = req.cookies.access_token;
 
     if (!token) return res.status(401).json({ message: 'Não autenticado' });
@@ -156,4 +156,4 @@ export const checkAcesso = (tipoRecurso) => {
 };
 
 
-export { autenticar, isAdminOrManager };
+export { authenticateToken, isAdminOrManager };

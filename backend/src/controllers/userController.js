@@ -18,33 +18,18 @@ const searchSchema = Joi.object({
     order: Joi.string().valid('ASC', 'DESC').default('ASC'),
 });
 
-const checkAuthController = async (req, res) => {
-    // Extrai o token do cookie
-    const token = req.cookies.access_token;
+const checkAuthController = (req, res) => {
+    const { id: id_usuario, email, tipo_usuario, fk_empresa_id } = req.user;
 
-    if (!token) {
-        return res.status(401).json({ authenticated: false, message: 'Token não fornecido' });
-    }
-
-    try {
-        // Verifica o token usando a chave secreta
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use a mesma chave usada no login
-
-        // Retorna as informações do usuário e o status de autenticação
-        res.status(200).json({
-            authenticated: true,
-            user: {
-                id: decoded.id,
-                email: decoded.email,
-                tipo_usuario: decoded.tipo_usuario,
-                fk_empresa_id: decoded.fk_empresa_id,
-            },
-        });
-    } catch (err) {
-        // Se o token for inválido ou expirado
-        console.error('Erro ao verificar token:', err);
-        res.status(401).json({ authenticated: false, message: 'Token inválido ou expirado' });
-    }
+    return res.status(200).json({
+        authenticated: true,
+        user: {
+            id_usuario,
+            email,
+            tipo_usuario,
+            fk_empresa_id,
+        },
+    });
 };
 
 
@@ -126,7 +111,16 @@ const loginController = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(200).json({ message: 'Login bem-sucedido', user: { id: user.id_usuario, email: user.email } });
+        res.status(200).json({
+            message: 'Login bem-sucedido',
+            success: true,
+            user: {
+                id_usuario: (user.id_usuario),
+                email: user.email,
+                tipo_usuario: user.tipo_usuario,
+                fk_empresa_id: user.fk_empresa_id
+            }
+        });
 
     } catch (err) {
         console.error('Erro ao fazer login:', err);
@@ -206,33 +200,6 @@ const getUserNameController = async (req, res) => {
     }
 };
 
-const getUserByEmailController = async (req, res) => {
-    try {
-        const { email } = req.query; // Mude de req.body para req.query
-
-        const usuario = await getUserByEmail(email);
-
-        if (!usuario) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuário não encontrado'
-            });
-        }
-
-        // Retorne TODOS os dados do usuário no mesmo formato que seu frontend espera
-        res.status(200).json({
-            success: true,
-            data: usuario // Retorna o objeto completo
-        });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            message: 'Erro no servidor'
-        });
-    }
-};
 
 const getUsersController = async (req, res) => {
     const { error, value } = searchSchema.validate(req.query);
@@ -247,8 +214,7 @@ const getUsersController = async (req, res) => {
         if (users.length === 0) {
             return res.status(404).send('Nenhum usuário encontrado');
         }
-
-        res.status(200).json(users);
+        return res.status(200).json(users);
     } catch (err) {
         console.error('Erro ao buscar usuários:', err);
         res.status(500).send('Erro ao buscar usuários');
@@ -341,7 +307,6 @@ export {
     loginController,
     logoutController,
     checkAuthController,
-    getUserByEmailController,
     getUserNameController,
     updatePasswordController,
     refreshTokenController,

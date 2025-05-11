@@ -4,24 +4,19 @@ import { useAuth } from '../context/AuthContext';
 import { fetchUsuarios } from '../services/usuarioService';
 
 export const usePermissionCheck = ({ pageType, pageId }) => {
-    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
     const [accessState, setAccessState] = useState({
         loading: true,
         granted: false,
         unauthenticated: false,
     });
 
-    const tipoUsuario = localStorage.getItem('tipo_usuario');
-    const idUsuario = localStorage.getItem('id_usuario');
-    const fkEmpresaId = localStorage.getItem('fk_empresa_id');
-
     useEffect(() => {
         const verificar = async () => {
+            if (authLoading || !user) return; // ✅ Aguarda o usuário ser carregado
 
-            if (authLoading) return;
-
-            // Espera até que as infos de localStorage estejam disponíveis
-            if (!tipoUsuario || !idUsuario || !fkEmpresaId) return;
+            const { tipo_usuario, id_usuario, fk_empresa_id } = user;
+            console.log('user', user);
 
             if (!isAuthenticated) {
                 return setAccessState({
@@ -31,26 +26,24 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
                 });
             }
 
-            // Admin tem acesso total
-            if (tipoUsuario === 'admin') {
+            if (tipo_usuario === 'admin') {
                 return setAccessState({ loading: false, granted: true, unauthenticated: false });
             }
 
-            // TROCAR SENHA
-            //console.log("Aqui está chegando")
             if (pageType === 'atualizar-senha') {
                 return setAccessState({ loading: false, granted: true, unauthenticated: false });
             }
 
-            // AGENDA
             if (pageType === 'agenda') {
-                if (idUsuario === pageId) return setAccessState({ loading: false, granted: true, unauthenticated: false });
+                if (id_usuario.toString() === pageId.toString()) {
+                    return setAccessState({ loading: false, granted: true, unauthenticated: false });
+                }
 
-                if (['gerente', 'secretario'].includes(tipoUsuario)) {
+                if (['gerente', 'secretario'].includes(tipo_usuario)) {
                     try {
-                        const res = await fetchUsuarios(fkEmpresaId, { id: pageId });
+                        const res = await fetchUsuarios(fk_empresa_id, { id: pageId });
                         const usuario = res?.[0];
-                        if (usuario && usuario.fk_empresa_id == fkEmpresaId) {
+                        if (usuario && usuario.fk_empresa_id == fk_empresa_id) {
                             return setAccessState({ loading: false, granted: true, unauthenticated: false });
                         }
                     } catch (e) { }
@@ -60,36 +53,53 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
                 return setAccessState({ loading: false, granted: false, unauthenticated: false });
             }
 
-            // USUÁRIO
             if (pageType === 'usuario') {
-                if (tipoUsuario === 'funcionario') return setAccessState({ loading: false, granted: false, unauthenticated: false });
 
-                if (['gerente', 'secretario'].includes(tipoUsuario)) {
-                    return setAccessState({
-                        loading: false,
-                        granted: true,
-                        unauthenticated: false,
-                    });
+                if (tipo_usuario === 'funcionario') {
+
+                    return setAccessState({ loading: false, granted: false, unauthenticated: false });
+                }
+
+                if (['gerente', 'secretario'].includes(tipo_usuario)) {
+                    if (fk_empresa_id.toString() === pageId.toString()) {
+                        return setAccessState({
+                            loading: false,
+                            granted: true,
+                            unauthenticated: false,
+                        });
+                    }
                 }
 
                 return setAccessState({ loading: false, granted: false, unauthenticated: false });
             }
 
             if (pageType === 'empresa') {
-                if (tipoUsuario !== 'admin') return setAccessState({ loading: false, granted: false, unauthenticated: false });
+                if (tipo_usuario !== 'admin') {
+                    return setAccessState({ loading: false, granted: false, unauthenticated: false });
+                }
 
                 return setAccessState({
                     loading: false,
-                    granted: pageId === fkEmpresaId,
+                    granted: pageId === fk_empresa_id,
                     unauthenticated: false,
                 });
             }
+
+            if (pageType === 'horario') {
+
+                return setAccessState({
+                    loading: false,
+                    granted: pageId === fk_empresa_id,
+                    unauthenticated: false,
+                });
+            }
+
 
             return setAccessState({ loading: false, granted: false, unauthenticated: false });
         };
 
         verificar();
-    }, [authLoading, isAuthenticated, pageType, pageId, tipoUsuario, idUsuario, fkEmpresaId]);
+    }, [authLoading, isAuthenticated, user, pageType, pageId]);
 
     return {
         authLoading,
