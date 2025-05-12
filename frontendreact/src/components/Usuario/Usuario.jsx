@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -26,7 +26,10 @@ import { useAuth } from "../../context/AuthContext";
 
 function Usuario() {
   const { user } = useAuth();
-  const { tipo_usuario, fk_empresa_id } = user || {};
+  const { tipo_usuario } = user || {};
+  // id da empresa vizualizada
+  const { id } = useParams() || {};
+
   const navigate = useNavigate();
 
   const [usuarios, setUsuarios] = useState([]);
@@ -52,7 +55,7 @@ function Usuario() {
       if (params.tipo_usuario === "") delete params.tipo_usuario;
       params.page = currentPage;
 
-      const data = await fetchUsuarios(fk_empresa_id, params);
+      const data = await fetchUsuarios(id, params);
       if (data) {
         const ordem = { gerente: 1, funcionario: 2, secretario: 3 };
         setUsuarios(data.sort((a, b) => ordem[a.tipo_usuario] - ordem[b.tipo_usuario]));
@@ -71,7 +74,7 @@ function Usuario() {
 
   const loadEmpresa = async () => {
     try {
-      const nomeEmpresa = await fetchEmpresaNome(fk_empresa_id);
+      const nomeEmpresa = await fetchEmpresaNome(id);
       setEmpresaNome(nomeEmpresa || "Empresa não encontrada");
     } catch (error) {
       console.error(error);
@@ -96,7 +99,7 @@ function Usuario() {
       email: e.target.email.value.trim(),
       senha: e.target.password.value,
       tipo_usuario: e.target.tipo_usuario.value,
-      fk_empresa_id: fk_empresa_id,
+      fk_empresa_id: id,
     };
 
     if (formData.tipo_usuario === "cargo") {

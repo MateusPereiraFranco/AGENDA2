@@ -151,7 +151,6 @@ const addScheduleController = async (req, res) => {
     const isAdmin = usuarioAutenticado.tipo_usuario === 'admin';
     const isManagerOrSecretary = ['gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
     const mesmoUsuario = usuarioAutenticado.id == fk_usuario_id;
-    console.log(mesmoUsuario, usuarioAutenticado.id, fk_usuario_id);
 
     try {
         if (!mesmoUsuario && !isAdmin) {
@@ -166,7 +165,6 @@ const addScheduleController = async (req, res) => {
             const mesmaEmpresa = usuarioAutenticado.fk_empresa_id === targetEmpresaId;
 
             const podeCriarAgenda = (isManagerOrSecretary && mesmaEmpresa);
-            console.log('Permissão: ', podeCriarAgenda, isAdmin, mesmoUsuario, isManagerOrSecretary, mesmaEmpresa);
 
             if (!podeCriarAgenda) {
                 return res.status(403).send('Você não tem permissão para criar agendamentos para outros usuários');

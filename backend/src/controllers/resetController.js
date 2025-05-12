@@ -55,8 +55,6 @@ export const verifyToken = async (req, res) => {
             [email, token]
         );
 
-        console.log('Resultado da verificação do token:', result.rows); // Debugging
-
         if (result.rows.length === 0) {
             return res.status(400).json({ message: 'Token inválido ou expirado' });
         }

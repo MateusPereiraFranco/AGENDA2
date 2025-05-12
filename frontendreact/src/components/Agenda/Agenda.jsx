@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -24,8 +24,9 @@ import { useAuth } from "../../context/AuthContext";
 
 function Agenda() {
 
+  const { id } = useParams();
   const { user } = useAuth();
-  const { tipo_usuario, id_usuario } = user || {};
+  const { tipo_usuario } = user || {};
 
   const navigate = useNavigate();
 
@@ -88,7 +89,7 @@ function Agenda() {
         ...(searchParams.dataFim && { dataFim: searchParams.dataFim }),
       };
 
-      const data = await fetchAgendamentos(id_usuario, params);
+      const data = await fetchAgendamentos(id, params);
       setAgendamentos(data || []);
       setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
@@ -102,7 +103,7 @@ function Agenda() {
 
   const loadUsuarioName = async () => {
     try {
-      const nomeUsuario = await fetchUsuarioNome(id_usuario);
+      const nomeUsuario = await fetchUsuarioNome(id);
       setUsuarioNome(nomeUsuario || "Usuário não encontrado");
     } catch (error) {
       console.error(error);
@@ -133,7 +134,7 @@ function Agenda() {
     const data = e.target.data.value;
 
     try {
-      await addAgendamento({ data }, id_usuario);
+      await addAgendamento({ data }, id);
       toast.success("Agendamento adicionado com sucesso!");
       loadAgendamentos();
       e.target.reset();

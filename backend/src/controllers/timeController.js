@@ -33,8 +33,6 @@ const getTimesController = async (req, res) => {
             if (!agenda) {
                 return res.status(404).send('Agenda não encontrada');
             }
-            console.log('Agenda:', agenda);
-            console.log('Usuário autenticado:', usuarioAutenticado);
 
             // Verifica se o usuário é o dono da agenda ou tem permissão de admin/gerente/secretário
             if (usuarioAutenticado.id !== agenda.fk_usuario_id && !['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
