@@ -24,7 +24,8 @@ body {
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   background-image: radial-gradient(rgb(54, 59, 63), rgb(16, 22, 32));
   color: var(--text-color);
-  height: 115vh;
+  height: 100vh;
+  width: 99.2vw;
 }
 
 input, select {
