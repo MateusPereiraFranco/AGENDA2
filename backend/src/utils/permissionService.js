@@ -32,9 +32,8 @@ export async function checkPermissionByType(user, pageType, pageId) {
     if (pageType === 'usuario') {
         if (tipo_usuario === 'funcionario') return false;
 
-
         if (['gerente', 'secretario'].includes(tipo_usuario)) {
-            return pageId == fk_empresa_id;
+            return pageId.toString() == fk_empresa_id.toString();
         }
         return false;
     }

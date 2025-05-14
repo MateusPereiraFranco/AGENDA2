@@ -2,12 +2,13 @@ import pool from "../config/database.js";
 import { getSchedules, addSchedule, deleteSchedule, updateSchedule, getScheduleById, getFkUserScheduleById, getDataAgendamento } from "../models/scheduleModel.js";
 
 import Joi from 'joi';
+import { encodeId, decodeId } from "../utils/hashids.js";
 
 const searchSchema = Joi.object({
-    id: Joi.number().integer().positive().optional(),
+    id: Joi.string().optional(),
     dataInicio: Joi.date().iso().optional(),
     dataFim: Joi.date().iso().optional(),
-    fk_usuario_id: Joi.number().integer().positive().optional(),
+    fk_usuario_id: Joi.string().optional(),
     page: Joi.number().integer().positive().default(1),
     limit: Joi.number().integer().positive().default(10),
     sortBy: Joi.string().valid('id_agenda', 'data', 'fk_usuario_id').default('id_agenda'),
@@ -18,14 +19,21 @@ export const getFkUserScheduleByIdController = async (req, res) => {
     try {
         const { id } = req.params
 
-        if (!id) {
+        let decodedId;
+        try {
+            decodedId = decodeId(id);
+        } catch {
+            return res.status(400).send('ID inválido');
+        }
+
+        if (!decodedId) {
             return res.status(400).json({
                 success: false,
                 message: 'ID do agendamento é obrigatório'
             });
         }
 
-        const fkUsuarioId = await getFkUserScheduleById(id);
+        const fkUsuarioId = await getFkUserScheduleById(decodedId);
 
         if (!fkUsuarioId) {
             return res.status(404).json({
@@ -36,7 +44,7 @@ export const getFkUserScheduleByIdController = async (req, res) => {
 
         res.json({
             success: true,
-            fk_usuario_id: fkUsuarioId
+            fk_usuario_id: encodeId(fkUsuarioId)
         });
     } catch (err) {
         console.error('Erro no controller ao buscar agendamento:', err);
@@ -52,14 +60,21 @@ export const getDataAgendamentoController = async (req, res) => {
     try {
         const { id } = req.params
 
-        if (!id) {
+        let decodedId;
+        try {
+            decodedId = decodeId(id);
+        } catch {
+            return res.status(400).send('ID inválido');
+        }
+
+        if (!decodedId) {
             return res.status(400).json({
                 success: false,
                 message: 'ID do agendamento é obrigatório'
             });
         }
 
-        const data = await getDataAgendamento(id);
+        const data = await getDataAgendamento(decodedId);
 
         if (!data) {
             return res.status(404).json({
@@ -93,9 +108,16 @@ const getSchedulesController = async (req, res) => {
         }
 
         const loggedUser = req.user;
-        const agendaUserId = value.fk_usuario_id;
+        let agendaUserId = value.fk_usuario_id;
+
         if (!agendaUserId) {
             return res.status(400).json({ message: 'ID do usuário da agenda é obrigatório' });
+        } else {
+            try {
+                agendaUserId = decodeId(agendaUserId);
+            } catch {
+                return res.status(400).json({ message: 'ID do usuario inválido' });
+            }
         }
 
         if (!loggedUser.id || !loggedUser.fk_empresa_id || !loggedUser.tipo_usuario) {
@@ -125,7 +147,14 @@ const getSchedulesController = async (req, res) => {
 
         // 4. Buscar agendas
         const schedules = await getSchedules({ ...value, fk_usuario_id: agendaUserId });
-        return res.status(200).json(schedules || []);
+
+        const response = schedules.map(schedule => ({
+            ...schedule,
+            id_agenda: encodeId(schedule.id_agenda),
+            fk_usuario_id: schedule.fk_usuario_id ? encodeId(schedule.fk_usuario_id) : null,
+        }));
+
+        return res.status(200).json(response || []);
     } catch (err) {
         console.error('Erro no getSchedulesController:', err);
         return res.status(500).json({
@@ -136,11 +165,18 @@ const getSchedulesController = async (req, res) => {
 };
 
 
-
 // Controlador para adicionar um nova agenda
 const addScheduleController = async (req, res) => {
     const { data } = req.body;
     const { fk_usuario_id } = req.body;
+
+    let fk_usuario_id_decoded;
+
+    try {
+        fk_usuario_id_decoded = decodeId(fk_usuario_id);
+    } catch {
+        return res.status(400).json({ error: 'ID da empresa inválido' });
+    }
 
     const usuarioAutenticado = req.user;
 
@@ -150,14 +186,14 @@ const addScheduleController = async (req, res) => {
 
     const isAdmin = usuarioAutenticado.tipo_usuario === 'admin';
     const isManagerOrSecretary = ['gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
-    const mesmoUsuario = usuarioAutenticado.id == fk_usuario_id;
+    const mesmoUsuario = usuarioAutenticado.id == fk_usuario_id_decoded;
 
     try {
         if (!mesmoUsuario && !isAdmin) {
 
             const { rows } = await pool.query(`
                 SELECT fk_empresa_id FROM usuario WHERE id_usuario = $1
-            `, [fk_usuario_id]);
+            `, [fk_usuario_id_decoded]);
 
             if (rows.length === 0) return res.status(404).send('Usuário de destino não encontrado');
 
@@ -171,8 +207,16 @@ const addScheduleController = async (req, res) => {
             }
         }
 
-        const newSchedule = await addSchedule(data, fk_usuario_id);
-        return res.status(201).json(newSchedule);
+        const newSchedule = await addSchedule(data, fk_usuario_id_decoded);
+        return res.status(201).json({
+            success: true,
+            data: {
+                ...newSchedule,
+                id_agenda: encodeId(newSchedule.id_agenda),
+                fk_usuario_id: newSchedule.fk_usuario_id ? encodeId(newSchedule.fk_usuario_id) : null
+            }
+        });
+
     } catch (err) {
         if (err.code === '23505') {
             return res.status(409).json({ error: 'Esta agenda já está cadastrada' });
@@ -193,12 +237,21 @@ const deleteScheduleController = async (req, res) => {
         return res.status(400).send('ID do agendamento é obrigatório para exclusão');
     }
 
+    let decodedId;
     try {
+        decodedId = decodeId(id);
+    } catch {
+        return res.status(400).send('ID inválido');
+    }
 
-        const deleted = await deleteSchedule(id);
+    try {
+        const deleted = await deleteSchedule(decodedId);
         if (!deleted) {
             return res.status(404).send('Agendamento não encontrado');
         }
+        deleted.id_agenda = encodeId(deleted.id_agenda); // Codifica o id do usuario
+        deleted.fk_usuario_id = deleted.fk_usuario_id ? encodeId(deleted.fk_usuario_id) : null;
+
         return res.status(200).json({ message: 'Agendamento excluído com sucesso', schedule: deleted });
 
     } catch (err) {
@@ -217,11 +270,27 @@ const updateScheduleController = async (req, res) => {
         return res.status(400).send('ID e data são obrigatórios para atualização');
     }
 
+    let decodedId;
     try {
-        const updatedSchedule = await updateSchedule(id, data, schedule.fk_usuario_id);
+        decodedId = decodeId(id);
+    } catch {
+        return res.status(400).send('ID inválido');
+    }
+
+    let decodedFkUsuarioId;
+    try {
+        decodedFkUsuarioId = decodeId(schedule.fk_usuario_id);
+    } catch {
+        return res.status(400).send('ID inválido');
+    }
+
+    try {
+        const updatedSchedule = await updateSchedule(decodedId, data, decodedFkUsuarioId);
         if (!updatedSchedule) {
             return res.status(404).send('Agendamento não encontrado');
         }
+        updatedSchedule.id_agenda = encodeId(updatedSchedule.id_agenda); // Codifica o id do usuario
+        updatedSchedule.fk_usuario_id = updatedSchedule.fk_usuario_id ? encodeId(updatedSchedule.fk_usuario_id) : null;
         return res.status(200).json({ message: 'Agenda atualizada com sucesso!', schedule: updatedSchedule });
 
     } catch (err) {

@@ -7,16 +7,16 @@ import {
     getFkUserScheduleByIdController,
     getDataAgendamentoController,
 } from '../controllers/scheduleController.js';
-import { authenticateToken, checkAcesso } from '../middlewares/authMiddleware.js';
+import { authenticateToken } from '../middlewares/authMiddleware.js';
 
 
 const router = express.Router();
 
 router.get('/schedules', authenticateToken, getSchedulesController);
 router.post('/addSchedule', authenticateToken, addScheduleController);
-router.delete('/deleteSchedule/:id', authenticateToken, checkAcesso('agenda'), deleteScheduleController);
-router.put('/updateSchedule/:id', authenticateToken, checkAcesso('agenda'), updateScheduleController);
-router.get('/schedule/:id', authenticateToken, checkAcesso('agenda'), getFkUserScheduleByIdController);
-router.get('/scheduleData/:id', authenticateToken, checkAcesso('agenda'), getDataAgendamentoController);
+router.delete('/deleteSchedule/:id', authenticateToken, deleteScheduleController);
+router.put('/updateSchedule/:id', authenticateToken, updateScheduleController);
+router.get('/schedule/:id', authenticateToken, getFkUserScheduleByIdController);
+router.get('/scheduleData/:id', authenticateToken, getDataAgendamentoController);
 
 export default router;

@@ -4,7 +4,7 @@ import { handleError } from './errorHandler';
 
 // Função para buscar usuários de uma empresa
 export const fetchUsuarios = async (fk_empresa_id, searchParams = {}) => {
-
+    console.log('fetchUsuarios', fk_empresa_id, searchParams);
     try {
         const queryString = new URLSearchParams(searchParams).toString();
         const response = await fetch(`${API_URL}/users?${queryString}&fk_empresa_id=${fk_empresa_id}`, {

@@ -2,10 +2,11 @@ import { getTimes, addTime, deleteTime, updateTime, getTimeById } from "../model
 import { getScheduleById } from "../models/scheduleModel.js";
 import Joi from 'joi';
 import pool from "../config/database.js";
+import { encodeId, decodeId } from "../utils/hashids.js";
 
 const searchSchema = Joi.object({
-    id: Joi.number().integer().positive().optional(),
-    fk_agenda_id: Joi.number().integer().positive().optional(),
+    id: Joi.string().optional(),
+    fk_agenda_id: Joi.string().optional(),
     horario: Joi.string().optional(),
     nome: Joi.string().optional(),
     contato: Joi.string().optional(),
@@ -22,6 +23,14 @@ const getTimesController = async (req, res) => {
 
     if (error) {
         return res.status(400).send(error.details[0].message);
+    }
+
+    if (value.fk_agenda_id) {
+        try {
+            value.fk_agenda_id = decodeId(value.fk_agenda_id);
+        } catch {
+            return res.status(400).send('ID da empresa inválido');
+        }
     }
 
     const usuarioAutenticado = req.user; // Dados do usuário autenticado
@@ -42,7 +51,13 @@ const getTimesController = async (req, res) => {
 
         const times = await getTimes(value);
 
-        return res.status(200).json(times || []);
+        const response = times.map(time => ({
+            ...time,
+            id_horario: encodeId(time.id_horario),
+            fk_agenda_id: time.fk_agenda_id ? encodeId(time.fk_agenda_id) : null,
+        }));
+
+        return res.status(200).json(response || []);
 
     } catch (err) {
         console.error('Erro ao buscar horários:', err);
@@ -55,21 +70,32 @@ const addTimeController = async (req, res) => {
     const { horario, fk_usuario_id } = req.body;
     const usuarioAutenticado = req.user;
 
-
+    if (!fk_usuario_id) {
+        return res.st
+    }
     if (!horario || !horario.fk_agenda_id) {
         return res.status(400).send('Dados obrigatórios ausentes');
+    }
+
+
+    let fk_usuario_id_decoded;
+    try {
+        fk_usuario_id_decoded = decodeId(fk_usuario_id);
+        horario.fk_agenda_id = decodeId(horario.fk_agenda_id);
+    } catch {
+        return res.status(400).json({ error: 'ID da empresa inválido' });
     }
 
     try {
         const { rows } = await pool.query(`
             SELECT fk_empresa_id FROM usuario WHERE id_usuario = $1
-        `, [fk_usuario_id]);
+        `, [fk_usuario_id_decoded]);
 
         if (rows.length === 0) return res.status(404).send('Usuário de destino não encontrado');
         const targetEmpresaId = rows[0].fk_empresa_id;
         const isAdmin = usuarioAutenticado.tipo_usuario === 'admin';
         const isManagerOrSecretary = ['gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario);
-        const mesmoUsuario = usuarioAutenticado.id === fk_usuario_id;
+        const mesmoUsuario = usuarioAutenticado.id === fk_usuario_id_decoded;
         const mesmaEmpresa = usuarioAutenticado.fk_empresa_id === targetEmpresaId;
 
         const podeCriarHorario = isAdmin || mesmoUsuario || (isManagerOrSecretary && mesmaEmpresa);
@@ -78,9 +104,19 @@ const addTimeController = async (req, res) => {
             return res.status(403).send('Você não tem permissão para criar horário para esse usuário');
         }
 
+
         // Aqui você chama sua função de criação
-        const novoHorario = await addTime(horario); // ou como você tiver implementado
-        return res.status(201).json(novoHorario);
+        const novoHorario = await addTime(horario);
+
+        return res.status(201).json({
+            success: true,
+            data: {
+                ...novoHorario,
+                id_agenda: encodeId(novoHorario.id_horario),
+                fk_agenda_id: novoHorario.fk_agenda_id ? encodeId(novoHorario.fk_agenda_id) : null
+            }
+        });
+
     } catch (err) {
         console.error('Erro ao adicionar horário:', err);
         return res.status(500).send('Erro interno ao adicionar horário');
@@ -96,9 +132,17 @@ const deleteTimeController = async (req, res) => {
         return res.status(400).send('ID é obrigatório para exclusão');
     }
 
+    let decodedId;
+    try {
+        decodedId = decodeId(id);
+    } catch {
+        return res.status(400).send('ID inválido');
+    }
+
     try {
         // Busca o horário pelo ID
-        const time = await getTimeById(id);
+        const time = await getTimeById(decodedId);
+
         if (!time) {
             return res.status(404).send('Horário não encontrado');
         }
@@ -111,7 +155,10 @@ const deleteTimeController = async (req, res) => {
 
         // Verifica se o usuário tem permissão para deletar o horário
         if (usuarioAutenticado.id === agenda.fk_usuario_id || ['admin', 'gerente', 'secretario'].includes(usuarioAutenticado.tipo_usuario)) {
-            const deletedTime = await deleteTime(id);
+            const deletedTime = await deleteTime(decodedId);
+            //deletedTime.id_horario = encodeId(deletedTime.id_horario); // Codifica o id do usuario
+            //deletedTime.fk_agenda_id = deletedTime.fk_agenda_id ? encodeId(deletedTime.fk_agenda_id) : null;
+
             res.status(200).json({ message: 'Horário excluído com sucesso!', time: deletedTime });
         } else {
             res.status(403).send('Você não tem permissão para excluir horários desta agenda');

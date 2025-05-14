@@ -53,13 +53,13 @@ const refreshTokenController = async (req, res) => {
             id: decoded.id,
             email: decoded.email,
             tipo_usuario: decoded.tipo_usuario
-        }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        }, process.env.JWT_SECRET, { expiresIn: '150m' });
 
         res.cookie('access_token', newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 15 * 60 * 1000,
+            maxAge: 15 * 60 * 100000,
         });
 
         res.status(200).json({ message: 'Access token renovado' });
@@ -87,7 +87,7 @@ const loginController = async (req, res) => {
 
         // Tokens
         const payload = { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario, fk_empresa_id: user.fk_empresa_id };
-        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '150m' });
         const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
         // Salva refresh no banco
@@ -101,7 +101,7 @@ const loginController = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 15 * 60 * 1000,
+            maxAge: 15 * 60 * 100000,
         });
 
         // Envia refresh no cookie separado
@@ -109,7 +109,7 @@ const loginController = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: 7 * 24 * 60 * 60 * 100000,
         });
 
         res.status(200).json({
@@ -119,7 +119,7 @@ const loginController = async (req, res) => {
                 id_usuario: encodeId(user.id_usuario),
                 email: user.email,
                 tipo_usuario: user.tipo_usuario,
-                fk_empresa_id: encondeId(user.fk_empresa_id)
+                fk_empresa_id: encodeId(user.fk_empresa_id)
             }
         });
 
@@ -292,7 +292,6 @@ const deleteUserController = async (req, res) => {
     if (!id) {
         return res.status(400).send('ID é obrigatório para exclusão');
     }
-    console.log(id);
     let decodedId;
     try {
         decodedId = decodeId(id);

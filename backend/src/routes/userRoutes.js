@@ -12,9 +12,10 @@ import {
     refreshTokenController
 } from '../controllers/userController.js';
 
-import { authenticateToken, isAdminOrManager } from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
+import { authenticateToken } from '../middlewares/authMiddleware.js'; // Importe o middleware de autenticação
 import { requestReset, resetPassword, verifyToken } from '../controllers/resetController.js';
 import { authLimiter, generalLimiter, writeLimiter } from '../middlewares/rateLimitMiddleware.js';
+import { permissionMiddleware } from '../middlewares/permissionMiddleware.js';
 
 const router = express.Router();
 
@@ -22,10 +23,10 @@ const router = express.Router();
 router.post('/login', loginController);
 
 // Rotas protegidas (exigem autenticação)
-router.get('/users', authenticateToken, generalLimiter, isAdminOrManager, getUsersController); // Listar usuários
-router.post('/addUser', authenticateToken, writeLimiter, isAdminOrManager, addUserController); // Adicionar usuário
-router.delete('/deleteUser', authenticateToken, writeLimiter, isAdminOrManager, deleteUserController); // Deletar usuário
-router.put('/updateUser/:id', authenticateToken, writeLimiter, isAdminOrManager, updateUserController); // Atualizar usuário
+router.get('/users', authenticateToken, generalLimiter, permissionMiddleware('usuario'), getUsersController); // Listar usuários
+router.post('/addUser', authenticateToken, writeLimiter, permissionMiddleware('usuario'), addUserController); // Adicionar usuário
+router.delete('/deleteUser', authenticateToken, writeLimiter, permissionMiddleware('usuario'), deleteUserController); // Deletar usuário
+router.put('/updateUser/:id', authenticateToken, writeLimiter, permissionMiddleware('usuario'), updateUserController); // Atualizar usuário
 router.post('/logout', logoutController);
 router.get('/check-auth', authenticateToken, checkAuthController);
 router.get('/usuarioName', authenticateToken, generalLimiter, getUserNameController)

@@ -16,7 +16,7 @@ router.get('/times', authenticateToken, generalLimiter, getTimesController);
 
 // Escrita
 router.post('/addTime', authenticateToken, writeLimiter, addTimeController);
-router.delete('/deleteTime/:id', authenticateToken, checkAcesso('horario'), writeLimiter, deleteTimeController);
-router.put('/updateTime/:id', authenticateToken, checkAcesso('horario'), writeLimiter, updateTimeController);
+router.delete('/deleteTime/:id', authenticateToken, writeLimiter, deleteTimeController);
+router.put('/updateTime/:id', authenticateToken, writeLimiter, updateTimeController);
 
 export default router;
