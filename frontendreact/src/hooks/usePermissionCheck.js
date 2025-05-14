@@ -24,10 +24,8 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
             }
             try {
                 const granted = await getPermissionStatus(pageType, pageId);
-
                 setAccessState({ loading: false, granted: granted, unauthenticated: false });
             } catch (error) {
-                console.error('Erro ao verificar permissão:', error);
                 setAccessState({ loading: false, granted: false, unauthenticated: false });
             }
         };

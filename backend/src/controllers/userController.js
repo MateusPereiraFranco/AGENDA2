@@ -288,7 +288,7 @@ const addUserController = async (req, res) => {
 
 // Controlador para adicionar um novo usuario
 const deleteUserController = async (req, res) => {
-    const { id } = req.body; // Recebe os dados do corpo da requisição
+    const { id } = req.params; // Recebe os dados do corpo da requisição
     if (!id) {
         return res.status(400).send('ID é obrigatório para exclusão');
     }

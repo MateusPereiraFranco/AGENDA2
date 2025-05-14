@@ -25,7 +25,7 @@ router.post('/login', loginController);
 // Rotas protegidas (exigem autenticação)
 router.get('/users', authenticateToken, generalLimiter, permissionMiddleware('usuario'), getUsersController); // Listar usuários
 router.post('/addUser', authenticateToken, writeLimiter, permissionMiddleware('usuario'), addUserController); // Adicionar usuário
-router.delete('/deleteUser', authenticateToken, writeLimiter, permissionMiddleware('usuario'), deleteUserController); // Deletar usuário
+router.delete('/deleteUser/:id', authenticateToken, writeLimiter, permissionMiddleware('usuario'), deleteUserController); // Deletar usuário
 router.put('/updateUser/:id', authenticateToken, writeLimiter, permissionMiddleware('usuario'), updateUserController); // Atualizar usuário
 router.post('/logout', logoutController);
 router.get('/check-auth', authenticateToken, checkAuthController);

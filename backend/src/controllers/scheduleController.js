@@ -277,15 +277,8 @@ const updateScheduleController = async (req, res) => {
         return res.status(400).send('ID inválido');
     }
 
-    let decodedFkUsuarioId;
     try {
-        decodedFkUsuarioId = decodeId(schedule.fk_usuario_id);
-    } catch {
-        return res.status(400).send('ID inválido');
-    }
-
-    try {
-        const updatedSchedule = await updateSchedule(decodedId, data, decodedFkUsuarioId);
+        const updatedSchedule = await updateSchedule(decodedId, data);
         if (!updatedSchedule) {
             return res.status(404).send('Agendamento não encontrado');
         }
@@ -301,7 +294,6 @@ const updateScheduleController = async (req, res) => {
         return res.status(500).send('Erro interno ao atualizar agenda');
     }
 };
-
 
 export {
     getSchedulesController,

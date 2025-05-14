@@ -4,7 +4,6 @@ import { handleError } from './errorHandler';
 
 // Função para buscar usuários de uma empresa
 export const fetchUsuarios = async (fk_empresa_id, searchParams = {}) => {
-    console.log('fetchUsuarios', fk_empresa_id, searchParams);
     try {
         const queryString = new URLSearchParams(searchParams).toString();
         const response = await fetch(`${API_URL}/users?${queryString}&fk_empresa_id=${fk_empresa_id}`, {
@@ -43,10 +42,8 @@ export const fetchUsuarioNome = async (id) => {
 // Função para deletar um usuário
 export const deleteUsuario = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/deleteUser`, {
+        const response = await fetch(`${API_URL}/deleteUser/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id }),
             credentials: 'include', // Inclui cookies na requisição
         });
         if (!response.ok) {

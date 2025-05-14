@@ -144,11 +144,11 @@ const deleteSchedule = async (id) => {
 };
 
 
-const updateSchedule = async (id, data, fk_usuario_id) => {
+const updateSchedule = async (id, data) => {
     try {
         const result = await pool.query(
-            'UPDATE agenda SET data = $1, fk_usuario_id = $2 WHERE id_agenda = $3 RETURNING *',
-            [data, fk_usuario_id, id]
+            'UPDATE agenda SET data = $1 WHERE id_agenda = $2 RETURNING *',
+            [data, id]
         );
         return result.rows[0]; // Retorna o agenda atualizado
     } catch (err) {

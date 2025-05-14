@@ -42,8 +42,33 @@ export async function checkPermissionByType(user, pageType, pageId) {
         return false;
     }
 
+    // Check permission for 'horario' page type
     if (pageType === 'horario') {
-        return true;
+
+        const agendaResult = await pool.query(
+            'SELECT fk_usuario_id FROM agenda WHERE id_agenda = $1',
+            [pageId]
+        );
+
+        if (agendaResult.rowCount === 0) {
+            return false;
+        }
+
+        const fk_usuario_id = agendaResult.rows[0].fk_usuario_id;
+
+        const usuario = await pool.query(
+            'SELECT id_usuario, fk_empresa_id FROM usuario WHERE id_usuario = $1',
+            [fk_usuario_id]
+        );
+
+        if (usuario.rowCount === 0) {
+            return false;
+        }
+
+        const { id_usuario, fk_empresa_id: targetEmpresaId } = usuario.rows[0];
+
+        if ((tipo_usuario === 'gerente' || tipo_usuario === 'secretario') && targetEmpresaId == fk_empresa_id) return true;
+        if (tipo_usuario === 'funcionario' && id_usuario == id) return true;
     }
 
     return false;

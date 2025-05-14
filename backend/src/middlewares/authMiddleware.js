@@ -16,7 +16,7 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
-
+/*
 const isAdminOrManager = async (req, res, next) => {
     const allowedRoles = ['admin', 'gerente', 'secretario'];
 
@@ -154,6 +154,6 @@ export const checkAcesso = (tipoRecurso) => {
         }
     };
 };
+*/
 
-
-export { authenticateToken, isAdminOrManager };
+export { authenticateToken };

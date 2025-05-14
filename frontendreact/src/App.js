@@ -18,6 +18,7 @@ import UpdatePassword from './components/UpdatePassword/UpdatePassword';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import VerifyToken from './components/VerifyToken/VerifyToken';
 import ResetPassword from './components/ResetPassword/ResetPassword';
+import ProtectedHorarioRoute from './services/ProtectedHorarioRoute copy';
 
 
 function App() {
@@ -45,8 +46,9 @@ function App() {
                     <Route element={<ProtectedAgendaRoute />}>
                         <Route path="/agenda/:id" element={<Agenda />} />
                     </Route>
-                    <Route path="/horario/:id" element={<Horario />} />
-
+                    <Route element={<ProtectedHorarioRoute />}>
+                        <Route path="/horario/:id" element={<Horario />} />
+                    </Route>
                     <Route element={<ProtectedUpdatePasswordRoute />}>
                         <Route path="/atualizar-senha" element={<UpdatePassword />} />
                     </Route>

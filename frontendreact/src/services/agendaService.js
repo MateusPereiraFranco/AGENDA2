@@ -91,7 +91,6 @@ export const deleteAgendamento = async (id) => {
 // Função para atualizar um agendamento
 export const updateAgendamento = async (id, agendamento) => {
     try {
-
         const response = await fetch(`${API_URL}/updateSchedule/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
