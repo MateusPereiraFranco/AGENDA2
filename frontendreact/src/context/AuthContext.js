@@ -1,52 +1,72 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
 import { API_URL } from '../services/apiConfig';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { checkAuth as checkAuthService } from '../services/authService';
+import { saveUserToSession, getUserFromSession, clearUserFromSession } from '../services/authStorage';
 
 const AuthContext = createContext();
 
-// context/AuthContext.js
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState(null); // Novo estado com os dados do usuário
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!getUserFromSession());
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const response = await fetch(`${API_URL}/check-auth`, {
-                    credentials: 'include',
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.authenticated) {
-                        setIsAuthenticated(true);
-                        setUser(data.user); // Salva o usuário do backend
-                    } else {
-                        setIsAuthenticated(false);
-                        setUser(null);
-                    }
-                } else {
-                    setIsAuthenticated(false);
-                    setUser(null);
-                }
-            } catch (error) {
-                console.error('Erro ao verificar autenticação:', error);
+    const checkAuth = async () => {
+        setIsLoading(true);
+        try {
+            const { authenticated, user } = await checkAuthService();
+            if (authenticated) {
+                setIsAuthenticated(true);
+                setUser(user);
+                saveUserToSession(user);
+            } else {
                 setIsAuthenticated(false);
                 setUser(null);
-            } finally {
-                setIsLoading(false);
+                clearUserFromSession();
             }
-        };
+        } catch (err) {
+            console.error('Erro ao verificar auth:', err);
+            setIsAuthenticated(false);
+            setUser(null);
+            clearUserFromSession();
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    const logout = async () => {
+        try {
+            await fetch(`${API_URL}/logout`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+        } catch (err) {
+            console.error('Erro ao fazer logout:', err);
+        } finally {
+            setIsAuthenticated(false);
+            setUser(null);
+            clearUserFromSession();
+        }
+    };
+
+    useEffect(() => {
         checkAuth();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, user, setUser, isLoading }}>
+        <AuthContext.Provider
+            value={{
+                isAuthenticated,
+                setIsAuthenticated, // só se realmente necessário
+                user,
+                setUser, // idem
+                isLoading,
+                checkAuth, // exposto para uso em qualquer lugar
+                logout,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 };
-
 
 export const useAuth = () => useContext(AuthContext);

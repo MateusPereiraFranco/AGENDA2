@@ -27,62 +27,19 @@ import { flushSync } from 'react-dom';
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
-  const { isAuthenticated, setIsAuthenticated, user, setUser } = useAuth(); // Use o contexto de autenticação
+  const { isAuthenticated, logout, setIsAuthenticated, user, setUser } = useAuth(); // Use o contexto de autenticação
   const navigate = useNavigate();
 
   const handleNavigateToChangePassword = () => {
     navigate("/atualizar-senha");
   };
 
-  // Verifica se o usuário está autenticado ao carregar o componente
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch(`${API_URL}/check-auth`, {
-          credentials: "include", // Inclui cookies na requisição
-        });
-
-        // Verifica se a resposta foi bem-sucedida
-        if (!response.ok) {
-          throw new Error("Erro ao verificar autenticação");
-        }
-
-        const data = await response.json();
-        if (data.authenticated) {
-          setIsAuthenticated(true); // Atualiza o estado de autenticação
-        } else {
-          setIsAuthenticated(false); // Define como não autenticado
-        }
-      } catch (error) {
-        console.error("Erro ao verificar autenticação:", error);
-        setIsAuthenticated(false); // Define como não autenticado em caso de erro
-      }
-    };
-
-    checkAuth();
-  }, [setIsAuthenticated]); // Adiciona setIsAuthenticated como dependência
-
   // Função para fazer logout
   const handleLogout = async () => {
-    try {
-      const response = await fetch(`${API_URL}/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        flushSync(() => {
-          setIsAuthenticated(false);
-          setUser(null); // limpa o usuário do contexto
-        });
-        navigate("/login");
-      } else {
-        console.error("Erro ao fazer logout:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-    }
+    await logout();
+    navigate("/login");
   };
+
 
   // Opções do menu
   const menuOptions = [

@@ -6,6 +6,7 @@ import { usePermissionCheck } from '../hooks/usePermissionCheck';
 const ProtectedEmpresaRoute = () => {
     const { user, isLoading: authLoading } = useAuth();
 
+    console.log('user', user);
     const { accessLoading, granted, unauthenticated } = usePermissionCheck({
         pageType: 'empresa',
         pageId: user.id_usuario,

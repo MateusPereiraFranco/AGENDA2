@@ -6,7 +6,12 @@ export async function checkPermissionByType(user, pageType, pageId) {
 
     if (tipo_usuario === 'admin') return true;
 
-    if (pageType === 'atualizar-senha') return true;
+    if (pageType === 'atualizar-senha') {
+        if (id !== pageId) {
+            return false;
+        }
+        return true
+    }
 
     if (pageType === 'agenda') {
         if (id == pageId) return true;
