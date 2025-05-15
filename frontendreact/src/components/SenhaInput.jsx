@@ -30,7 +30,6 @@ function SenhaInput({
         placeholder={placeholder}
         id={id}
       />
-      <label htmlFor="senha" className={value ? "floating" : ""}>Senha</label>
       <button 
         className='button_eye'
         type="button"

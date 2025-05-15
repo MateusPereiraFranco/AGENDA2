@@ -4,16 +4,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 //icons
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import RotateRightIcon from '@mui/icons-material/RotateRight';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import EditOffIcon from '@mui/icons-material/EditOff';
-import DeleteIcon from '@mui/icons-material/Delete';
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import EditOffIcon from "@mui/icons-material/EditOff";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   fetchEmpresas,
@@ -62,7 +62,7 @@ function Empresa() {
   };
 
   const toggleEditingEmpresa = (id) => {
-    setEditingEmpresaId(prevId => prevId === id ? null : id);
+    setEditingEmpresaId((prevId) => (prevId === id ? null : id));
   };
 
   const handleAddEmpresa = async (e) => {
@@ -76,7 +76,7 @@ function Empresa() {
       e.target.name.value = "";
       e.target.cnpj.value = "";
       e.target.email.value = "";
-      setError('');
+      setError("");
       toast.success(`Empresa ${nome} cadastrada com sucesso!`);
     } catch (error) {
       setError(error.message);
@@ -115,7 +115,7 @@ function Empresa() {
       await updateEmpresa(editingEmpresaId, { nome, cnpj, email });
       loadEmpresas();
       setEditingEmpresaId(null);
-      setError('');
+      setError("");
       toast.success(`Empresa ${nome} atualizada com sucesso!`);
     } catch (error) {
       console.error(error);
@@ -138,7 +138,11 @@ function Empresa() {
 
   return (
     <div className="conteiner_empresas_geral">
-      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
       <h1>TEM UM HORÁRIO</h1>
 
       <div className="form_empresa">
@@ -160,19 +164,27 @@ function Empresa() {
         </form>
         <hr />
         <form onSubmit={handleAddEmpresa}>
-          <input type="text" name="name" placeholder="Nome da Empresa" required />
+          <input
+            type="text"
+            name="name"
+            placeholder="Nome da Empresa"
+            required
+          />
           <input type="text" name="cnpj" placeholder="CNPJ" required />
           <input type="text" name="email" placeholder="Email" required />
-          <button className="botao_verde" type="submit">Adicionar Empresa</button>
+          <button className="botao_verde" type="submit">
+            Adicionar Empresa
+          </button>
         </form>
       </div>
 
-      <hr />
-      <h2>EMPRESAS</h2>
-      <hr />
-
       <div className="tabela_empresa">
         <table>
+          <thead>
+            <tr>
+              <td colSpan='4'><h2>Empresas</h2></td>
+            </tr>
+          </thead>
           <tbody>
             {empresas.length > 0 ? (
               empresas.map((empresa) => (
@@ -184,16 +196,26 @@ function Empresa() {
                     <td className="botaoNoCanto">
                       <button
                         className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(empresa.id_empresa, empresa.nome)}
+                        onClick={() =>
+                          handleDeleteEmpresa(empresa.id_empresa, empresa.nome)
+                        }
                         disabled={deletingId === empresa.id_empresa}
                       >
-                        {deletingId === empresa.id_empresa ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
+                        {deletingId === empresa.id_empresa ? (
+                          <RotateRightIcon className="loading" />
+                        ) : (
+                          <DeleteIcon />
+                        )}
                       </button>
                       <button
                         className="botao_azul"
                         onClick={() => toggleEditingEmpresa(empresa.id_empresa)}
                       >
-                        {editingEmpresaId === empresa.id_empresa ? <EditOffIcon /> : <BorderColorIcon />}
+                        {editingEmpresaId === empresa.id_empresa ? (
+                          <EditOffIcon />
+                        ) : (
+                          <BorderColorIcon />
+                        )}
                       </button>
                       <button
                         className="botao_verde"
@@ -209,7 +231,10 @@ function Empresa() {
                       <td colSpan="4">
                         <h2>Editar Empresa</h2>
                         <div className="edit-empresa-form">
-                          <form className="form-atualizacao" onSubmit={handleUpdateEmpresa}>
+                          <form
+                            className="form-atualizacao"
+                            onSubmit={handleUpdateEmpresa}
+                          >
                             <label htmlFor="nome">Nome:</label>
                             <input
                               type="text"
@@ -286,4 +311,3 @@ function Empresa() {
 }
 
 export default Empresa;
-

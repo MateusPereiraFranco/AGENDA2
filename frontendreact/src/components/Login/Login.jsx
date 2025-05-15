@@ -76,7 +76,7 @@ function Login() {
           />
           <label htmlFor="email" className={email ? "floating" : ""}>E-mail</label>
         </div>
-        <div>
+        <div className="input-container">
           <SenhaInput
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
@@ -84,6 +84,7 @@ function Login() {
             required
             id='senha'
           />
+          <label htmlFor="senha" className={senha ? "floating" : ""}>Senha</label>
         </div>
         <button id='botaoAtuSen' className="botao_verde" type="submit">Entrar</button>
       </form>
