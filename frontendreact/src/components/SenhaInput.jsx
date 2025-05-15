@@ -7,12 +7,13 @@ function SenhaInput({
   onChange,
   placeholder = '',
   required = false,
-  name = ''
+  name = '',
+  id = ''
 }) {
   const [mostrar, setMostrar] = useState(false);
 
   return (
-    <div 
+    <div className="input-container"
       style={{
         position: 'relative', 
         display: 'flex',
@@ -27,7 +28,9 @@ function SenhaInput({
         required={required}
         onChange={onChange}
         placeholder={placeholder}
+        id={id}
       />
+      <label htmlFor="senha" className={value ? "floating" : ""}>Senha</label>
       <button 
         className='button_eye'
         type="button"

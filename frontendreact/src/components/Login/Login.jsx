@@ -65,21 +65,24 @@ function Login() {
     <div className="login-container">
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="input-container">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder='E-mail'
+            placeholder=''
             required
+            id="email"
           />
+          <label htmlFor="email" className={email ? "floating" : ""}>E-mail</label>
         </div>
         <div>
           <SenhaInput
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
-            placeholder='Senha'
+            placeholder=''
             required
+            id='senha'
           />
         </div>
         <button id='botaoAtuSen' className="botao_verde" type="submit">Entrar</button>
