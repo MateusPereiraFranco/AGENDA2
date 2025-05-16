@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
-import { HiEye, HiEyeOff } from 'react-icons/hi';
+import React, { useState } from "react";
+import { HiEye, HiEyeOff } from "react-icons/hi";
 
 function SenhaInput({
   label,
   value,
   onChange,
-  placeholder = '',
+  placeholder = "",
   required = false,
-  name = '',
-  id = ''
+  name = "",
+  id = "",
 }) {
   const [mostrar, setMostrar] = useState(false);
 
   return (
-    <div className="input-container"
+    <div
+      className="input-container"
       style={{
-        position: 'relative', 
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+        position: "relative",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {label && <label>{label}</label>}
       <input
-        type={mostrar ? 'text' : 'password'}
+        type={mostrar ? "text" : "password"}
         name={name}
         value={value}
         required={required}
@@ -30,12 +32,13 @@ function SenhaInput({
         placeholder={placeholder}
         id={id}
       />
-      <button 
-        className='button_eye'
+      <label htmlFor={id} className={value ? "floating" : ""}>{name}</label>
+      <button
+        className="button_eye"
         type="button"
         onClick={() => setMostrar((prev) => !prev)}
         tabIndex={-1}
-        style={{ transform: label ? 'none' : 'translateY(-50%)'}}
+        style={{ transform: label ? "none" : "translateY(-50%)" }}
       >
         {mostrar ? <HiEyeOff /> : <HiEye />}
       </button>

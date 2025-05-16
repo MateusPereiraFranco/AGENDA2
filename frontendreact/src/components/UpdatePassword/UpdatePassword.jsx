@@ -51,39 +51,33 @@ const UpdatePassword = () => {
 
         <div className="input-container">
           <SenhaInput
+            name="Senha atual"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder=""
             required
             id="senhaAtual"
           />
-          <label htmlFor="senhaAtual" className={currentPassword ? "floating" : ""}>
-            Senha atual
-          </label>
         </div>
         <div className="input-container">
           <SenhaInput
+            name="Nova senha"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder=""
             required
             id="novaSenha"
           />
-          <label htmlFor="novasenha" className={newPassword ? "floating" : ""}>
-            Nova senha
-          </label>
         </div>
         <div className="input-container">
           <SenhaInput
+            name="Confirme sua senha"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder=""
             required
             id="confirmaSenha"
           />
-          <label htmlFor="confirmaSenha" className={confirmPassword ? "floating" : ""}>
-            Confirmar nova senha
-          </label>
         </div>
         {confirmPassword && (
           <p style={{ color: senhasCoincidem ? "green" : "red" }}>
