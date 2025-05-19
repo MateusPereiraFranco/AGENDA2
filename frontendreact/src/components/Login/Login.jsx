@@ -78,13 +78,14 @@ function Login() {
         </div>
         <div className="input-container">
           <SenhaInput
+            name='Senha'
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             placeholder=''
             required
-            id='senha'
+            id="senha"
           />
-          <label htmlFor="senha" className={senha ? "floating" : ""}>Senha</label>
+          
         </div>
         <button id='botaoAtuSen' className="botao_verde" type="submit">Entrar</button>
       </form>

@@ -256,6 +256,7 @@ function Horario() {
         >
           <KeyboardArrowLeftIcon className="seta_icon" />
         </button>
+        <span>Página {currentPage}</span>
         <button
           className="botao_verde"
           onClick={() => setCurrentPage(currentPage + 1)}

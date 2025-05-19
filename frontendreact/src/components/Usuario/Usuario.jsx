@@ -11,18 +11,17 @@ import {
 import { fetchEmpresaNome } from "../../services/empresaService";
 
 //icons
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import RotateRightIcon from '@mui/icons-material/RotateRight';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import EditOffIcon from '@mui/icons-material/EditOff';
-import DeleteIcon from '@mui/icons-material/Delete';
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import EditOffIcon from "@mui/icons-material/EditOff";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../../context/AuthContext";
-
 
 function Usuario() {
   const { user } = useAuth();
@@ -33,7 +32,11 @@ function Usuario() {
   const navigate = useNavigate();
 
   const [usuarios, setUsuarios] = useState([]);
-  const [searchParams, setSearchParams] = useState({ nome: "", tipo_usuario: "", sortBy: "tipo_usuario, nome" });
+  const [searchParams, setSearchParams] = useState({
+    nome: "",
+    tipo_usuario: "",
+    sortBy: "tipo_usuario, nome",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [empresaNome, setEmpresaNome] = useState("");
   const [error, setError] = useState("");
@@ -58,7 +61,9 @@ function Usuario() {
       const data = await fetchUsuarios(id, params);
       if (data) {
         const ordem = { gerente: 1, funcionario: 2, secretario: 3 };
-        setUsuarios(data.sort((a, b) => ordem[a.tipo_usuario] - ordem[b.tipo_usuario]));
+        setUsuarios(
+          data.sort((a, b) => ordem[a.tipo_usuario] - ordem[b.tipo_usuario])
+        );
         setError("");
       } else {
         setUsuarios([]);
@@ -83,8 +88,8 @@ function Usuario() {
   };
 
   const toggleStateById = (id, setState) => {
-    setState(prev => {
-      if (prev === null || typeof prev !== 'object') {
+    setState((prev) => {
+      if (prev === null || typeof prev !== "object") {
         return prev === id ? null : id;
       } else {
         return { ...prev, [id]: !prev[id] };
@@ -113,7 +118,7 @@ function Usuario() {
       await addUsuario(formData);
       loadUsuarios();
       e.target.reset();
-      setError('');
+      setError("");
       toast.success(`Usuário ${formData.nome} cadastrado com sucesso!`);
     } catch (error) {
       setError(error.message);
@@ -152,7 +157,7 @@ function Usuario() {
       await updateUsuario(editingId, { nome, email, tipo_usuario });
       loadUsuarios();
       setEditingId(null);
-      setError('');
+      setError("");
       toast.success(`Usuário ${nome} atualizado com sucesso!`);
     } catch (error) {
       setError(error.message);
@@ -166,12 +171,15 @@ function Usuario() {
 
   const handleSearchChangeNome = (e) => {
     const value = e.target.value;
-    setSearchParams(prev => ({ ...prev, nome: value }));
+    setSearchParams((prev) => ({ ...prev, nome: value }));
   };
 
   const handleSearchChangeTipo_Usuario = (e) => {
     const value = e.target.value;
-    setSearchParams(prev => ({ ...prev, tipo_usuario: value === "Todos" ? "" : value }));
+    setSearchParams((prev) => ({
+      ...prev,
+      tipo_usuario: value === "Todos" ? "" : value,
+    }));
   };
 
   const tipoUsuarioMap = {
@@ -182,7 +190,11 @@ function Usuario() {
 
   return (
     <div className="conteiner_usuario_geral">
-      <ToastContainer autoClose={1200} pauseOnHover={false} pauseOnFocusLoss={false} />
+      <ToastContainer
+        autoClose={1200}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
       <h1>{empresaNome}</h1>
 
       <div className="form_usuario">
@@ -193,7 +205,10 @@ function Usuario() {
             value={searchParams.nome}
             onChange={handleSearchChangeNome}
           />
-          <select value={searchParams.tipo_usuario || "Todos"} onChange={handleSearchChangeTipo_Usuario}>
+          <select
+            value={searchParams.tipo_usuario || "Todos"}
+            onChange={handleSearchChangeTipo_Usuario}
+          >
             <option value="Todos">Todos</option>
             <option value="gerente">Gerente</option>
             <option value="secretario">Secretário</option>
@@ -205,7 +220,12 @@ function Usuario() {
           <form onSubmit={handleAddUsuario}>
             <input type="text" name="name" placeholder="Nome" required />
             <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Senha" required />
+            <input
+              type="password"
+              name="password"
+              placeholder="Senha"
+              required
+            />
             <select name="tipo_usuario">
               <option value="cargo">Cargo</option>
               <option value="funcionario">Funcionário</option>
@@ -226,7 +246,6 @@ function Usuario() {
               <td colSpan="4" style={{ textAlign: "center" }}>
                 <h2>FUNCIONÁRIOS</h2>
               </td>
-
             </tr>
           </thead>
           <tbody>
@@ -236,20 +255,52 @@ function Usuario() {
                   <tr>
                     <td>{usuario.nome}</td>
                     <td>{usuario.email}</td>
-                    <td>{tipoUsuarioMap[usuario.tipo_usuario] || usuario.tipo_usuario}</td>
+                    <td>
+                      {tipoUsuarioMap[usuario.tipo_usuario] ||
+                        usuario.tipo_usuario}
+                    </td>
                     <td className="botaoNoCanto">
-                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
                         <>
-                          <button className="botao-vermelho" onClick={() => handleDeleteUsuario(usuario.id_usuario, usuario.nome)} disabled={deletingId === usuario.id_usuario}>
-                            {deletingId === usuario.id_usuario ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
+                          <button
+                            className="botao-vermelho"
+                            onClick={() =>
+                              handleDeleteUsuario(
+                                usuario.id_usuario,
+                                usuario.nome
+                              )
+                            }
+                            disabled={deletingId === usuario.id_usuario}
+                          >
+                            {deletingId === usuario.id_usuario ? (
+                              <RotateRightIcon className="loading" />
+                            ) : (
+                              <DeleteIcon />
+                            )}
                           </button>
-                          <button className="botao_azul" onClick={() => toggleStateById(usuario.id_usuario, setEditingId)}>
-                            {editingId === usuario.id_usuario ? <EditOffIcon /> : <BorderColorIcon />}
+                          <button
+                            className="botao_azul"
+                            onClick={() =>
+                              toggleStateById(usuario.id_usuario, setEditingId)
+                            }
+                          >
+                            {editingId === usuario.id_usuario ? (
+                              <EditOffIcon />
+                            ) : (
+                              <BorderColorIcon />
+                            )}
                           </button>
                         </>
                       )}
-                      {(usuario.tipo_usuario === "funcionario" || usuario.tipo_usuario === "gerente") && (
-                        <button className="botao_verde" onClick={() => handleVerFuncionario(usuario.id_usuario)}>
+                      {(usuario.tipo_usuario === "funcionario" ||
+                        usuario.tipo_usuario === "gerente") && (
+                        <button
+                          className="botao_verde"
+                          onClick={() =>
+                            handleVerFuncionario(usuario.id_usuario)
+                          }
+                        >
                           <KeyboardArrowRightIcon />
                         </button>
                       )}
@@ -261,15 +312,37 @@ function Usuario() {
                       <td colSpan="4">
                         <div className="edit-usuario-form">
                           <h2>Editar Usuário</h2>
-                          <form className="form-atualizacao" onSubmit={handleUpdateUsuario}>
+                          <form
+                            className="form-atualizacao"
+                            onSubmit={handleUpdateUsuario}
+                          >
                             <label htmlFor="nome">Nome:</label>
-                            <input type="text" id="nome" name="nome" defaultValue={usuario.nome} required />
+                            <input
+                              type="text"
+                              id="nome"
+                              name="nome"
+                              defaultValue={usuario.nome}
+                              required
+                            />
                             <br />
                             <label htmlFor="email">Email:</label>
-                            <input type="email" id="email" name="email" defaultValue={usuario.email} required />
+                            <input
+                              type="email"
+                              id="email"
+                              name="email"
+                              defaultValue={usuario.email}
+                              required
+                            />
                             <br />
-                            <label htmlFor="tipo_usuario">Tipo de Usuário:</label>
-                            <select id="tipo_usuario" name="tipo_usuario" defaultValue={usuario.tipo_usuario} required>
+                            <label htmlFor="tipo_usuario">
+                              Tipo de Usuário:
+                            </label>
+                            <select
+                              id="tipo_usuario"
+                              name="tipo_usuario"
+                              defaultValue={usuario.tipo_usuario}
+                              required
+                            >
                               <option value="funcionario">Funcionário</option>
                               <option value="secretario">Secretário</option>
                               <option value="gerente">Gerente</option>
@@ -279,7 +352,11 @@ function Usuario() {
                               <button className="botao_verde" type="submit">
                                 <CheckIcon />
                               </button>
-                              <button className="botao-vermelho" type="button" onClick={() => setEditingId(null)}>
+                              <button
+                                className="botao-vermelho"
+                                type="button"
+                                onClick={() => setEditingId(null)}
+                              >
                                 <CloseIcon />
                               </button>
                             </div>
@@ -299,13 +376,21 @@ function Usuario() {
             )}
           </tbody>
         </table>
-
       </div>
       <div className="vai_volta">
-        <button className="botao_verde" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+        <button
+          className="botao_verde"
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           <KeyboardArrowLeftIcon className="seta_icon" />
         </button>
-        <button className="botao_verde" onClick={() => setCurrentPage(currentPage + 1)} disabled={!hasMorePages}>
+        <span>Página {currentPage}</span>
+        <button
+          className="botao_verde"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={!hasMorePages}
+        >
           <KeyboardArrowRightIcon className="seta_icon" />
         </button>
       </div>
