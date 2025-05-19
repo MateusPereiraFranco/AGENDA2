@@ -1,28 +1,18 @@
 import { API_URL } from './apiConfig';
 import { handleError } from './errorHandler';
+import { httpClient } from './fetchWithAuth';
 
 // Função para buscar horários de uma agenda
 export const fetchHorarios = async (fk_agenda_id, searchParams = {}) => {
-
-    const params = new URLSearchParams();
-
-    if (searchParams.page) params.append('page', searchParams.page);
-    if (searchParams.limit) params.append('limit', searchParams.limit);
-    if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy);
-    if (searchParams.order) params.append('order', searchParams.order);
-    params.append('fk_agenda_id', fk_agenda_id);
-
     try {
-        const response = await fetch(`${API_URL}/times?${params.toString()}`, {
-            credentials: 'include',
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
-        }
-        return response.json();
+        const params = new URLSearchParams({
+            ...searchParams,
+            fk_agenda_id
+        }).toString();
+
+        return await httpClient(`/times?${params}`);
     } catch (error) {
-        console.error('Erro no fetchHorarios:');
+        console.error('Erro no fetchHorarios:', error);
         throw error;
     }
 };
@@ -30,24 +20,11 @@ export const fetchHorarios = async (fk_agenda_id, searchParams = {}) => {
 // Função para adicionar um horário
 export const addHorario = async (horario, fk_usuario_id) => {
     try {
-        const payload = {
-            ...horario,
-            fk_usuario_id, // necessário para controle de acesso no backend
-        };
-
-        const response = await fetch(`${API_URL}/addTime`, {
+        const payload = { ...horario, fk_usuario_id };
+        return await httpClient('/addTime', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            credentials: 'include',
+            body: JSON.stringify(payload)
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao adicionar horário');
-        }
-        return data;
     } catch (error) {
         console.error('Erro ao adicionar horário:', error.message);
         throw error;
@@ -57,15 +34,9 @@ export const addHorario = async (horario, fk_usuario_id) => {
 // Função para deletar um horário
 export const deleteHorario = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/deleteTime/${id}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
+        return await httpClient(`/deleteTime/${id}`, {
+            method: 'DELETE'
         });
-        if (!response.ok) {
-            throw new Error('Erro ao excluir horário');
-        }
-        return response.json();
     } catch (error) {
         handleError(error);
         return null;
@@ -75,21 +46,12 @@ export const deleteHorario = async (id) => {
 // Função para atualizar um horario
 export const updateHorario = async (id, horario) => {
     try {
-        const response = await fetch(`${API_URL}/updateSchedule/${id}`, {
+        return await httpClient(`/updateTime/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(horario),
-            credentials: 'include',
+            body: JSON.stringify(horario)
         });
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao adicionar horário');
-        }
-        return data;
     } catch (error) {
-        console.error('Erro ao adicionar horário:', error.message);
+        console.error('Erro ao atualizar horário:', error.message);
         throw error;
     }
-
 };

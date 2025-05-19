@@ -1,6 +1,6 @@
 //react
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Para redirecionar o usuário
+import { Link, useNavigate } from "react-router-dom"; // Para redirecionar o usuário
 
 //API
 import { API_URL } from "../../services/apiConfig"; // Importe a URL da API
@@ -23,12 +23,25 @@ import {
   ListItemText,
 } from "@mui/material";
 import { useAuth } from "../../context/AuthContext"; // Importe o hook useAuth
-import { flushSync } from 'react-dom';
+
+const getHomePath = (user) => {
+  if (!user) return "/login";
+  const { tipo_usuario, id_usuario, fk_empresa_id } = user;
+
+  return {
+    funcionario: `/agenda/${id_usuario}`,
+    secretario: `/usuario/${fk_empresa_id}`,
+    gerente: `/usuario/${fk_empresa_id}`,
+    admin: "/empresa",
+  }[tipo_usuario] || "/";
+};
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const { isAuthenticated, logout, setIsAuthenticated, user, setUser } = useAuth(); // Use o contexto de autenticação
   const navigate = useNavigate();
+
+  const homePath = getHomePath(user);
 
   const handleNavigateToChangePassword = () => {
     navigate("/atualizar-senha");
@@ -46,7 +59,7 @@ const Navbar = () => {
     {
       text: "Home",
       icon: <HomeIcon />,
-      path: "/",
+      path: homePath,
     },
     {
       text: "About",
@@ -67,16 +80,16 @@ const Navbar = () => {
       </div>
       <div className="navbar-links-container">
         {menuOptions.map((item) => (
-          <a key={item.text} href={item.path || "#"} onClick={item.onClick}>
+          <Link key={item.text} to={item.path || "#"} onClick={item.onClick}>
             {item.text}
-          </a>
+          </Link>
         ))}
         {/* Botão de logout ao lado do Cart */}
         {isAuthenticated && (
           <>
-            <a onClick={handleNavigateToChangePassword} style={{ cursor: "pointer" }}>
+            <Link to="/atualizar-senha" style={{ cursor: "pointer" }}>
               Trocar Senha
-            </a>
+            </Link>
 
             <button className="logout-button" onClick={handleLogout}>
               <LogoutIcon className="logout_icon" />

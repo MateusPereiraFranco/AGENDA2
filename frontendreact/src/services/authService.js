@@ -1,17 +1,10 @@
 import { API_URL } from './apiConfig';
 
+import { httpClient } from './fetchWithAuth';
+
 export const checkAuth = async () => {
     try {
-        const response = await fetch(`${API_URL}/check-auth`, {
-            method: 'GET',
-            credentials: 'include', // importante!
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Erro ao verificar autenticação');
-        }
+        const data = await httpClient('/check-auth');
 
         return {
             authenticated: data.authenticated,
@@ -47,7 +40,6 @@ export const login = async (credentials) => {
         if (!response.ok || !data.success) {
             throw new Error(data.message || 'Erro ao fazer login');
         }
-
 
         return {
             success: true,

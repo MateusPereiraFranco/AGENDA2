@@ -2,9 +2,11 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getPermissionStatus } from '../services/permissionService';
+import { useUserId } from './useUserId';
 
 export const usePermissionCheck = ({ pageType, pageId }) => {
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const userId = useUserId();
     const [accessState, setAccessState] = useState({
         loading: true,
         granted: false,
@@ -13,7 +15,7 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
 
     useEffect(() => {
         const verificar = async () => {
-            if (authLoading || !user) return;
+            if (authLoading || !userId) return;
 
             if (!isAuthenticated) {
                 return setAccessState({
@@ -31,7 +33,7 @@ export const usePermissionCheck = ({ pageType, pageId }) => {
         };
 
         verificar();
-    }, [authLoading, isAuthenticated, user, pageType, pageId]);
+    }, [authLoading, isAuthenticated, userId, pageType, pageId]);
 
     return {
         authLoading,

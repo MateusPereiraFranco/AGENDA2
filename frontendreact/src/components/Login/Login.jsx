@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { get_fk_empresa_id, login } from '../../services/authService';
+import { login } from '../../services/authService';
 import { useAuth } from '../../context/AuthContext';
 import SenhaInput from '../../components/SenhaInput';
 

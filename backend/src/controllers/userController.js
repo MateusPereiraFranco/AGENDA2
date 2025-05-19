@@ -52,14 +52,16 @@ const refreshTokenController = async (req, res) => {
         const newAccessToken = jwt.sign({
             id: decoded.id,
             email: decoded.email,
-            tipo_usuario: decoded.tipo_usuario
-        }, process.env.JWT_SECRET, { expiresIn: '150m' });
+            tipo_usuario: decoded.tipo_usuario,
+            fk_empresa_id: decoded.fk_empresa_id
+        }, process.env.JWT_SECRET, { expiresIn: '15m' });
 
         res.cookie('access_token', newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 15 * 60 * 100000,
+            maxAge: 15 * 10 * 1000,
+            path: '/',
         });
 
         res.status(200).json({ message: 'Access token renovado' });
@@ -87,7 +89,7 @@ const loginController = async (req, res) => {
 
         // Tokens
         const payload = { id: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario, fk_empresa_id: user.fk_empresa_id };
-        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '150m' });
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '10s' });
         const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
         // Salva refresh no banco
@@ -101,7 +103,8 @@ const loginController = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 15 * 60 * 100000,
+            maxAge: 15 * 10 * 1000,
+            path: '/',
         });
 
         // Envia refresh no cookie separado
@@ -109,7 +112,8 @@ const loginController = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 100000,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: '/',
         });
 
         res.status(200).json({

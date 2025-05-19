@@ -1,21 +1,12 @@
 import { API_URL } from './apiConfig';
 import { handleError } from './errorHandler';
+import { httpClient } from './fetchWithAuth';
 
 // Função para buscar empresas
 export const fetchEmpresas = async (searchParams = {}) => {
     try {
-        const token = localStorage.getItem('token');
         const queryString = new URLSearchParams(searchParams).toString();
-        const response = await fetch(`${API_URL}/enterprises?${queryString}`, {
-            credentials: 'include', // Inclui cookies na requisição
-            headers: {
-                'Authorization': `Bearer ${token}`, // Adiciona o token no cabeçalho
-            },
-        });
-        if (!response.ok) {
-            return null;
-        }
-        return response.json();
+        return await httpClient(`/enterprises?${queryString}`);
     } catch (error) {
         handleError(error);
         return null;
@@ -24,17 +15,8 @@ export const fetchEmpresas = async (searchParams = {}) => {
 
 export const fetchEmpresaNome = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/enterpriseName?id=${id}`, {
-            method: 'GET',
-            credentials: 'include',
-        });
-
-        if (!response.ok) {
-            return null; // Retorna null se a resposta não for bem-sucedida
-        }
-
-        const data = await response.json();
-        return data.nome; // Retorna o nome da empresa
+        const data = await httpClient(`/enterpriseName/${id}`);
+        return data.nome;
     } catch (error) {
         handleError(error);
         return null;
@@ -42,23 +24,15 @@ export const fetchEmpresaNome = async (id) => {
 };
 
 
+
 export const addEmpresa = async (empresa) => {
     try {
-        const response = await fetch(`${API_URL}/addEnterprise`, {
+        return await httpClient('/addEnterprise', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(empresa),
-            credentials: 'include',
         });
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao cadastrar usuário');
-        }
-
-        return data;
     } catch (error) {
-        console.error('Erro ao adicionar empresa:', error.message);
+        handleError(error);
         throw error;
     }
 };
@@ -66,21 +40,12 @@ export const addEmpresa = async (empresa) => {
 // Função para atualizar uma empresa
 export const updateEmpresa = async (id, empresa) => {
     try {
-        const response = await fetch(`${API_URL}/updateEnterprise/${id}`, {
+        return await httpClient(`/updateEnterprise/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(empresa),
-            credentials: 'include',
         });
-        const data = await response.json(); // 👈 importante!
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao atualizar empresa');
-        }
-
-        return data;
     } catch (error) {
-        console.error('Erro ao atualizar empresa:', error.message);
+        handleError(error);
         throw error;
     }
 };
@@ -88,16 +53,9 @@ export const updateEmpresa = async (id, empresa) => {
 // Função para deletar uma empresa
 export const deleteEmpresa = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/deleteEnterprise`, {
+        return await httpClient(`/deleteEnterprise/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id }),
-            credentials: 'include',
         });
-        if (!response.ok) {
-            throw new Error('Erro ao excluir empresa');
-        }
-        return response.json();
     } catch (error) {
         handleError(error);
         return null;

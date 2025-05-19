@@ -1,12 +1,6 @@
-import { API_URL } from './apiConfig';
+import { httpClient } from './fetchWithAuth';
 
 export const getPermissionStatus = async (pageType, hashid) => {
-    const res = await fetch(`${API_URL}/permission/${pageType}/${hashid}`, {
-        method: 'GET',
-        credentials: 'include',
-    });
-
-    const data = await res.json(); // ✅ parsear a resposta JSON
-
+    const data = await httpClient(`/permission/${pageType}/${hashid}`);
     return data.granted;
-}
+};

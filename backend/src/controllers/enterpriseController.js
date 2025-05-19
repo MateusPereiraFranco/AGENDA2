@@ -77,7 +77,7 @@ const addEnterpriseController = async (req, res) => {
 };
 
 const deleteEnterpriseController = async (req, res) => {
-    const { id } = req.body;
+    const { id } = req.params;
     if (!id) {
         return res.status(400).send('ID é obrigatório para exclusão');
     }
@@ -145,12 +145,16 @@ const updateEnterpriseController = async (req, res) => {
 
 
 const getEnterpriseNameController = async (req, res) => {
-    const { id } = req.query;
+    const { id } = req.params;
     let decodedId;
     try {
         decodedId = decodeId(id);
     } catch {
         return res.status(400).send('ID inválido');
+    }
+
+    if (decodedId !== req.user.fk_empresa_id && req.user.tipo_usuario !== 'admin') {
+        return res.status(403).send('Acesso negado');
     }
 
     try {

@@ -1,71 +1,36 @@
 import { API_URL } from './apiConfig';
 import { handleError } from './errorHandler';
+import { httpClient } from './fetchWithAuth';
 
 export const fetchAgendamentosFkUsuarioId = async (id) => {
-
-    const response = await fetch(`${API_URL}/schedule/${id}`, {
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+    try {
+        return await httpClient(`/schedule/${id}`);
+    } catch (error) {
+        handleError(error);
+        throw error;
     }
-
-    return response.json();
-}
+};
 
 export const fetchAgendamentoData = async (id) => {
-
-    const response = await fetch(`${API_URL}/scheduleData/${id}`, {
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+    try {
+        return await httpClient(`/scheduleData/${id}`);
+    } catch (error) {
+        handleError(error);
+        throw error;
     }
-
-    return response.json();
 };
 
 // Função para buscar agendamentos de um usuário
 export const fetchAgendamentos = async (userId, searchParams = {}) => {
     try {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams({
+            ...searchParams,
+            fk_usuario_id: userId,
+        }).toString();
 
-        if (searchParams.page) params.append('page', searchParams.page);
-        if (searchParams.limit) params.append('limit', searchParams.limit);
-        if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy);
-        if (searchParams.order) params.append('order', searchParams.order);
-        if (searchParams.dataInicio) params.append('dataInicio', searchParams.dataInicio);
-        if (searchParams.dataFim) params.append('dataFim', searchParams.dataFim);
-
-        params.append('fk_usuario_id', userId);
-
-        const response = await fetch(`${API_URL}/schedules?${params.toString()}`, {
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
-        }
-        return response.json();
+        return await httpClient(`/schedules?${params}`);
     } catch (error) {
-        console.error('Erro no fetchAgendamentos:', error);
+        handleError(error);
         throw error;
     }
 };
@@ -74,38 +39,23 @@ export const fetchAgendamentos = async (userId, searchParams = {}) => {
 // Função para deletar um agendamento
 export const deleteAgendamento = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/deleteSchedule/${id}`, {
-            method: 'DELETE',
-            credentials: 'include',
+        return await httpClient(`/deleteSchedule/${id}`, {
+            method: 'DELETE'
         });
-        if (!response.ok) {
-            throw new Error('Erro ao excluir agendamento');
-        }
-        return response.json();
     } catch (error) {
         handleError(error);
         return null;
     }
 };
-
 // Função para atualizar um agendamento
 export const updateAgendamento = async (id, agendamento) => {
     try {
-        const response = await fetch(`${API_URL}/updateSchedule/${id}`, {
+        return await httpClient(`/updateSchedule/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(agendamento),
-            credentials: 'include',
+            body: JSON.stringify(agendamento)
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao atualizar agenda');
-        }
-        return data;
     } catch (error) {
-        console.error('Erro ao atualizar agenda:', error.message);
+        handleError(error);
         throw error;
     }
 };
@@ -114,26 +64,13 @@ export const updateAgendamento = async (id, agendamento) => {
 // Função para adicionar um agendamento
 export const addAgendamento = async (agendamento, fk_usuario_id) => {
     try {
-        const payload = {
-            ...agendamento,
-            fk_usuario_id
-        };
-
-        const response = await fetch(`${API_URL}/addSchedule`, {
+        const payload = { ...agendamento, fk_usuario_id };
+        return await httpClient('/addSchedule', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            credentials: 'include',
+            body: JSON.stringify(payload)
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erro ao adicionar agenda');
-        }
-        return data;
     } catch (error) {
-        console.error('Erro ao adicionar agenda:', error.message);
+        handleError(error);
         throw error;
     }
 };
