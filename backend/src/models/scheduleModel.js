@@ -68,7 +68,8 @@ const getSchedules = async ({
           TO_CHAR(data, 'DD/MM/YYYY') as data, 
           data as data_original, 
           fk_usuario_id,
-          (SELECT COUNT(id_horario) FROM horario WHERE fk_agenda_id = agenda.id_agenda) as total_horarios
+          (SELECT COUNT(id_horario) FROM horario WHERE fk_agenda_id = agenda.id_agenda) as total_horarios,
+          (SELECT COALESCE(SUM(valor_servico), 0) FROM horario WHERE fk_agenda_id = agenda.id_agenda) as total_valores
         FROM agenda
       `;
 

@@ -23,7 +23,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { fetchAgendamentoData, fetchAgendamentos, fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
 import { useAuth } from "../../context/AuthContext";
 
-
 function Horario() {
 
   const { user } = useAuth();
@@ -50,6 +49,14 @@ function Horario() {
     getDataAgenda();
   }, [currentPage, searchParams]);
 
+  const [valor, setValor] = useState('');
+
+  const handleValorChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, '');
+    let formatted = (Number(raw) / 100).toFixed(2).replace('.', ',');
+    setValor('R$ ' + formatted);
+  };
+
   // Função genérica para toggles
   const toggleStateById = (id, setState) => {
     setState(prev => {
@@ -58,7 +65,6 @@ function Horario() {
   };
 
   const toggleDetalhes = (id) => toggleStateById(id, setDetalhesVisiveis);
-
 
   const handleContatoChange = (e) => {
     const input = e.target.value.replace(/\D/g, '');
@@ -145,6 +151,7 @@ function Horario() {
       contato: contato,
       observacoes: e.target.observacoes.value,
       agendadoPor: `${nomeUsuarioLogado}`,
+      valor_servico: parseFloat(e.target.valor_servico.value.replace('R$', '').replace(',', '.')),
       fk_agenda_id: id,
     };
     try {
@@ -152,6 +159,7 @@ function Horario() {
       loadHorarios();
       e.target.reset();
       setContato("");
+      setValor("");
     } catch (error) {
       setError(error.message);
       toast.error(error.message);
@@ -195,6 +203,15 @@ function Horario() {
             maxLength={15}
           />
           <input type="text" name="observacoes" placeholder="Observação (Opcional)" />
+          <input
+            type="text"
+            id="valor_servico"
+            name="valor_servico"
+            placeholder="R$ 0,00"
+            value={valor}
+            onChange={handleValorChange}
+            required
+          />
           <button className="botao_verde" type="submit">Adicionar Horário</button>
         </form>
       </div>
@@ -212,6 +229,12 @@ function Horario() {
                   <tr>
                     <td>{formatarHorarioSemSegundos(horario.horario)}</td>
                     <td>{horario.nome}</td>
+                    <td>
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }).format(horario.valor_servico)}
+                    </td>
                     <td className="botaoNoCanto">
                       <button
                         className="botao-vermelho"

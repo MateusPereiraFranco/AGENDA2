@@ -12,6 +12,7 @@ const searchSchema = Joi.object({
     contato: Joi.string().optional(),
     observacoes: Joi.string().optional(),
     agendadoPor: Joi.string().optional(),
+    valor_servico: Joi.number().precision(2).min(0),
     page: Joi.number().integer().positive().default(1),
     limit: Joi.number().integer().positive().default(10),
     sortBy: Joi.string().valid('id_horario', 'horario', 'nome').default('id_horario'),
@@ -71,7 +72,7 @@ const addTimeController = async (req, res) => {
     const usuarioAutenticado = req.user;
 
     if (!fk_usuario_id) {
-        return res.st
+        return res.status(400).send('Dados obrigatórios ausentes');
     }
     if (!horario || !horario.fk_agenda_id) {
         return res.status(400).send('Dados obrigatórios ausentes');
@@ -172,13 +173,13 @@ const deleteTimeController = async (req, res) => {
 
 const updateTimeController = async (req, res) => {
     const { id } = req.params;
-    const { fk_agenda_id, horario, nome, contato, observacoes, agendadoPor } = req.body; // Recebe os dados do corpo da requisição
+    const { fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico } = req.body; // Recebe os dados do corpo da requisição
     if (!id || !fk_agenda_id || !horario || !nome) {
         return res.status(400).send('ID, fk_agenda_id, horario, nome são obrigatório para atualização');
     }
 
     try {
-        const time = await updateTime(id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor); // Chama o modelo para atualizar o horario
+        const time = await updateTime(id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico); // Chama o modelo para atualizar o horario
         if (!time) {
             return res.status(404).send('Horario não encontrado');
         }

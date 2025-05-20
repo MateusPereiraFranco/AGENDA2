@@ -234,6 +234,7 @@ function Agenda() {
               <td>Data</td>
               <td>Agendados</td>
               <td >Valor</td>
+              <td></td>
             </tr>
           </thead>
           <tbody>
@@ -251,6 +252,7 @@ function Agenda() {
                       {agendamento.data}
                     </td>
                     <td>{agendamento.total_horarios}</td>
+                    <td>{agendamento.total_valores}</td>
                     <td className="botaoNoCanto">
                       <button
                         className="botao-vermelho"
