@@ -150,10 +150,21 @@ const logoutController = async (req, res) => {
 };
 
 const updatePasswordController = async (req, res) => {
-    const token = req.cookies.access_token; // Corrigido nome do cookie
+    const token = req.cookies.access_token;
 
     if (!token) {
         return res.status(401).json({ message: 'Não autenticado' });
+    }
+    const id = req.params.id
+
+    let decodedId
+    try {
+        decodedId = decodeId(id);
+    } catch (error) {
+        return res.status(403).json({ message: 'id incorreto passado' });
+    }
+    if (decodedId !== req.user.id) {
+        return res.status(403).json({ message: 'Acesso negado' });
     }
 
     const { currentPassword, newPassword } = req.body;
@@ -187,13 +198,27 @@ const updatePasswordController = async (req, res) => {
 
 
 const getUserNameController = async (req, res) => {
-    const { id } = req.query;
+    const { id } = req.params;
 
     let decodedId;
     try {
         decodedId = decodeId(id);
     } catch {
         return res.status(400).send('ID inválido');
+    }
+
+    if (req.user.id !== decodedId) {
+        try {
+            const rows = await pool.query('SELECT fk_empresa_id FROM usuario WHERE id_usuario = $1', [decodedId]);
+            if (rows.rowCount === 0) {
+                return res.status(404).send('Usuario não encontrado');
+            }
+            if (rows.rows[0].fk_empresa_id !== req.user.fk_empresa_id && req.user.tipo_usuario !== 'admin') {
+                return res.status(403).send('Acesso negado');
+            }
+        } catch (error) {
+            return res.status(500).send('Erro ao buscar empresa do usuario');
+        }
     }
 
     try {

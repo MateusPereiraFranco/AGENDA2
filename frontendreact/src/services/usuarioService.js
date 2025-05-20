@@ -20,7 +20,7 @@ export const fetchUsuarios = async (fk_empresa_id, searchParams = {}) => {
 
 export const fetchUsuarioNome = async (id) => {
     try {
-        const data = await httpClient(`/usuarioName?id=${id}`);
+        const data = await httpClient(`/usuarioName/${id}`);
         return data.nome;
     } catch (error) {
         handleError(error);

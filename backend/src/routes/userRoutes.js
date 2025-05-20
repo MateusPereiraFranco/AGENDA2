@@ -29,8 +29,8 @@ router.delete('/deleteUser/:id', authenticateToken, writeLimiter, permissionMidd
 router.put('/updateUser/:id', authenticateToken, writeLimiter, permissionMiddleware('usuario'), updateUserController); // Atualizar usuário
 router.post('/logout', authLimiter, logoutController);
 router.get('/check-auth', authenticateToken, generalLimiter, checkAuthController);
-router.get('/usuarioName', authenticateToken, generalLimiter, getUserNameController)
-router.put('/update-password', authenticateToken, writeLimiter, updatePasswordController);
+router.get('/usuarioName/:id', authenticateToken, generalLimiter, getUserNameController)
+router.put('/update-password/:id', authenticateToken, writeLimiter, updatePasswordController);
 
 router.post('/refresh-token', authLimiter, refreshTokenController);
 

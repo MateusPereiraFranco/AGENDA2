@@ -12,7 +12,6 @@ const updatePassword = async (userId, hashedPassword) => {
 
 const getUserName = async (id) => {
     try {
-
         const result = await pool.query(
             'SELECT nome FROM usuario WHERE id_usuario = $1',
             [id]

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { API_URL } from "../../services/apiConfig";
 import SenhaInput from "../../components/SenhaInput"; // Mesmo componente usado no Reset
 import { httpClient } from "../../services/fetchWithAuth";
+import { useUserId } from "../../hooks/useUserId";
 
 const UpdatePassword = () => {
+  const userId = useUserId();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,7 +27,7 @@ const UpdatePassword = () => {
     }
 
     try {
-      await httpClient('/update-password', {
+      await httpClient(`/update-password/${userId}`, {
         method: 'PUT',
         body: JSON.stringify({ currentPassword, newPassword }),
       });

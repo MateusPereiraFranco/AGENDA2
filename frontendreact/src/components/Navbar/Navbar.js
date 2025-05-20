@@ -2,9 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Para redirecionar o usuário
 
-//API
-import { API_URL } from "../../services/apiConfig"; // Importe a URL da API
-
 //Icons
 import piratinha from "../../assets/piratinha.png";
 import HomeIcon from "@mui/icons-material/Home";
