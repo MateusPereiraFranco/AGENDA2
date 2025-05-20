@@ -250,9 +250,12 @@ function Usuario() {
           </thead>
           <tbody>
             {usuarios.length > 0 ? (
-              usuarios.map((usuario) => (
+              usuarios.map((usuario, index) => (
                 <React.Fragment key={usuario.id_usuario}>
-                  <tr>
+                  <tr
+                    className="tr-animation"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <td>{usuario.nome}</td>
                     <td>{usuario.email}</td>
                     <td>
@@ -308,59 +311,64 @@ function Usuario() {
                   </tr>
 
                   {editingId === usuario.id_usuario && (
-                    <tr>
+                    <tr
+                      className="tr-animation"
+                      style={{ animationDelay: `${index * 100 + 50}ms` }}
+                    >
                       <td colSpan="4">
                         <div className="edit-usuario-form">
-                          <h2>Editar Usuário</h2>
-                          <form
-                            className="form-atualizacao"
-                            onSubmit={handleUpdateUsuario}
-                          >
-                            <label htmlFor="nome">Nome:</label>
-                            <input
-                              type="text"
-                              id="nome"
-                              name="nome"
-                              defaultValue={usuario.nome}
-                              required
-                            />
-                            <br />
-                            <label htmlFor="email">Email:</label>
-                            <input
-                              type="email"
-                              id="email"
-                              name="email"
-                              defaultValue={usuario.email}
-                              required
-                            />
-                            <br />
-                            <label htmlFor="tipo_usuario">
-                              Tipo de Usuário:
-                            </label>
-                            <select
-                              id="tipo_usuario"
-                              name="tipo_usuario"
-                              defaultValue={usuario.tipo_usuario}
-                              required
+                          <div className="edit-usuario-form">
+                            <h2>Editar Usuário</h2>
+                            <form
+                              className="form-atualizacao"
+                              onSubmit={handleUpdateUsuario}
                             >
-                              <option value="funcionario">Funcionário</option>
-                              <option value="secretario">Secretário</option>
-                              <option value="gerente">Gerente</option>
-                            </select>
-                            <br />
-                            <div className="form-atualizacao_botao">
-                              <button className="botao_verde" type="submit">
-                                <CheckIcon />
-                              </button>
-                              <button
-                                className="botao-vermelho"
-                                type="button"
-                                onClick={() => setEditingId(null)}
+                              <label htmlFor="nome">Nome:</label>
+                              <input
+                                type="text"
+                                id="nome"
+                                name="nome"
+                                defaultValue={usuario.nome}
+                                required
+                              />
+                              <br />
+                              <label htmlFor="email">Email:</label>
+                              <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                defaultValue={usuario.email}
+                                required
+                              />
+                              <br />
+                              <label htmlFor="tipo_usuario">
+                                Tipo de Usuário:
+                              </label>
+                              <select
+                                id="tipo_usuario"
+                                name="tipo_usuario"
+                                defaultValue={usuario.tipo_usuario}
+                                required
                               >
-                                <CloseIcon />
-                              </button>
-                            </div>
-                          </form>
+                                <option value="funcionario">Funcionário</option>
+                                <option value="secretario">Secretário</option>
+                                <option value="gerente">Gerente</option>
+                              </select>
+                              <br />
+                              <div className="form-atualizacao_botao">
+                                <button className="botao_verde" type="submit">
+                                  <CheckIcon />
+                                </button>
+                                <button
+                                  className="botao-vermelho"
+                                  type="button"
+                                  onClick={() => setEditingId(null)}
+                                >
+                                  <CloseIcon />
+                                </button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
                       </td>
                     </tr>
