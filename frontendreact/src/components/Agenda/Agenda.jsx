@@ -11,19 +11,18 @@ import {
 import { fetchUsuarioNome } from "../../services/usuarioService";
 
 //icons
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import RotateRightIcon from '@mui/icons-material/RotateRight';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import EditOffIcon from '@mui/icons-material/EditOff';
-import DeleteIcon from '@mui/icons-material/Delete';
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import EditOffIcon from "@mui/icons-material/EditOff";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../../context/AuthContext";
 
 function Agenda() {
-
   const { id } = useParams();
   const { user } = useAuth();
   const { tipo_usuario } = user || {};
@@ -41,8 +40,8 @@ function Agenda() {
   const itemsPerPage = 10;
 
   const toggleStateById = (id, setState) => {
-    setState(prev => {
-      if (prev === null || typeof prev !== 'object') {
+    setState((prev) => {
+      if (prev === null || typeof prev !== "object") {
         return prev === id ? null : id;
       } else {
         return { ...prev, [id]: !prev[id] };
@@ -170,9 +169,8 @@ function Agenda() {
     }
 
     try {
-
       await updateAgendamento(editingAgendamentoId, {
-        data
+        data,
       });
       toast.success("Agendamento atualizado!");
       loadAgendamentos();
@@ -199,7 +197,11 @@ function Agenda() {
 
   return (
     <div className="agenda_conteiner_geral">
-      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
       <h1>{usuarioNome}</h1>
       <hr />
       <div className="form_agenda">
@@ -207,67 +209,105 @@ function Agenda() {
           <input
             type="date"
             value={searchParams.dataInicio}
-            onChange={(e) => setSearchParams({ ...searchParams, dataInicio: e.target.value })}
+            onChange={(e) =>
+              setSearchParams({ ...searchParams, dataInicio: e.target.value })
+            }
           />
           <input
             type="date"
             value={searchParams.dataFim}
-            onChange={(e) => setSearchParams({ ...searchParams, dataFim: e.target.value })}
+            onChange={(e) =>
+              setSearchParams({ ...searchParams, dataFim: e.target.value })
+            }
           />
-          <button className="botao_verde" type="button" onClick={handleSearch}>Buscar</button>
-          <button className="botao_verde" type="button" onClick={limparFiltros}>Limpar</button>
+          <button className="botao_verde" type="button" onClick={handleSearch}>
+            Buscar
+          </button>
+          <button className="botao_verde" type="button" onClick={limparFiltros}>
+            Limpar
+          </button>
         </form>
         <hr />
         <form onSubmit={handleAddAgendamento}>
           <input type="date" name="data" required />
-          <button className="botao_verde" type="submit">Adicionar Agendamento</button>
+          <button className="botao_verde" type="submit">
+            Adicionar Agendamento
+          </button>
         </form>
       </div>
 
       <div className="tabela_agenda">
         <table>
           <thead>
-            <tr>
-              <td colSpan='4'><h2>AGENDA</h2></td>
+            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
+              <td colSpan="4">
+                <h2>AGENDA</h2>
+              </td>
             </tr>
             <tr>
               <td>Data</td>
               <td>Agendados</td>
-              <td >Valor</td>
+              <td>Valor</td>
               <td></td>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="3" style={{ textAlign: "center", padding: "1rem" }}>
+                <td
+                  colSpan="4"
+                  style={{ textAlign: "center", padding: "1rem" }}
+                >
                   Carregando...
                 </td>
               </tr>
             ) : agendamentos.length > 0 ? (
-              agendamentos.map((agendamento) => (
+              agendamentos.map((agendamento, index) => (
                 <React.Fragment key={agendamento.id_agenda}>
-                  <tr>
+                  <tr
+                    className="tr-animation"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <td className={getDataClassName(agendamento.data)}>
                       {agendamento.data}
                     </td>
-                    <td>{agendamento.total_horarios}</td>
-                    <td>{agendamento.total_valores}</td>
+                    <td>{agendamento.total_horario}</td>
+                    <td>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(agendamento.total_valores)}
+                    </td>
                     <td className="botaoNoCanto">
                       <button
                         className="botao-vermelho"
-                        onClick={() => handleDeleteEmpresa(agendamento.id_agenda)}
+                        onClick={() =>
+                          handleDeleteEmpresa(agendamento.id_agenda)
+                        }
                         disabled={deletingId === agendamento.id_agenda}
                       >
-                        {deletingId === agendamento.id_agenda ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
+                        {deletingId === agendamento.id_agenda ? (
+                          <RotateRightIcon className="loading" />
+                        ) : (
+                          <DeleteIcon />
+                        )}
                       </button>
-                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
                         <button
                           className="botao_azul"
-                          onClick={() => toggleStateById(agendamento.id_agenda, setEditingAgendamentoId)}
+                          onClick={() =>
+                            toggleStateById(
+                              agendamento.id_agenda,
+                              setEditingAgendamentoId
+                            )
+                          }
                         >
-                          {editingAgendamentoId === agendamento.id_agenda ? <EditOffIcon /> : <BorderColorIcon />}
-
+                          {editingAgendamentoId === agendamento.id_agenda ? (
+                            <EditOffIcon />
+                          ) : (
+                            <BorderColorIcon />
+                          )}
                         </button>
                       )}
                       <button
@@ -278,10 +318,17 @@ function Agenda() {
                       </button>
                     </td>
                   </tr>
+
                   {editingAgendamentoId === agendamento.id_agenda && (
-                    <tr>
-                      <td colSpan="3">
-                        <form className="form-atualizacao" onSubmit={handleUpdateAgendamento}>
+                    <tr
+                      className="tr-animation"
+                      style={{ animationDelay: `${index * 100 + 50}ms` }}
+                    >
+                      <td colSpan="4">
+                        <form
+                          className="form-atualizacao"
+                          onSubmit={handleUpdateAgendamento}
+                        >
                           <label htmlFor="data">Nova Data:</label>
                           <input
                             type="date"
@@ -291,7 +338,9 @@ function Agenda() {
                           />
                           <br />
                           <div className="form-atualizacao_botao">
-                            <button className="botao_verde" type="submit"><CheckIcon /></button>
+                            <button className="botao_verde" type="submit">
+                              <CheckIcon />
+                            </button>
                             <button
                               type="button"
                               className="botao-vermelho"
@@ -308,7 +357,7 @@ function Agenda() {
               ))
             ) : (
               <tr>
-                <td colSpan="3" style={{ textAlign: "center" }}>
+                <td colSpan="4" style={{ textAlign: "center" }}>
                   Nenhum agendamento cadastrado
                 </td>
               </tr>

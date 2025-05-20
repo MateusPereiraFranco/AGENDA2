@@ -11,20 +11,23 @@ import {
 import { fetchUsuarioNome } from "../../services/usuarioService";
 
 //icons
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import RotateRightIcon from '@mui/icons-material/RotateRight';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckIcon from '@mui/icons-material/Check';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { fetchAgendamentoData, fetchAgendamentos, fetchAgendamentosFkUsuarioId } from "../../services/agendaService";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import RotateRightIcon from "@mui/icons-material/RotateRight";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  fetchAgendamentoData,
+  fetchAgendamentos,
+  fetchAgendamentosFkUsuarioId,
+} from "../../services/agendaService";
 import { useAuth } from "../../context/AuthContext";
 
 function Horario() {
-
   const { user } = useAuth();
   const { id_usuario } = user || {};
   const { id } = useParams();
@@ -34,7 +37,7 @@ function Horario() {
   const [currentPage, setCurrentPage] = useState(1);
   const [usuarioNome, setUsuarioNome] = useState("");
   const [nomeUsuarioLogado, setNomeUsuarioLogado] = useState("");
-  const [dataAgenda, setDataAgenda] = useState('');
+  const [dataAgenda, setDataAgenda] = useState("");
   const [error, setError] = useState("");
   const [hasMorePages, setHasMorePages] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
@@ -49,17 +52,17 @@ function Horario() {
     getDataAgenda();
   }, [currentPage, searchParams]);
 
-  const [valor, setValor] = useState('');
+  const [valor, setValor] = useState("");
 
   const handleValorChange = (e) => {
-    let raw = e.target.value.replace(/\D/g, '');
-    let formatted = (Number(raw) / 100).toFixed(2).replace('.', ',');
-    setValor('R$ ' + formatted);
+    let raw = e.target.value.replace(/\D/g, "");
+    let formatted = (Number(raw) / 100).toFixed(2).replace(".", ",");
+    setValor("R$ " + formatted);
   };
 
   // Função genérica para toggles
   const toggleStateById = (id, setState) => {
-    setState(prev => {
+    setState((prev) => {
       return { ...prev, [id]: !prev[id] };
     });
   };
@@ -67,7 +70,7 @@ function Horario() {
   const toggleDetalhes = (id) => toggleStateById(id, setDetalhesVisiveis);
 
   const handleContatoChange = (e) => {
-    const input = e.target.value.replace(/\D/g, '');
+    const input = e.target.value.replace(/\D/g, "");
     let formattedInput = "";
 
     if (input.length > 0) {
@@ -103,8 +106,7 @@ function Horario() {
     try {
       const data = await fetchAgendamentoData(id);
       setDataAgenda(data.data || "Data não encontrada");
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Erro ao buscar data da agenda:", error);
     }
   };
@@ -138,8 +140,8 @@ function Horario() {
   };
 
   const formatarHorarioSemSegundos = (horarioCompleto) => {
-    if (!horarioCompleto) return '';
-    const partes = horarioCompleto.split(':');
+    if (!horarioCompleto) return "";
+    const partes = horarioCompleto.split(":");
     return `${partes[0]}:${partes[1]}`;
   };
 
@@ -151,7 +153,9 @@ function Horario() {
       contato: contato,
       observacoes: e.target.observacoes.value,
       agendadoPor: `${nomeUsuarioLogado}`,
-      valor_servico: parseFloat(e.target.valor_servico.value.replace('R$', '').replace(',', '.')),
+      valor_servico: parseFloat(
+        e.target.valor_servico.value.replace("R$", "").replace(",", ".")
+      ),
       fk_agenda_id: id,
     };
     try {
@@ -192,47 +196,62 @@ function Horario() {
       <hr />
       <div className="form_horario">
         <form className="add_horario" onSubmit={handleAddHorario}>
-          <input type="time" name="horario" placeholder="Horário" required />
-          <input type="text" name="nome" placeholder="Nome" required />
-          <input
-            type="text"
-            name="contato"
-            placeholder="Contato (Opcional)"
-            value={contato}
-            onChange={handleContatoChange}
-            maxLength={15}
-          />
-          <input type="text" name="observacoes" placeholder="Observação (Opcional)" />
-          <input
-            type="text"
-            id="valor_servico"
-            name="valor_servico"
-            placeholder="R$ 0,00"
-            value={valor}
-            onChange={handleValorChange}
-            required
-          />
-          <button className="botao_verde" type="submit">Adicionar Horário</button>
+          <div>
+            <input type="text" name="nome" placeholder="Nome" required />
+            <input
+              type="text"
+              name="contato"
+              placeholder="Contato (Opcional)"
+              value={contato}
+              onChange={handleContatoChange}
+              maxLength={15}
+            />
+            <input type="time" name="horario" placeholder="Horário" required />
+          </div>
+          <div>
+            <input
+              type="text"
+              id="valor_servico"
+              name="valor_servico"
+              placeholder="R$ 0,00"
+              value={valor}
+              onChange={handleValorChange}
+              required
+            />
+            <input
+              type="text"
+              name="observacoes"
+              placeholder="Observação (Opcional)"
+            />
+            <button className="botao_verde" type="submit">
+              Adicionar Horário
+            </button>
+          </div>
         </form>
       </div>
       <div className="tabela_horario">
         <table>
           <thead>
-            <tr>
-              <td colSpan='4'><h2>{dataAgenda}</h2></td>
+            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
+              <td colSpan="4">
+                <h2>{dataAgenda}</h2>
+              </td>
             </tr>
           </thead>
           <tbody>
             {horarios.length > 0 ? (
-              horarios.map((horario) => (
+              horarios.map((horario, index) => (
                 <React.Fragment key={horario.id_horario}>
-                  <tr>
+                  <tr
+                    className="tr-animation"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <td>{formatarHorarioSemSegundos(horario.horario)}</td>
                     <td>{horario.nome}</td>
                     <td>
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
                       }).format(horario.valor_servico)}
                     </td>
                     <td className="botaoNoCanto">
@@ -241,20 +260,41 @@ function Horario() {
                         onClick={() => handleDeleteHorario(horario.id_horario)}
                         disabled={deletingId === horario.id_horario}
                       >
-                        {deletingId === horario.id_horario ? <RotateRightIcon className="loading" /> : <DeleteIcon />}
+                        {deletingId === horario.id_horario ? (
+                          <RotateRightIcon className="loading" />
+                        ) : (
+                          <DeleteIcon />
+                        )}
                       </button>
-                      <button className="botao_azul" onClick={() => toggleDetalhes(horario.id_horario)}>
-                        {detalhesVisiveis[horario.id_horario] ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      <button
+                        className="botao_azul"
+                        onClick={() => toggleDetalhes(horario.id_horario)}
+                      >
+                        {detalhesVisiveis[horario.id_horario] ? (
+                          <VisibilityOffIcon />
+                        ) : (
+                          <VisibilityIcon />
+                        )}
                       </button>
                     </td>
                   </tr>
+
                   {detalhesVisiveis[horario.id_horario] && (
-                    <tr>
+                    <tr
+                      className="tr-animation"
+                      style={{ animationDelay: `${index * 100 + 50}ms` }}
+                    >
                       <td colSpan="4">
                         <div className="info_horario">
-                          <p><strong>Contato:</strong> {horario.contato}</p>
-                          <p><strong>Obs:</strong> {horario.observacoes}</p>
-                          <p><strong>Agendado Por:</strong> {horario.agendadopor}</p>
+                          <p>
+                            <strong>Contato:</strong> {horario.contato}
+                          </p>
+                          <p>
+                            <strong>Obs:</strong> {horario.observacoes}
+                          </p>
+                          <p>
+                            <strong>Agendado Por:</strong> {horario.agendadopor}
+                          </p>
                         </div>
                       </td>
                     </tr>

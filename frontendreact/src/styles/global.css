@@ -78,27 +78,6 @@ body {
   animation-delay: 2s;
 }
 
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
-@keyframes shoot {
-  0% {
-    transform: translateX(0) translateY(0) rotate(25deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(120vw) translateY(50vh) rotate(25deg);
-    opacity: 0;
-  }
-}
-
 input,
 select {
   margin: 5px;
@@ -440,7 +419,7 @@ nav:hover{
   flex-direction: column;
 }
 
-/*conteiners formularios*/
+/*formularios*/
 .quatroZeroQuatro_conteiner{
   margin-left: auto;
   margin-right: auto;
@@ -523,16 +502,10 @@ nav:hover{
   border-radius: 4px;
 }
 
-/*conteiner tabelas*/
-@keyframes cascadeFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.add_horario{
+  display: flex;
+  flex-direction: column;
+
 }
 
 .tr-animation {
@@ -592,18 +565,8 @@ nav:hover{
   transform-origin: center; /* Gira no próprio eixo */
 }
 
-/* bagui que gira */
-@keyframes spin {
-  0% {
-    transform: rotateZ(0deg);
-  }
-  100% {
-    transform: rotateZ(360deg);
-  }
-}
-
+/*////////////////////////////////////////////////////*/
 /* Responsividade */
-/*Navbar*/
 @media (max-width: 1000px) {
   body{
     margin-left: 0px;
@@ -730,5 +693,49 @@ nav:hover{
   }
   .vai_volta button {
     min-width: 100px;
+  }
+}
+
+/* Animations */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(25deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120vw) translateY(50vh) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+/*conteiner tabelas*/
+@keyframes cascadeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* bagui que gira */
+@keyframes spin {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
   }
 }

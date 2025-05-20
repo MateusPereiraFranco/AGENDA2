@@ -242,7 +242,7 @@ function Usuario() {
       <div className="tabela_usuario">
         <table>
           <thead>
-            <tr>
+            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
               <td colSpan="4" style={{ textAlign: "center" }}>
                 <h2>FUNCIONÁRIOS</h2>
               </td>

@@ -21,6 +21,7 @@ import {
   updateEmpresa,
   deleteEmpresa,
 } from "../../services/empresaService";
+import { colors } from "@mui/material";
 
 // ...imports mantidos...
 
@@ -181,15 +182,20 @@ function Empresa() {
       <div className="tabela_empresa">
         <table>
           <thead>
-            <tr>
-              <td colSpan='4'><h2>Empresas</h2></td>
+            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
+              <td colSpan="4">
+                <h2>Empresas</h2>
+              </td>
             </tr>
           </thead>
           <tbody>
             {empresas.length > 0 ? (
-              empresas.map((empresa) => (
+              empresas.map((empresa, index) => (
                 <React.Fragment key={empresa.id_empresa}>
-                  <tr>
+                  <tr
+                    className="tr-animation"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <td>{empresa.nome}</td>
                     <td>{empresa.cnpj}</td>
                     <td>{empresa.email}</td>
@@ -227,7 +233,10 @@ function Empresa() {
                   </tr>
 
                   {editingEmpresaId === empresa.id_empresa && (
-                    <tr>
+                    <tr
+                      className="tr-animation"
+                      style={{ animationDelay: `${index * 100 + 50}ms` }}
+                    >
                       <td colSpan="4">
                         <h2>Editar Empresa</h2>
                         <div className="edit-empresa-form">
