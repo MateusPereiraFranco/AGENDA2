@@ -4,7 +4,7 @@ import { httpClient } from './fetchWithAuth';
 
 export const fetchAgendamentosFkUsuarioId = async (id) => {
     try {
-        return await httpClient(`/schedule/${id}`);
+        return await httpClient(`/scheduleFkUserId/${id}`);
     } catch (error) {
         handleError(error);
         throw error;

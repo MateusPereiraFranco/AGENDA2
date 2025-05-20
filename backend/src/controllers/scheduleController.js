@@ -19,18 +19,18 @@ export const getFkUserScheduleByIdController = async (req, res) => {
     try {
         const { id } = req.params
 
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID do agendamento é obrigatório'
+            });
+        }
+
         let decodedId;
         try {
             decodedId = decodeId(id);
         } catch {
             return res.status(400).send('ID inválido');
-        }
-
-        if (!decodedId) {
-            return res.status(400).json({
-                success: false,
-                message: 'ID do agendamento é obrigatório'
-            });
         }
 
         const fkUsuarioId = await getFkUserScheduleById(decodedId);
@@ -59,19 +59,18 @@ export const getFkUserScheduleByIdController = async (req, res) => {
 export const getDataAgendamentoController = async (req, res) => {
     try {
         const { id } = req.params
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID do agendamento é obrigatório'
+            });
+        }
 
         let decodedId;
         try {
             decodedId = decodeId(id);
         } catch {
             return res.status(400).send('ID inválido');
-        }
-
-        if (!decodedId) {
-            return res.status(400).json({
-                success: false,
-                message: 'ID do agendamento é obrigatório'
-            });
         }
 
         const data = await getDataAgendamento(decodedId);

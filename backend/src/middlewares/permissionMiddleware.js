@@ -38,16 +38,21 @@ export const permissionMiddleware = (pageType) => {
                             return res.status(400).send('ID de usuário não fornecido');
                         }
                     } else if (pageType === 'horario') {
-                        if (req.query.fk_agenda_id) {
-                            try {
-                                pageId = decodeId(req.query.fk_agenda_id);
-                            } catch (error) {
-                                console.error('Erro ao decodificar ID:', error);
-                                return res.status(400).json('ID inválido');
-                            }
+                        if (req.params.id) {
+                            pageId = req.params.id
+                        }
+                        else if (req.query.fk_agenda_id) {
+                            pageId = req.query.fk_agenda_id
                         } else {
                             return res.status(400).send('ID de agenda não fornecido');
                         }
+                        try {
+                            pageId = decodeId(pageId);
+                        } catch (error) {
+                            console.error('Erro ao decodificar ID:', error);
+                            return res.status(400).json('ID inválido');
+                        }
+
                     }
                     break;
                 case 'POST':
