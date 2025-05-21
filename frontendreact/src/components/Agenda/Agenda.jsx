@@ -271,7 +271,7 @@ function Agenda() {
                     <td className={getDataClassName(agendamento.data)}>
                       {agendamento.data}
                     </td>
-                    <td>{agendamento.total_horario}</td>
+                    <td>{agendamento.total_horarios}</td>
                     <td>
                       {new Intl.NumberFormat("pt-BR", {
                         style: "currency",
@@ -294,22 +294,22 @@ function Agenda() {
                       </button>
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <button
-                          className="botao_azul"
-                          onClick={() =>
-                            toggleStateById(
-                              agendamento.id_agenda,
-                              setEditingAgendamentoId
-                            )
-                          }
-                        >
-                          {editingAgendamentoId === agendamento.id_agenda ? (
-                            <EditOffIcon />
-                          ) : (
-                            <BorderColorIcon />
-                          )}
-                        </button>
-                      )}
+                          <button
+                            className="botao_azul"
+                            onClick={() =>
+                              toggleStateById(
+                                agendamento.id_agenda,
+                                setEditingAgendamentoId
+                              )
+                            }
+                          >
+                            {editingAgendamentoId === agendamento.id_agenda ? (
+                              <EditOffIcon />
+                            ) : (
+                              <BorderColorIcon />
+                            )}
+                          </button>
+                        )}
                       <button
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}

@@ -18,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import EditOffIcon from "@mui/icons-material/EditOff";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -39,6 +40,7 @@ function Horario() {
   const [nomeUsuarioLogado, setNomeUsuarioLogado] = useState("");
   const [dataAgenda, setDataAgenda] = useState("");
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState(null);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [contato, setContato] = useState("");
@@ -63,7 +65,11 @@ function Horario() {
   // Função genérica para toggles
   const toggleStateById = (id, setState) => {
     setState((prev) => {
-      return { ...prev, [id]: !prev[id] };
+      if (prev === null || typeof prev !== "object") {
+        return prev === id ? null : id;
+      } else {
+        return { ...prev, [id]: !prev[id] };
+      }
     });
   };
 
@@ -185,6 +191,28 @@ function Horario() {
     }
   };
 
+  const handleUpdateHorario = async (e) => {
+    e.preventDefault();
+    const nome = e.target.nome.value.trim();
+    const valor = e.target.valor.value.trim();
+
+    if (!nome || !valor) {
+      setError("Todos os campos são obrigatórios!");
+      return;
+    }
+
+    try {
+      await updateHorario(editingId, { nome, valor });
+      loadHorarios();
+      setEditingId(null);
+      setError("");
+      toast.success(`Horário atualizado com sucesso!`);
+    } catch (error) {
+      setError(error.message);
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="horarios_container_geral">
       <ToastContainer
@@ -237,6 +265,12 @@ function Horario() {
                 <h2>{dataAgenda}</h2>
               </td>
             </tr>
+            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
+              <td>Horário</td>
+              <td>Cliente</td>
+              <td>Valor</td>
+              <td></td>
+            </tr>
           </thead>
           <tbody>
             {horarios.length > 0 ? (
@@ -268,6 +302,18 @@ function Horario() {
                       </button>
                       <button
                         className="botao_azul"
+                        onClick={() =>
+                          toggleStateById(horario.id_horario, setEditingId)
+                        }
+                      >
+                        {editingId === horario.id_horario ? (
+                          <EditOffIcon />
+                        ) : (
+                          <BorderColorIcon />
+                        )}
+                      </button>
+                      <button
+                        className="botao_azul"
                         onClick={() => toggleDetalhes(horario.id_horario)}
                       >
                         {detalhesVisiveis[horario.id_horario] ? (
@@ -295,6 +341,57 @@ function Horario() {
                           <p>
                             <strong>Agendado Por:</strong> {horario.agendadopor}
                           </p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+
+                  {editingId === horario.id_horario && (
+                    <tr
+                      className="tr-animation"
+                      style={{ animationDelay: `${index * 100 + 50}ms` }}
+                    >
+                      <td colSpan="4">
+                        <div className="edit-usuario-form">
+                          <div className="edit-usuario-form">
+                            <h2>Editar horário</h2>
+                            <form
+                              className="form-atualizacao"
+                              onSubmit={handleUpdateHorario}
+                            >
+                              <label htmlFor="nome">Nome:</label>
+                              <input
+                                type="text"
+                                id="nome"
+                                name="nome"
+                                defaultValue={horario.nome}
+                                required
+                              />
+                              <br />
+                              <label htmlFor="valor">Valor:</label>
+                              <input
+                                type="text"
+                                id="valor"
+                                name="valor"
+                                defaultValue={horario.valor_servico}
+                                onChange={handleValorChange}
+                                required
+                              />
+                              <br />
+                              <div className="form-atualizacao_botao">
+                                <button className="botao_verde" type="submit">
+                                  <CheckIcon />
+                                </button>
+                                <button
+                                  className="botao-vermelho"
+                                  type="button"
+                                  onClick={() => setEditingId(null)}
+                                >
+                                  <CloseIcon />
+                                </button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
                       </td>
                     </tr>

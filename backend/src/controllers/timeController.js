@@ -173,13 +173,23 @@ const deleteTimeController = async (req, res) => {
 
 const updateTimeController = async (req, res) => {
     const { id } = req.params;
-    const { fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico } = req.body; // Recebe os dados do corpo da requisição
-    if (!id || !fk_agenda_id || !horario || !nome) {
-        return res.status(400).send('ID, fk_agenda_id, horario, nome são obrigatório para atualização');
+
+    console.log(req.body)
+
+    const { nome, valor } = req.body; // Recebe os dados do corpo da requisição
+    if (!id || !nome || !valor) {
+        return res.status(400).send('ID, valor e nome são obrigatório para atualização');
+    }
+
+    let decodedId;
+    try {
+        decodedId = decodeId(id);
+    } catch {
+        return res.status(400).send('ID inválido');
     }
 
     try {
-        const time = await updateTime(id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico); // Chama o modelo para atualizar o horario
+        const time = await updateTime(decodedId, nome, valor); // Chama o modelo para atualizar o horario
         if (!time) {
             return res.status(404).send('Horario não encontrado');
         }

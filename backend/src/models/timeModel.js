@@ -102,12 +102,11 @@ const deleteTime = async (id) => {
     }
 };
 
-
-const updateTime = async (id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico) => {
+const updateTime = async (id, nome, valor) => {
     try {
         const result = await pool.query(
-            'UPDATE horario SET fk_agenda_id = $1, horario = $2, nome = $3, contato = $4, observacoes =$5, agendadoPor =$6, valor_servico = $7 WHERE id_horario = $8 RETURNING *',
-            [fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico, id]
+            'UPDATE horario SET nome = $1, valor_servico = $2 WHERE id_horario = $3 RETURNING *',
+            [nome, valor, id]
         );
         return result.rows[0]; // Retorna o horario atualizado
     } catch (err) {
