@@ -26,9 +26,7 @@ import { useAuth } from "../../context/AuthContext";
 function Usuario() {
   const { user } = useAuth();
   const { tipo_usuario } = user || {};
-  // id da empresa vizualizada
   const { id } = useParams() || {};
-
   const navigate = useNavigate();
 
   const [usuarios, setUsuarios] = useState([]);
@@ -43,6 +41,13 @@ function Usuario() {
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [hasMorePages, setHasMorePages] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const toggleShowFilters = () => {
+    setShowFilters((prev) => !prev);
+    setShowAddForm(false);
+  };
 
   const itemsPerPage = 10;
 
@@ -196,48 +201,67 @@ function Usuario() {
         pauseOnFocusLoss={false}
       />
       <h1>{empresaNome}</h1>
-
       <div className="form_usuario">
-        <form onSubmit={(e) => e.preventDefault()}>
-          <input
-            type="text"
-            placeholder="Buscar por nome"
-            value={searchParams.nome}
-            onChange={handleSearchChangeNome}
-          />
-          <select
-            value={searchParams.tipo_usuario || "Todos"}
-            onChange={handleSearchChangeTipo_Usuario}
-          >
-            <option value="Todos">Todos</option>
-            <option value="gerente">Gerente</option>
-            <option value="secretario">Secretário</option>
-            <option value="funcionario">Funcionário</option>
-          </select>
-        </form>
         <hr />
+      </div>
+
+      {/* Botões e filtros na mesma linha */}
+      <div style={{ display: "flex", gap: "10px", margin: "10px 0", flexWrap: "wrap" }}>
+        <button className="botao_azul" onClick={toggleShowFilters}>
+          {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
+        </button>
+
         {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
-          <form onSubmit={handleAddUsuario}>
-            <input type="text" name="name" placeholder="Nome" required />
-            <input type="email" name="email" placeholder="Email" required />
+          <button
+            className="botao_azul"
+            type="button"
+            onClick={() => {
+              setShowAddForm((prev) => !prev);
+              setShowFilters(false);
+            }}
+          >
+            {showAddForm ? <VisibilityOffIcon /> : <VisibilityIcon />}{" "}
+            {showAddForm ? "Fechar Formulário" : "Adicionar Funcionário"}
+          </button>
+        )}
+
+        {showFilters && (
+          <>
             <input
-              type="password"
-              name="password"
-              placeholder="Senha"
-              required
+              type="text"
+              placeholder="Buscar por nome"
+              value={searchParams.nome}
+              onChange={handleSearchChangeNome}
             />
-            <select name="tipo_usuario">
-              <option value="cargo">Cargo</option>
-              <option value="funcionario">Funcionário</option>
-              <option value="secretario">Secretário</option>
+            <select
+              value={searchParams.tipo_usuario || "Todos"}
+              onChange={handleSearchChangeTipo_Usuario}
+            >
+              <option value="Todos">Todos</option>
               <option value="gerente">Gerente</option>
+              <option value="secretario">Secretário</option>
+              <option value="funcionario">Funcionário</option>
             </select>
-            <button className="botao_verde" type="submit">
-              Adicionar Funcionário
-            </button>
-          </form>
+          </>
         )}
       </div>
+
+      {showAddForm && (
+        <form onSubmit={handleAddUsuario} style={{ marginTop: "1rem" }}>
+          <input type="text" name="name" placeholder="Nome" required />
+          <input type="email" name="email" placeholder="Email" required />
+          <input type="password" name="password" placeholder="Senha" required />
+          <select name="tipo_usuario" required>
+            <option value="cargo">Cargo</option>
+            <option value="funcionario">Funcionário</option>
+            <option value="secretario">Secretário</option>
+            <option value="gerente">Gerente</option>
+          </select>
+          <button className="botao_verde" type="submit">
+            Confirmar Cadastro
+          </button>
+        </form>
+      )}
 
       <div className="tabela_usuario">
         <table>
@@ -257,22 +281,14 @@ function Usuario() {
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <td>{usuario.nome}</td>
-                    <td>{usuario.email}</td>
-                    <td>
-                      {tipoUsuarioMap[usuario.tipo_usuario] ||
-                        usuario.tipo_usuario}
-                    </td>
+                    <td>{tipoUsuarioMap[usuario.tipo_usuario] || usuario.tipo_usuario}</td>
                     <td className="botaoNoCanto">
-                      {(tipo_usuario === "gerente" ||
-                        tipo_usuario === "admin") && (
+                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
                         <>
                           <button
                             className="botao-vermelho"
                             onClick={() =>
-                              handleDeleteUsuario(
-                                usuario.id_usuario,
-                                usuario.nome
-                              )
+                              handleDeleteUsuario(usuario.id_usuario, usuario.nome)
                             }
                             disabled={deletingId === usuario.id_usuario}
                           >
@@ -298,18 +314,15 @@ function Usuario() {
                       )}
                       {(usuario.tipo_usuario === "funcionario" ||
                         usuario.tipo_usuario === "gerente") && (
-                        <button
-                          className="botao_verde"
-                          onClick={() =>
-                            handleVerFuncionario(usuario.id_usuario)
-                          }
-                        >
-                          <KeyboardArrowRightIcon />
-                        </button>
-                      )}
+                          <button
+                            className="botao_verde"
+                            onClick={() => handleVerFuncionario(usuario.id_usuario)}
+                          >
+                            <KeyboardArrowRightIcon />
+                          </button>
+                        )}
                     </td>
                   </tr>
-
                   {editingId === usuario.id_usuario && (
                     <tr
                       className="tr-animation"
@@ -317,58 +330,54 @@ function Usuario() {
                     >
                       <td colSpan="4">
                         <div className="edit-usuario-form">
-                          <div className="edit-usuario-form">
-                            <h2>Editar Usuário</h2>
-                            <form
-                              className="form-atualizacao"
-                              onSubmit={handleUpdateUsuario}
+                          <h2>Editar Usuário</h2>
+                          <form
+                            className="form-atualizacao"
+                            onSubmit={handleUpdateUsuario}
+                          >
+                            <label htmlFor="nome">Nome:</label>
+                            <input
+                              type="text"
+                              id="nome"
+                              name="nome"
+                              defaultValue={usuario.nome}
+                              required
+                            />
+                            <br />
+                            <label htmlFor="email">Email:</label>
+                            <input
+                              type="email"
+                              id="email"
+                              name="email"
+                              defaultValue={usuario.email}
+                              required
+                            />
+                            <br />
+                            <label htmlFor="tipo_usuario">Tipo de Usuário:</label>
+                            <select
+                              id="tipo_usuario"
+                              name="tipo_usuario"
+                              defaultValue={usuario.tipo_usuario}
+                              required
                             >
-                              <label htmlFor="nome">Nome:</label>
-                              <input
-                                type="text"
-                                id="nome"
-                                name="nome"
-                                defaultValue={usuario.nome}
-                                required
-                              />
-                              <br />
-                              <label htmlFor="email">Email:</label>
-                              <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                defaultValue={usuario.email}
-                                required
-                              />
-                              <br />
-                              <label htmlFor="tipo_usuario">
-                                Tipo de Usuário:
-                              </label>
-                              <select
-                                id="tipo_usuario"
-                                name="tipo_usuario"
-                                defaultValue={usuario.tipo_usuario}
-                                required
+                              <option value="funcionario">Funcionário</option>
+                              <option value="secretario">Secretário</option>
+                              <option value="gerente">Gerente</option>
+                            </select>
+                            <br />
+                            <div className="form-atualizacao_botao">
+                              <button className="botao_verde" type="submit">
+                                <CheckIcon />
+                              </button>
+                              <button
+                                className="botao-vermelho"
+                                type="button"
+                                onClick={() => setEditingId(null)}
                               >
-                                <option value="funcionario">Funcionário</option>
-                                <option value="secretario">Secretário</option>
-                                <option value="gerente">Gerente</option>
-                              </select>
-                              <br />
-                              <div className="form-atualizacao_botao">
-                                <button className="botao_verde" type="submit">
-                                  <CheckIcon />
-                                </button>
-                                <button
-                                  className="botao-vermelho"
-                                  type="button"
-                                  onClick={() => setEditingId(null)}
-                                >
-                                  <CloseIcon />
-                                </button>
-                              </div>
-                            </form>
-                          </div>
+                                <CloseIcon />
+                              </button>
+                            </div>
+                          </form>
                         </div>
                       </td>
                     </tr>
@@ -385,6 +394,7 @@ function Usuario() {
           </tbody>
         </table>
       </div>
+
       <div className="vai_volta">
         <button
           className="botao_verde"

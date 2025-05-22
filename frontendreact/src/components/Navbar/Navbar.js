@@ -76,78 +76,78 @@ const Navbar = () => {
   ];
 
   return (
-      <nav>
-        <div className="nav-logo-container">
-          <Relogio />
-        </div>
-        <div className="navbar-links-container">
-          {menuOptions.map((item) => (
-            <Link key={item.text} to={item.path || "#"} onClick={item.onClick}>
-              {item.text}
+    <nav>
+      <div className="nav-logo-container">
+        <Relogio />
+      </div>
+      <div className="navbar-links-container">
+        {menuOptions.map((item) => (
+          <Link key={item.text} to={item.path || "#"} onClick={item.onClick}>
+            {item.text}
+          </Link>
+        ))}
+        {/* Botão de logout ao lado do Cart */}
+        {isAuthenticated && (
+          <>
+            <Link to="/atualizar-senha" style={{ cursor: "pointer" }}>
+              Trocar Senha
             </Link>
-          ))}
-          {/* Botão de logout ao lado do Cart */}
-          {isAuthenticated && (
-            <>
-              <Link to="/atualizar-senha" style={{ cursor: "pointer" }}>
-                Trocar Senha
-              </Link>
 
-              <button className="logout-button" onClick={handleLogout}>
-                <LogoutIcon className="logout_icon" />
-                <span>Logout</span>
-              </button>
-            </>
-          )}
-        </div>
-        <div className="navbar-menu-container">
-          <HiOutlineBars3 onClick={() => setOpenMenu(true)} />
-        </div>
-        <Drawer
-          open={openMenu}
-          onClose={() => setOpenMenu(false)}
-          anchor="right"
+            <button className="logout-button" onClick={handleLogout}>
+              <LogoutIcon className="logout_icon" />
+              <span>Logout</span>
+            </button>
+          </>
+        )}
+      </div>
+      <div className="navbar-menu-container">
+        <HiOutlineBars3 onClick={() => setOpenMenu(true)} />
+      </div>
+      <Drawer
+        open={openMenu}
+        onClose={() => setOpenMenu(false)}
+        anchor="right"
+      >
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={() => setOpenMenu(false)}
+          onKeyDown={() => setOpenMenu(false)}
         >
-          <Box
-            sx={{ width: 250 }}
-            role="presentation"
-            onClick={() => setOpenMenu(false)}
-            onKeyDown={() => setOpenMenu(false)}
-          >
-            <List>
-              {menuOptions.map((item) => (
-                <ListItem key={item.text} disablePadding>
-                  <ListItemButton onClick={item.onClick}>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
-                    <ListItemText primary={item.text} />
+          <List>
+            {menuOptions.map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton onClick={item.onClick}>
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+            {/* Adiciona o botão de logout no menu lateral */}
+            {isAuthenticated && (
+              <>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleNavigateToChangePassword}>
+                    <ListItemIcon>
+                      <KeyIcon /> {/* Ou outro ícone como KeyRoundedIcon */}
+                    </ListItemIcon>
+                    <ListItemText primary="Trocar Senha" />
                   </ListItemButton>
                 </ListItem>
-              ))}
-              {/* Adiciona o botão de logout no menu lateral */}
-              {isAuthenticated && (
-                <>
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={handleNavigateToChangePassword}>
-                      <ListItemIcon>
-                        <KeyIcon /> {/* Ou outro ícone como KeyRoundedIcon */}
-                      </ListItemIcon>
-                      <ListItemText primary="Trocar Senha" />
-                    </ListItemButton>
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={handleLogout}>
-                      <ListItemIcon>
-                        <LogoutIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Logout" />
-                    </ListItemButton>
-                  </ListItem>
-                </>
-              )}
-            </List>
-          </Box>
-        </Drawer>
-      </nav>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleLogout}>
+                    <ListItemIcon>
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" />
+                  </ListItemButton>
+                </ListItem>
+              </>
+            )}
+          </List>
+        </Box>
+      </Drawer>
+    </nav>
   );
 };
 

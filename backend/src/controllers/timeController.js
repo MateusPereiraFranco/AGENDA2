@@ -174,8 +174,6 @@ const deleteTimeController = async (req, res) => {
 const updateTimeController = async (req, res) => {
     const { id } = req.params;
 
-    console.log(req.body)
-
     const { nome, valor } = req.body; // Recebe os dados do corpo da requisição
     if (!id || !nome || !valor) {
         return res.status(400).send('ID, valor e nome são obrigatório para atualização');
