@@ -18,6 +18,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -46,7 +48,6 @@ function Usuario() {
 
   const toggleShowFilters = () => {
     setShowFilters((prev) => !prev);
-    setShowAddForm(false);
   };
 
   const itemsPerPage = 10;
@@ -76,9 +77,8 @@ function Usuario() {
       }
       setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
-      console.error(error);
       setHasMorePages(false);
-      setError("Erro ao carregar usuários.");
+      setUsuarios([]);
     }
   };
 
@@ -196,73 +196,66 @@ function Usuario() {
   return (
     <div className="conteiner_usuario_geral">
       <ToastContainer
-        autoClose={1200}
+        autoClose={1500}
         pauseOnHover={false}
         pauseOnFocusLoss={false}
       />
       <h1>{empresaNome}</h1>
       <div className="form_usuario">
-        <hr />
-      </div>
-
-      {/* Botões e filtros na mesma linha */}
-      <div style={{ display: "flex", gap: "10px", margin: "10px 0", flexWrap: "wrap" }}>
-        <button className="botao_azul" onClick={toggleShowFilters}>
-          {showFilters ? "Ocultar Filtros" : "Mostrar Filtros"}
-        </button>
-
         {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
           <button
-            className="botao_azul"
+            className={showAddForm ? "botao-vermelho" : "botao_verde"}
             type="button"
             onClick={() => {
               setShowAddForm((prev) => !prev);
-              setShowFilters(false);
             }}
           >
-            {showAddForm ? <VisibilityOffIcon /> : <VisibilityIcon />}{" "}
-            {showAddForm ? "Fechar Formulário" : "Adicionar Funcionário"}
+            {showAddForm ? <CloseIcon /> : <AddIcon />}
           </button>
         )}
-
-        {showFilters && (
-          <>
-            <input
-              type="text"
-              placeholder="Buscar por nome"
-              value={searchParams.nome}
-              onChange={handleSearchChangeNome}
-            />
-            <select
-              value={searchParams.tipo_usuario || "Todos"}
-              onChange={handleSearchChangeTipo_Usuario}
-            >
-              <option value="Todos">Todos</option>
-              <option value="gerente">Gerente</option>
-              <option value="secretario">Secretário</option>
+        {showAddForm && (
+          <form onSubmit={handleAddUsuario} style={{ marginTop: "1rem" }}>
+            <input type="text" name="name" placeholder="Nome" required />
+            <input type="email" name="email" placeholder="Email" required />
+            <input type="password" name="password" placeholder="Senha" required />
+            <select name="tipo_usuario" required>
+              <option value="cargo">Cargo</option>
               <option value="funcionario">Funcionário</option>
+              <option value="secretario">Secretário</option>
+              <option value="gerente">Gerente</option>
             </select>
-          </>
+            <button className="botao_verde" type="submit">
+              Confirmar Cadastro
+            </button>
+          </form>
         )}
-      </div>
-
-      {showAddForm && (
-        <form onSubmit={handleAddUsuario} style={{ marginTop: "1rem" }}>
-          <input type="text" name="name" placeholder="Nome" required />
-          <input type="email" name="email" placeholder="Email" required />
-          <input type="password" name="password" placeholder="Senha" required />
-          <select name="tipo_usuario" required>
-            <option value="cargo">Cargo</option>
-            <option value="funcionario">Funcionário</option>
-            <option value="secretario">Secretário</option>
-            <option value="gerente">Gerente</option>
-          </select>
-          <button className="botao_verde" type="submit">
-            Confirmar Cadastro
+        <hr />
+        <div style={{ display: "flex", gap: "10px", margin: "10px 0", flexWrap: "wrap" }}>
+          <button className={showFilters ? "botao-vermelho" : "botao_azul"} onClick={toggleShowFilters}>
+            {showFilters ? <CloseIcon /> : <SearchIcon />}
           </button>
-        </form>
-      )}
 
+          {showFilters && (
+            <>
+              <input
+                type="text"
+                placeholder="Buscar por nome"
+                value={searchParams.nome}
+                onChange={handleSearchChangeNome}
+              />
+              <select
+                value={searchParams.tipo_usuario || "Todos"}
+                onChange={handleSearchChangeTipo_Usuario}
+              >
+                <option value="Todos">Todos</option>
+                <option value="gerente">Gerente</option>
+                <option value="secretario">Secretário</option>
+                <option value="funcionario">Funcionário</option>
+              </select>
+            </>
+          )}
+        </div>
+      </div>
       <div className="tabela_usuario">
         <table>
           <thead>

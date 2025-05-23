@@ -28,9 +28,12 @@ export const httpClient = async (url, options = {}, retry = true) => {
         // Lida com erro manual
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            const error = new Error(errorData.message || 'Erro na requisição');
+            const errorMessage = errorData.error || 'Erro na requisição';
+
+            const error = new Error(errorMessage);
             error.status = response.status;
             error.data = errorData;
+
             throw error;
         }
 

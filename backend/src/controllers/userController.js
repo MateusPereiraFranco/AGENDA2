@@ -299,7 +299,6 @@ const addUserController = async (req, res) => {
             }
         });
     } catch (err) {
-        console.error('Erro ao adicionar usuario:', err);
 
         // Tratamento específico para erro de e-mail duplicado
         if (err.code === '23505') {
