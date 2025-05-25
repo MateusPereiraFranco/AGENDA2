@@ -18,8 +18,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -201,67 +201,102 @@ function Usuario() {
         pauseOnFocusLoss={false}
       />
       <h1>{empresaNome}</h1>
-      <div className="form_usuario">
-        {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
-          <button
-            className={showAddForm ? "botao-vermelho" : "botao_verde"}
-            type="button"
-            onClick={() => {
-              setShowAddForm((prev) => !prev);
-            }}
-          >
-            {showAddForm ? <CloseIcon /> : <AddIcon />}
-          </button>
-        )}
-        {showAddForm && (
-          <form onSubmit={handleAddUsuario} style={{ marginTop: "1rem" }}>
-            <input type="text" name="name" placeholder="Nome" required />
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Senha" required />
-            <select name="tipo_usuario" required>
-              <option value="cargo">Cargo</option>
-              <option value="funcionario">Funcionário</option>
-              <option value="secretario">Secretário</option>
-              <option value="gerente">Gerente</option>
-            </select>
-            <button className="botao_verde" type="submit">
-              Confirmar Cadastro
-            </button>
-          </form>
-        )}
-        <hr />
-        <div style={{ display: "flex", gap: "10px", margin: "10px 0", flexWrap: "wrap" }}>
-          <button className={showFilters ? "botao-vermelho" : "botao_azul"} onClick={toggleShowFilters}>
-            {showFilters ? <CloseIcon /> : <SearchIcon />}
-          </button>
-
-          {showFilters && (
-            <>
-              <input
-                type="text"
-                placeholder="Buscar por nome"
-                value={searchParams.nome}
-                onChange={handleSearchChangeNome}
-              />
-              <select
-                value={searchParams.tipo_usuario || "Todos"}
-                onChange={handleSearchChangeTipo_Usuario}
-              >
-                <option value="Todos">Todos</option>
-                <option value="gerente">Gerente</option>
-                <option value="secretario">Secretário</option>
-                <option value="funcionario">Funcionário</option>
-              </select>
-            </>
-          )}
-        </div>
-      </div>
       <div className="tabela_usuario">
         <table>
           <thead>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
               <td colSpan="4" style={{ textAlign: "center" }}>
                 <h2>FUNCIONÁRIOS</h2>
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="3">
+                <div id="botaoBusca_botaoAdd">
+                  <div className="">
+                    <button
+                      id="botao_redondo"
+                      className={showFilters ? "botao-vermelho" : "botao_azul"}
+                      onClick={toggleShowFilters}
+                    >
+                      {showFilters ? <CloseIcon /> : <SearchIcon />}
+                    </button>
+                    {showFilters && (
+                      <>
+                        <input
+                          type="text"
+                          placeholder="Buscar por nome"
+                          value={searchParams.nome}
+                          onChange={handleSearchChangeNome}
+                        />
+                        <select
+                          value={searchParams.tipo_usuario || "Todos"}
+                          onChange={handleSearchChangeTipo_Usuario}
+                        >
+                          <option value="Todos">Todos</option>
+                          <option value="gerente">Gerente</option>
+                          <option value="secretario">Secretário</option>
+                          <option value="funcionario">Funcionário</option>
+                        </select>
+                      </>
+                    )}
+                  </div>
+                  <div className="">
+                    {showAddForm && (
+                      <form
+                        className="form_usuario"
+                        onSubmit={handleAddUsuario}
+                        style={{ marginTop: "1rem" }}
+                      >
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Nome"
+                          required
+                        />
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="Email"
+                          required
+                        />
+                        <input
+                          type="password"
+                          name="password"
+                          placeholder="Senha"
+                          required
+                        />
+                        <select name="tipo_usuario" required>
+                          <option value="cargo">Cargo</option>
+                          <option value="funcionario">Funcionário</option>
+                          <option value="secretario">Secretário</option>
+                          <option value="gerente">Gerente</option>
+                        </select>
+                        <button
+                          id="botao_redondo"
+                          className="botao_verde"
+                          type="submit"
+                        >
+                          <CheckIcon />
+                        </button>
+                      </form>
+                    )}
+                    {(tipo_usuario === "gerente" ||
+                      tipo_usuario === "admin") && (
+                      <button
+                        id="botao_redondo"
+                        className={
+                          showAddForm ? "botao-vermelho" : "botao_verde"
+                        }
+                        type="button"
+                        onClick={() => {
+                          setShowAddForm((prev) => !prev);
+                        }}
+                      >
+                        {showAddForm ? <CloseIcon /> : <AddIcon />}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </td>
             </tr>
           </thead>
@@ -274,14 +309,21 @@ function Usuario() {
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <td>{usuario.nome}</td>
-                    <td>{tipoUsuarioMap[usuario.tipo_usuario] || usuario.tipo_usuario}</td>
+                    <td>
+                      {tipoUsuarioMap[usuario.tipo_usuario] ||
+                        usuario.tipo_usuario}
+                    </td>
                     <td className="botaoNoCanto">
-                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
                         <>
                           <button
                             className="botao-vermelho"
                             onClick={() =>
-                              handleDeleteUsuario(usuario.id_usuario, usuario.nome)
+                              handleDeleteUsuario(
+                                usuario.id_usuario,
+                                usuario.nome
+                              )
                             }
                             disabled={deletingId === usuario.id_usuario}
                           >
@@ -307,13 +349,15 @@ function Usuario() {
                       )}
                       {(usuario.tipo_usuario === "funcionario" ||
                         usuario.tipo_usuario === "gerente") && (
-                          <button
-                            className="botao_verde"
-                            onClick={() => handleVerFuncionario(usuario.id_usuario)}
-                          >
-                            <KeyboardArrowRightIcon />
-                          </button>
-                        )}
+                        <button
+                          className="botao_verde"
+                          onClick={() =>
+                            handleVerFuncionario(usuario.id_usuario)
+                          }
+                        >
+                          <KeyboardArrowRightIcon />
+                        </button>
+                      )}
                     </td>
                   </tr>
                   {editingId === usuario.id_usuario && (
@@ -346,7 +390,9 @@ function Usuario() {
                               required
                             />
                             <br />
-                            <label htmlFor="tipo_usuario">Tipo de Usuário:</label>
+                            <label htmlFor="tipo_usuario">
+                              Tipo de Usuário:
+                            </label>
                             <select
                               id="tipo_usuario"
                               name="tipo_usuario"

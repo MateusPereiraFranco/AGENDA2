@@ -176,6 +176,14 @@ tr:hover {
   border-radius: 4px;
 }
 
+#botao_redondo{
+  text-align: center;
+  margin-right: 10px;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+}
+
 table button {
   text-align: center;
   margin-right: 10px;
@@ -187,6 +195,13 @@ table button {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+}
+
+#botaoBusca_botaoAdd {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 hr {
@@ -467,7 +482,13 @@ nav:hover{
   text-align: center;
 }
 
-.form_usuario,
+.form_usuario {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  gap: 2px;
+}
+
 .form_horario,
 .form_empresa,
 .form_agenda {
@@ -490,7 +511,6 @@ nav:hover{
   background-color: var(--secondary-bg-hover);
 }
 
-.form_usuario button,
 .form_horario button,
 .form_empresa button,
 .form_agenda button {
