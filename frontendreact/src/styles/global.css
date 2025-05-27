@@ -1,34 +1,30 @@
 /*Variáveis CSS*/
 :root {
-  --secondary-bg: rgba(184, 184, 184, 0.25);
-  --secondary-bg-hover: rgba(85, 85, 85, 0.4);
-  --text-color: #6cd875;
-  --shadows: rgba(0, 0, 0, 0.4);
-  --input-bg: #251f1f;
-  --input-border: rgb(67, 185, 106);
-  --button-verde-bg: rgb(67, 185, 106);
-  --button-verde-hover-bg: rgb(131, 202, 155);
-  --button-azul-bg: rgb(63, 130, 175);
-  --button-azul-hover-bg: rgb(127, 170, 199);
-  --button-vermelho-bg: rgb(172, 54, 54);
-  --button-vermelho-hover-bg: rgb(199, 136, 136);
+  --secondary-bg: rgba(184, 184, 184, 0.1);
+  --secondary-bg-hover: rgba(85, 85, 85, 0.2);
+  --text-color: #9fe2bf;
+  --shadows: rgba(0, 0, 0, 0.2);
+  --input-bg: #1c1c1e;
+  --input-border: #4caf50;
+  --button-verde-bg: #4caf50;
+  --button-verde-hover-bg: #66bb6a;
+  --button-azul-bg: #2196f3;
+  --button-azul-hover-bg: #64b5f6;
+  --button-vermelho-bg: #f44336;
+  --button-vermelho-hover-bg: #e57373;
 }
+
 
 /*Estilos globais*/
 body {
-  margin: 0px;
-  padding: 0px;
-  font-weight: 400;
-  font-style: normal;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   color: var(--text-color);
-  font-optical-sizing: auto;
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  height: 100%;
-  width: 99.8vw;
-  max-width: 99.8vw;
+  background: linear-gradient(180deg, #0b0b2b 0%, #1b2735 70%, #090a0f 100%);
   min-height: 100vh;
-  background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
 .stars {
@@ -53,11 +49,12 @@ body {
 }
 
 .shooting-star {
-  position: absolute;
+  position: fixed;
+  will-change: transform, opacity;
   width: 100px;
   height: 2px;
   background: linear-gradient(90deg, white, transparent);
-  animation: shoot 3s infinite ease-in;
+  animation: shoot 6s infinite ease-in;
 }
 
 .shooting-star:nth-child(1) {
@@ -78,8 +75,47 @@ body {
   animation-delay: 2s;
 }
 
+h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  background: linear-gradient(270deg, #5f9f8f, #4caf50, #9fe2bf);
+  background-size: 400% 400%;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 4px rgba(159, 226, 191, 0.3);
+  -webkit-text-stroke: 1px rgba(159, 226, 191, 0.4); /* borda sutil */
+  margin: 1rem 0;
+  text-align: center;
+  animation: gradientMove 15s ease infinite;
+}
+
+
+h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  text-shadow: 0 0 3px rgba(76, 175, 80, 0.2);
+  margin: 0.5rem 0 1rem;
+  text-align: center;
+}
+
+/* Animação de movimento do degradê */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
 input,
 select {
+  font-size: 1rem;
   margin: 5px;
   padding: 8px;
   border-radius: 4px;
@@ -96,12 +132,18 @@ ul {
 }
 
 button {
-  text-align: center;
-  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: 0.5s;
+  font-weight: 600;
+  transition: transform 5s;
+  box-shadow: 0 2px 4px var(--shadows);
+
 }
+
 .botao_verde {
   color: rgb(213, 255, 205);
   box-shadow: 2px 2px var(--shadows);
@@ -133,20 +175,23 @@ button.botao-vermelho:hover {
   background-color: var(--button-vermelho-hover-bg);
 }
 
-.seta_icon{
+.seta_icon {
   font-size: large;
 }
 
 table {
+  width: 100%;
+  max-width: 100%;
   margin: 20px 0;
   border-collapse: collapse;
-  box-shadow: 3px 3px var(--shadows);
-  text-shadow: 2px 2px var(--shadows);
+  overflow-x: auto;
+  box-shadow: 0 2px 4px var(--shadows);
 }
 
 th, td {
-  padding: 12px;
-  text-align: center;
+  padding: 12px 20px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 td {
@@ -154,13 +199,16 @@ td {
 }
 
 th {
-  background-color: #f2f2f2;
+  background-color: var(--secondary-bg-hover);
   font-weight: bold;
+  text-transform: uppercase;
 }
 
-tr {
-  transition: 0.5s;
-  border-bottom: 1px solid rgb(0, 0, 0);
+th {
+  background-color: var(--secondary-bg-hover);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 tr:hover {
@@ -255,7 +303,7 @@ hr {
 
 .input-container label {
   position: absolute;
-  top: 1rem;
+  top: 0.8rem;
   left: 8.7rem;
   color: #999;
   pointer-events: none;
@@ -265,7 +313,7 @@ hr {
 .input-container input:focus + label,
 .input-container input:not(:placeholder-shown) + label,
 .input-container label.floating {
-  top: -0.90rem;
+  top: -1.22rem;
   left: 8.2rem;
   padding: 0 0.25rem;
   color: var(--text-color);
@@ -429,9 +477,10 @@ nav:hover{
 .conteiner_empresas_geral,
 .conteiner_usuario_geral
 {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  margin: 0 auto;
 }
 
 /*formularios*/
@@ -482,26 +531,18 @@ nav:hover{
   text-align: center;
 }
 
-.form_usuario {
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-  gap: 2px;
-}
-
+/* Forms */
+.form_usuario,
 .form_horario,
 .form_empresa,
 .form_agenda {
   display: flex;
   flex-direction: column;
-  width: 90%;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
   padding: 20px;
-  min-width: 300px;
-  max-width: 1000px;
-  margin-bottom: 25px;
-  border-radius: 10px;
-  background-color: var(--secondary-bg);
-  transition: 0.5s;
 }
 
 .form_usuario:hover,
@@ -537,8 +578,8 @@ nav:hover{
 .tabela_agenda table,
 .tabela_usuario table,
 .tabela_empresa table {
-  width: 110vh;
-  max-width: 1500px;
+   width: 100%;
+  overflow-x: auto;
 }
 
 .info_horario {
@@ -1018,3 +1059,149 @@ nav:hover{
     transform: rotateZ(360deg);
   }
 }
+
+
+/*
+:root {
+  --secondary-bg: rgba(184, 184, 184, 0.25);
+  --secondary-bg-hover: rgba(85, 85, 85, 0.4);
+  --text-color: #6cd875;
+  --shadows: rgba(0, 0, 0, 0.4);
+  --input-bg: #251f1f;
+  --input-border: rgb(67, 185, 106);
+  --button-verde-bg: rgb(67, 185, 106);
+  --button-verde-hover-bg: rgb(131, 202, 155);
+  --button-azul-bg: rgb(63, 130, 175);
+  --button-azul-hover-bg: rgb(127, 170, 199);
+  --button-vermelho-bg: rgb(172, 54, 54);
+  --button-vermelho-hover-bg: rgb(199, 136, 136);
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-color);
+  font-optical-sizing: auto;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  height: 100%;
+  width: 99.8vw;
+  max-width: 99.8vw;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
+  overflow-x: hidden;
+}
+
+input,
+select {
+  margin: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: rgb(255, 255, 255);
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+ul {
+  list-style-type: none;
+  color: #000000;
+}
+
+button {
+  text-align: center;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: 0.5s;
+}
+.botao_verde {
+  color: rgb(213, 255, 205);
+  box-shadow: 2px 2px var(--shadows);
+  background-color: var(--button-verde-bg);
+}
+.botao_verde:hover {
+  color: rgb(30, 143, 7);
+  background-color: var(--button-verde-hover-bg);
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.100);
+}
+.botao_azul {
+  color: rgb(205, 249, 255);
+  box-shadow: 2px 2px var(--shadows);
+  background-color: var(--button-azul-bg);
+}
+.botao_azul:hover {
+  color: rgb(7, 116, 131);
+  background-color: var(--button-azul-hover-bg);
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.100);
+}
+button.botao-vermelho {
+  color: rgb(255, 206, 206);
+  box-shadow: 2px 2px var(--shadows);
+  background-color: var(--button-vermelho-bg);
+}
+button.botao-vermelho:hover {
+  color: rgb(153, 17, 17);
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.100);
+  background-color: var(--button-vermelho-hover-bg);
+}
+
+.seta_icon{
+  font-size: large;
+}
+
+table {
+  margin: 20px 0;
+  border-collapse: collapse;
+  box-shadow: 3px 3px var(--shadows);
+  text-shadow: 2px 2px var(--shadows);
+}
+
+th, td {
+  padding: 12px;
+  text-align: start;
+  padding-left: 20px;
+}
+
+td {
+  background-color: var(--secondary-bg);
+}
+
+th {
+  background-color: var(--secondary-bg-hover);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+tr {
+  transition: 0.5s;
+  border-bottom: 1px solid rgb(0, 0, 0);
+}
+
+tr:hover {
+  background-color: var(--secondary-bg-hover);
+}
+
+.form_usuario {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  gap: 2px;
+}
+.tabela_horario table,
+.tabela_agenda table,
+.tabela_usuario table,
+.tabela_empresa table {
+  width: 110vh;
+  max-width: 1500px;
+}
+  .form_usuario,
+  .form_horario,
+  .form_empresa,
+  .form_agenda {
+    flex-wrap: wrap;
+  } 
+
+  */

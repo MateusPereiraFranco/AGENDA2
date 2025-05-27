@@ -19,6 +19,7 @@ import RotateRightIcon from "@mui/icons-material/RotateRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SearchIcon from "@mui/icons-material/Search";
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import AddIcon from "@mui/icons-material/Add";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
@@ -201,6 +202,7 @@ function Usuario() {
         pauseOnFocusLoss={false}
       />
       <h1>{empresaNome}</h1>
+      <hr />
       <div className="tabela_usuario">
         <table>
           <thead>
@@ -215,10 +217,10 @@ function Usuario() {
                   <div className="">
                     <button
                       id="botao_redondo"
-                      className={showFilters ? "botao-vermelho" : "botao_azul"}
+                      className="botao_azul"
                       onClick={toggleShowFilters}
                     >
-                      {showFilters ? <CloseIcon /> : <SearchIcon />}
+                      {showFilters ? <SearchOffIcon /> : <SearchIcon />}
                     </button>
                     {showFilters && (
                       <>
@@ -241,6 +243,21 @@ function Usuario() {
                     )}
                   </div>
                   <div className="">
+                    {(tipo_usuario === "gerente" ||
+                      tipo_usuario === "admin") && (
+                        <button
+                          id="botao_redondo"
+                          className={
+                            showAddForm ? "botao-vermelho" : "botao_verde"
+                          }
+                          type="button"
+                          onClick={() => {
+                            setShowAddForm((prev) => !prev);
+                          }}
+                        >
+                          {showAddForm ? <CloseIcon /> : <AddIcon />}
+                        </button>
+                      )}
                     {showAddForm && (
                       <form
                         className="form_usuario"
@@ -280,24 +297,15 @@ function Usuario() {
                         </button>
                       </form>
                     )}
-                    {(tipo_usuario === "gerente" ||
-                      tipo_usuario === "admin") && (
-                      <button
-                        id="botao_redondo"
-                        className={
-                          showAddForm ? "botao-vermelho" : "botao_verde"
-                        }
-                        type="button"
-                        onClick={() => {
-                          setShowAddForm((prev) => !prev);
-                        }}
-                      >
-                        {showAddForm ? <CloseIcon /> : <AddIcon />}
-                      </button>
-                    )}
+
                   </div>
                 </div>
               </td>
+            </tr>
+            <tr>
+              <th>Nome</th>
+              <th>Cargo</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -316,48 +324,48 @@ function Usuario() {
                     <td className="botaoNoCanto">
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <>
-                          <button
-                            className="botao-vermelho"
-                            onClick={() =>
-                              handleDeleteUsuario(
-                                usuario.id_usuario,
-                                usuario.nome
-                              )
-                            }
-                            disabled={deletingId === usuario.id_usuario}
-                          >
-                            {deletingId === usuario.id_usuario ? (
-                              <RotateRightIcon className="loading" />
-                            ) : (
-                              <DeleteIcon />
-                            )}
-                          </button>
-                          <button
-                            className="botao_azul"
-                            onClick={() =>
-                              toggleStateById(usuario.id_usuario, setEditingId)
-                            }
-                          >
-                            {editingId === usuario.id_usuario ? (
-                              <EditOffIcon />
-                            ) : (
-                              <BorderColorIcon />
-                            )}
-                          </button>
-                        </>
-                      )}
+                          <>
+                            <button
+                              className="botao-vermelho"
+                              onClick={() =>
+                                handleDeleteUsuario(
+                                  usuario.id_usuario,
+                                  usuario.nome
+                                )
+                              }
+                              disabled={deletingId === usuario.id_usuario}
+                            >
+                              {deletingId === usuario.id_usuario ? (
+                                <RotateRightIcon className="loading" />
+                              ) : (
+                                <DeleteIcon />
+                              )}
+                            </button>
+                            <button
+                              className="botao_azul"
+                              onClick={() =>
+                                toggleStateById(usuario.id_usuario, setEditingId)
+                              }
+                            >
+                              {editingId === usuario.id_usuario ? (
+                                <EditOffIcon />
+                              ) : (
+                                <BorderColorIcon />
+                              )}
+                            </button>
+                          </>
+                        )}
                       {(usuario.tipo_usuario === "funcionario" ||
                         usuario.tipo_usuario === "gerente") && (
-                        <button
-                          className="botao_verde"
-                          onClick={() =>
-                            handleVerFuncionario(usuario.id_usuario)
-                          }
-                        >
-                          <KeyboardArrowRightIcon />
-                        </button>
-                      )}
+                          <button
+                            className="botao_verde"
+                            onClick={() =>
+                              handleVerFuncionario(usuario.id_usuario)
+                            }
+                          >
+                            <KeyboardArrowRightIcon />
+                          </button>
+                        )}
                     </td>
                   </tr>
                   {editingId === usuario.id_usuario && (
