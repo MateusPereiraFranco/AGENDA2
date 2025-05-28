@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +16,9 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import EditOffIcon from "@mui/icons-material/EditOff";
@@ -23,7 +26,6 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   fetchAgendamentoData,
-  fetchAgendamentos,
   fetchAgendamentosFkUsuarioId,
 } from "../../services/agendaService";
 import { useAuth } from "../../context/AuthContext";
@@ -46,6 +48,18 @@ function Horario() {
   const [contato, setContato] = useState("");
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
   const itemsPerPage = 10;
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [valor, setValor] = useState("");
+  const [valorUpdate, setValorUpdate] = useState("");
+  const editInputRef = useRef(null);
+
+  const toggleShowFilters = () => {
+    setShowFilters((prev) => !prev);
+  };
+  const toggleShowAddForm = () => {
+    setShowAddForm((prev) => !prev);
+  };
 
   useEffect(() => {
     loadHorarios();
@@ -54,12 +68,23 @@ function Horario() {
     getDataAgenda();
   }, [currentPage, searchParams]);
 
-  const [valor, setValor] = useState("");
+  useEffect(() => {
+    if (editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [editingId]);
 
   const handleValorChange = (e) => {
     let raw = e.target.value.replace(/\D/g, "");
     let formatted = (Number(raw) / 100).toFixed(2).replace(".", ",");
     setValor("R$ " + formatted);
+  };
+
+  const handleValorUpdateChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, "");
+    let formatted = (Number(raw) / 100).toFixed(2).replace(".", ",");
+    setValorUpdate("R$ " + formatted);
   };
 
   // Função genérica para toggles
@@ -194,7 +219,9 @@ function Horario() {
   const handleUpdateHorario = async (e) => {
     e.preventDefault();
     const nome = e.target.nome.value.trim();
-    const valor = e.target.valor.value.trim();
+    const valor = parseFloat(
+      e.target.valor.value.replace("R$", "").replace(",", ".")
+    );
 
     if (!nome || !valor) {
       setError("Todos os campos são obrigatórios!");
@@ -222,41 +249,6 @@ function Horario() {
       />
       <h1>{usuarioNome}</h1>
       <hr />
-      <div className="form_horario">
-        <form className="add_horario" onSubmit={handleAddHorario}>
-          <div>
-            <input type="text" name="nome" placeholder="Nome" required />
-            <input
-              type="text"
-              name="contato"
-              placeholder="Contato (Opcional)"
-              value={contato}
-              onChange={handleContatoChange}
-              maxLength={15}
-            />
-            <input type="time" name="horario" placeholder="Horário" required />
-          </div>
-          <div>
-            <input
-              type="text"
-              id="valor_servico"
-              name="valor_servico"
-              placeholder="R$ 0,00"
-              value={valor}
-              onChange={handleValorChange}
-              required
-            />
-            <input
-              type="text"
-              name="observacoes"
-              placeholder="Observação (Opcional)"
-            />
-            <button className="botao_verde" type="submit">
-              Adicionar Horário
-            </button>
-          </div>
-        </form>
-      </div>
       <div className="tabela_horario">
         <table>
           <thead>
@@ -265,11 +257,69 @@ function Horario() {
                 <h2>{dataAgenda}</h2>
               </td>
             </tr>
-            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
-              <td>Horário</td>
-              <td>Cliente</td>
-              <td>Valor</td>
-              <td></td>
+            <tr>
+              <td colSpan="4">
+                <div id="botaoBusca_botaoAdd">
+                  <button
+                    id="botao_redondo"
+                    className="botao_azul"
+                    onClick={toggleShowFilters}
+                  >{showFilters ? <SearchOffIcon /> : <SearchIcon />}</button>
+                  <button
+                    id="botao_redondo"
+                    className={
+                      showAddForm ? "botao-vermelho" : "botao_verde"
+                    }
+                    type="button"
+                    onClick={
+                      toggleShowAddForm
+                    }
+                  >{showAddForm ? <CloseIcon /> : <AddIcon />}</button>
+                  {showAddForm && (
+                    <div className="form_horario">
+                      <form className="add_horario" onSubmit={handleAddHorario}>
+                        <div>
+                          <input type="time" name="horario" placeholder="Horário" required />
+                          <input type="text" name="nome" placeholder="Nome" required />
+                          <input
+                            type="text"
+                            name="contato"
+                            placeholder="Contato (Opcional)"
+                            value={contato}
+                            onChange={handleContatoChange}
+                            maxLength={15}
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            id="valor_servico"
+                            name="valor_servico"
+                            placeholder="R$ 0,00"
+                            value={valor}
+                            onChange={handleValorChange}
+                            required
+                          />
+                          <input
+                            type="text"
+                            name="observacoes"
+                            placeholder="Observação (Opcional)"
+                          />
+                          <button className="botao_verde" type="submit">
+                            Adicionar Horário
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>Horário</th>
+              <th>Cliente</th>
+              <th>Valor</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -373,9 +423,11 @@ function Horario() {
                                 type="text"
                                 id="valor"
                                 name="valor"
-                                defaultValue={horario.valor_servico}
-                                onChange={handleValorChange}
+                                placeholder="R$ 0,00"
+                                value={valorUpdate}
+                                onChange={handleValorUpdateChange}
                                 required
+                                ref={editInputRef}
                               />
                               <br />
                               <div className="form-atualizacao_botao">

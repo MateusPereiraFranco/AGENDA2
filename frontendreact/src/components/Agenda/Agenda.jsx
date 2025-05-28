@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +16,9 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
@@ -38,6 +41,16 @@ function Agenda() {
   const [hasMorePages, setHasMorePages] = useState(true);
   const [loading, setLoading] = useState(false);
   const itemsPerPage = 10;
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const editInputRef = useRef(null);
+
+  const toggleShowFilters = () => {
+    setShowFilters((prev) => !prev);
+  };
+  const toggleShowAddForm = () => {
+    setShowAddForm((prev) => !prev);
+  };
 
   const toggleStateById = (id, setState) => {
     setState((prev) => {
@@ -66,6 +79,13 @@ function Agenda() {
     loadAgendamentos();
     loadUsuarioName();
   }, [currentPage]);
+
+  useEffect(() => {
+    if (editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [editingAgendamentoId]);
 
   const loadAgendamentos = async () => {
     if (
@@ -204,38 +224,6 @@ function Agenda() {
       />
       <h1>{usuarioNome}</h1>
       <hr />
-      <div className="form_agenda">
-        <form onSubmit={(e) => e.preventDefault()}>
-          <input
-            type="date"
-            value={searchParams.dataInicio}
-            onChange={(e) =>
-              setSearchParams({ ...searchParams, dataInicio: e.target.value })
-            }
-          />
-          <input
-            type="date"
-            value={searchParams.dataFim}
-            onChange={(e) =>
-              setSearchParams({ ...searchParams, dataFim: e.target.value })
-            }
-          />
-          <button className="botao_verde" type="button" onClick={handleSearch}>
-            Buscar
-          </button>
-          <button className="botao_verde" type="button" onClick={limparFiltros}>
-            Limpar
-          </button>
-        </form>
-        <hr />
-        <form onSubmit={handleAddAgendamento}>
-          <input type="date" name="data" required />
-          <button className="botao_verde" type="submit">
-            Adicionar Agendamento
-          </button>
-        </form>
-      </div>
-
       <div className="tabela_agenda">
         <table>
           <thead>
@@ -245,10 +233,67 @@ function Agenda() {
               </td>
             </tr>
             <tr>
-              <td>Data</td>
-              <td>Agendados</td>
-              <td>Valor</td>
-              <td></td>
+              <td colSpan="4">
+                <div id="botaoBusca_botaoAdd">
+                  <div>
+                    <button
+                      id="botao_redondo"
+                      className="botao_azul"
+                      onClick={toggleShowFilters}
+                    >{showFilters ? <SearchOffIcon /> : <SearchIcon />}</button>
+                    {showFilters && (
+                      <form onSubmit={(e) => e.preventDefault()}>
+                        <input
+                          type="date"
+                          value={searchParams.dataInicio}
+                          onChange={(e) =>
+                            setSearchParams({ ...searchParams, dataInicio: e.target.value })
+                          }
+                        />
+                        <input
+                          type="date"
+                          value={searchParams.dataFim}
+                          onChange={(e) =>
+                            setSearchParams({ ...searchParams, dataFim: e.target.value })
+                          }
+                        />
+                        <button className="botao_verde" type="button" onClick={handleSearch}>
+                          Buscar
+                        </button>
+                        <button className="botao_verde" type="button" onClick={limparFiltros}>
+                          Limpar
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                  <div>
+                    <button
+                      id="botao_redondo"
+                      className={
+                        showAddForm ? "botao-vermelho" : "botao_verde"
+                      }
+                      type="button"
+                      onClick={
+                        toggleShowAddForm
+                      }
+                    >{showAddForm ? <CloseIcon /> : <AddIcon />}</button>
+                    {showAddForm && (
+                      <form onSubmit={handleAddAgendamento}>
+                        <input type="date" name="data" required />
+                        <button className="botao_verde" type="submit" style={{ marginLeft: 10 }}>
+                          <CheckIcon />
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>Data</th>
+              <th>Agendados</th>
+              <th>Valor</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -335,6 +380,7 @@ function Agenda() {
                             name="data"
                             defaultValue={agendamento.data}
                             required
+                            ref={editInputRef}
                           />
                           <br />
                           <div className="form-atualizacao_botao">

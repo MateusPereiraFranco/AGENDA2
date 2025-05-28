@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -46,9 +46,23 @@ function Usuario() {
   const [hasMorePages, setHasMorePages] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const editInputRef = useRef(null);
 
   const toggleShowFilters = () => {
     setShowFilters((prev) => !prev);
+  };
+  const toggleShowAddForm = () => {
+    setShowAddForm((prev) => !prev);
+  };
+
+  const toggleStateById = (id, setState) => {
+    setState((prev) => {
+      if (prev === null || typeof prev !== "object") {
+        return prev === id ? null : id;
+      } else {
+        return { ...prev, [id]: !prev[id] };
+      }
+    });
   };
 
   const itemsPerPage = 10;
@@ -57,6 +71,13 @@ function Usuario() {
     loadUsuarios();
     loadEmpresa();
   }, [currentPage, searchParams]);
+
+  useEffect(() => {
+    if (editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [editingId]);
 
   const loadUsuarios = async () => {
     try {
@@ -91,16 +112,6 @@ function Usuario() {
       console.error(error);
       setError("Erro ao carregar detalhes da empresa.");
     }
-  };
-
-  const toggleStateById = (id, setState) => {
-    setState((prev) => {
-      if (prev === null || typeof prev !== "object") {
-        return prev === id ? null : id;
-      } else {
-        return { ...prev, [id]: !prev[id] };
-      }
-    });
   };
 
   const handleAddUsuario = async (e) => {
@@ -207,7 +218,7 @@ function Usuario() {
         <table>
           <thead>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
-              <td colSpan="4" style={{ textAlign: "center" }}>
+              <td colSpan="4">
                 <h2>FUNCIONÁRIOS</h2>
               </td>
             </tr>
@@ -251,9 +262,9 @@ function Usuario() {
                             showAddForm ? "botao-vermelho" : "botao_verde"
                           }
                           type="button"
-                          onClick={() => {
-                            setShowAddForm((prev) => !prev);
-                          }}
+                          onClick={
+                            toggleShowAddForm
+                          }
                         >
                           {showAddForm ? <CloseIcon /> : <AddIcon />}
                         </button>
@@ -387,6 +398,7 @@ function Usuario() {
                               name="nome"
                               defaultValue={usuario.nome}
                               required
+                              ref={editInputRef}
                             />
                             <br />
                             <label htmlFor="email">Email:</label>
