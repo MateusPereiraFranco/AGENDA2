@@ -44,6 +44,7 @@ function Usuario() {
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [hasMorePages, setHasMorePages] = useState(true);
+  const itemsPerPage = 10;
   const [showAddForm, setShowAddForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const editInputRef = useRef(null);
@@ -64,8 +65,6 @@ function Usuario() {
       }
     });
   };
-
-  const itemsPerPage = 10;
 
   useEffect(() => {
     loadUsuarios();
@@ -212,17 +211,11 @@ function Usuario() {
         pauseOnHover={false}
         pauseOnFocusLoss={false}
       />
-      <h1>{empresaNome}</h1>
-      <hr />
       <div className="tabela_usuario">
+        <h1 style={{ fontStyle: "italic" }}>{empresaNome}</h1>
         <table>
           <thead>
-            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
-              <td colSpan="4">
-                <h2>FUNCIONÁRIOS</h2>
-              </td>
-            </tr>
-            <tr>
+            <tr tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
               <td colSpan="3">
                 <div id="botaoBusca_botaoAdd">
                   <div className="">

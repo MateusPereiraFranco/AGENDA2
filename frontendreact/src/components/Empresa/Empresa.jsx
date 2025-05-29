@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,6 +8,9 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
+import SearchIcon from "@mui/icons-material/Search";
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import AddIcon from "@mui/icons-material/Add";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -21,9 +24,6 @@ import {
   updateEmpresa,
   deleteEmpresa,
 } from "../../services/empresaService";
-import { colors } from "@mui/material";
-
-// ...imports mantidos...
 
 function Empresa() {
   const [empresas, setEmpresas] = useState([]);
@@ -35,10 +35,31 @@ function Empresa() {
   const navigate = useNavigate();
   const [hasMorePages, setHasMorePages] = useState(true);
   const itemsPerPage = 10;
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const editInputRef = useRef(null);
+
+  const toggleShowFilters = () => {
+    setShowFilters((prev) => !prev);
+  };
+  const toggleShowAddForm = () => {
+    setShowAddForm((prev) => !prev);
+  };
+
+  const toggleEditingEmpresa = (id) => {
+    setEditingEmpresaId((prevId) => (prevId === id ? null : id));
+  };
 
   useEffect(() => {
     loadEmpresas();
   }, [currentPage, searchParams]);
+
+  useEffect(() => {
+    if (editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [editingEmpresaId]);
 
   const loadEmpresas = async () => {
     try {
@@ -58,12 +79,8 @@ function Empresa() {
       setHasMorePages(data.length >= itemsPerPage);
     } catch (error) {
       setHasMorePages(false);
-      console.error(error);
+      setEmpresas([]);
     }
-  };
-
-  const toggleEditingEmpresa = (id) => {
-    setEditingEmpresaId((prevId) => (prevId === id ? null : id));
   };
 
   const handleAddEmpresa = async (e) => {
@@ -144,48 +161,64 @@ function Empresa() {
         pauseOnHover={false}
         pauseOnFocusLoss={false}
       />
-      <h1>TEM UM HORÁRIO</h1>
-
-      <div className="form_empresa">
-        <form>
-          <input
-            type="text"
-            name="nome"
-            placeholder="Nome da Empresa"
-            value={searchParams.nome}
-            onChange={handleSearchChange}
-          />
-          <input
-            type="text"
-            name="cnpj"
-            placeholder="CNPJ"
-            value={searchParams.cnpj}
-            onChange={handleSearchChange}
-          />
-        </form>
-        <hr />
-        <form onSubmit={handleAddEmpresa}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Nome da Empresa"
-            required
-          />
-          <input type="text" name="cnpj" placeholder="CNPJ" required />
-          <input type="text" name="email" placeholder="Email" required />
-          <button className="botao_verde" type="submit">
-            Adicionar Empresa
-          </button>
-        </form>
+      <div>
+        <button className="botao_verde" onClick={toggleShowAddForm}><AddIcon /></button>
       </div>
-
+      {showAddForm && (
+        <div className="form_empresa">
+          <form onSubmit={handleAddEmpresa}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nome da Empresa"
+              required
+            />
+            <input type="text" name="cnpj" placeholder="CNPJ" required />
+            <input type="text" name="email" placeholder="Email" required />
+            <button className="botao_verde" type="submit">
+              Adicionar Empresa
+            </button>
+          </form>
+        </div>
+      )}
       <div className="tabela_empresa">
         <table>
           <thead>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
               <td colSpan="4">
-                <h2>Empresas</h2>
+                <h2 style={{ fontSize: 60, textDecoration: "underline" }}>EMPRESAS</h2>
               </td>
+            </tr>
+            <tr>
+              <td colSpan="4">
+                <div style={{ display: "flex", alignItems: "start" }}>
+                  <button className="botao_azul" onClick={toggleShowFilters}><SearchIcon /></button>
+                  {showFilters && (
+                    <form>
+                      <input
+                        type="text"
+                        name="nome"
+                        placeholder="Nome da Empresa"
+                        value={searchParams.nome}
+                        onChange={handleSearchChange}
+                      />
+                      <input
+                        type="text"
+                        name="cnpj"
+                        placeholder="CNPJ"
+                        value={searchParams.cnpj}
+                        onChange={handleSearchChange}
+                      />
+                    </form>
+                  )}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>Nome</th>
+              <th>CNPJ</th>
+              <th>EMAIL</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -251,6 +284,7 @@ function Empresa() {
                               name="nome"
                               defaultValue={empresa.nome}
                               required
+                              ref={editInputRef}
                             />
                             <label htmlFor="cnpj">CNPJ:</label>
                             <input

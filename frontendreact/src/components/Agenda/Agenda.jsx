@@ -229,7 +229,7 @@ function Agenda() {
           <thead>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
               <td colSpan="4">
-                <h2>AGENDA</h2>
+                <h2>AGENDAS</h2>
               </td>
             </tr>
             <tr>

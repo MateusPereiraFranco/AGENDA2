@@ -1,6 +1,6 @@
 //react
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Para redirecionar o usuário
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Para redirecionar o usuário
 
 // Relógio
 import Relogio from "./relogio.js";
@@ -43,8 +43,31 @@ const Navbar = () => {
   const { isAuthenticated, logout, setIsAuthenticated, user, setUser } =
     useAuth(); // Use o contexto de autenticação
   const navigate = useNavigate();
+  const location = useLocation();
 
   const homePath = getHomePath(user);
+
+  const pageTitles = {
+    "/empresa": "Gerenciamento de Empresas",
+    "/usuario": "FUNCIONÁRIOS",
+    "/agenda": "AGENDAS",
+    "/horario": "HORÁRIOS",
+    "/atualizar-senha": "Atualize sua Senha",
+    "/about": "QUEM SOMOS",
+    "/contact": "Fale Conosco",
+    "/login": "Bem-vindo",
+    "/forgot-password": "Recuperar Senha",
+    "/verify-token": "Verificar Token",
+    "/reset-password": "Redefinir Senha",
+  };
+
+  const getPageTitle = () => {
+    const pathname = location.pathname;
+    const key = Object.keys(pageTitles).find((k) => pathname.startsWith(k));
+    return pageTitles[key] || "Sistema";
+  };
+
+  const pageTitle = getPageTitle();
 
   const handleNavigateToChangePassword = () => {
     navigate("/atualizar-senha");
@@ -79,6 +102,9 @@ const Navbar = () => {
     <nav>
       <div className="nav-logo-container">
         <Relogio />
+      </div>
+      <div>
+        <h1>{pageTitle}</h1>
       </div>
       <div className="navbar-links-container">
         {menuOptions.map((item) => (
