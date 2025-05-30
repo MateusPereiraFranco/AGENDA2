@@ -10,7 +10,7 @@ import {
 } from "../../services/usuarioService";
 import { fetchEmpresaNome } from "../../services/empresaService";
 
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch } from "react-icons/fi";
 //icons
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -20,7 +20,7 @@ import RotateRightIcon from "@mui/icons-material/RotateRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SearchIcon from "@mui/icons-material/Search";
-import SearchOffIcon from '@mui/icons-material/SearchOff';
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import AddIcon from "@mui/icons-material/Add";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
@@ -75,7 +75,10 @@ function Usuario() {
   useEffect(() => {
     if (editInputRef.current) {
       editInputRef.current.focus();
-      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      editInputRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [editingId]);
 
@@ -212,49 +215,53 @@ function Usuario() {
         pauseOnHover={false}
         pauseOnFocusLoss={false}
       />
-      <div className="tabela_usuario">
+      <div className="tabela">
         <h1>{empresaNome}</h1>
         <table>
           <tbody>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
               <th colSpan="3">
                 <div id="botaoBusca_botaoAdd">
-                  <div className="relative w-full">
-                    <FiSearch style={{ position: "relative", left: 3, top: 1 }} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Buscar por nome"
-                      value={searchParams.nome}
-                      onChange={handleSearchChangeNome}
-                      className="w-full pl-10 py-2 pr-3 rounded-md border border-gray-700 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <select
-                      value={searchParams.tipo_usuario || "Todos"}
-                      onChange={handleSearchChangeTipo_Usuario}
+                  <div className="busca_tabela">
+                    <div
+                      style={{
+                        position: "relative",
+                      }}
                     >
-                      <option value="Todos">Todos</option>
-                      <option value="gerente">Gerente</option>
-                      <option value="secretario">Secretário</option>
-                      <option value="funcionario">Funcionário</option>
-                    </select>
-
+                      <FiSearch id="Lupa" size={18} />
+                      <input
+                        type="text"
+                        placeholder="Buscar por nome"
+                        value={searchParams.nome}
+                        onChange={handleSearchChangeNome}
+                        className="input_buscar"
+                      />
+                      <select
+                        value={searchParams.tipo_usuario || "Todos"}
+                        onChange={handleSearchChangeTipo_Usuario}
+                        className="select_busca"
+                      >
+                        <option value="Todos">Todos</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="secretario">Secretário</option>
+                        <option value="funcionario">Funcionário</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="">
                     {(tipo_usuario === "gerente" ||
                       tipo_usuario === "admin") && (
-                        <button
-                          id="botao_redondo"
-                          className={
-                            showAddForm ? "botao-vermelho" : "botao_verde"
-                          }
-                          type="button"
-                          onClick={
-                            toggleShowAddForm
-                          }
-                        >
-                          {showAddForm ? <CloseIcon /> : <AddIcon />}
-                        </button>
-                      )}
+                      <button
+                        id="botao_redondo"
+                        className={
+                          showAddForm ? "botao-vermelho" : "botao_verde"
+                        }
+                        type="button"
+                        onClick={toggleShowAddForm}
+                      >
+                        {showAddForm ? <CloseIcon /> : <AddIcon />}
+                      </button>
+                    )}
                     {showAddForm && (
                       <form
                         className="form_usuario"
@@ -294,7 +301,6 @@ function Usuario() {
                         </button>
                       </form>
                     )}
-
                   </div>
                 </div>
               </th>
@@ -319,48 +325,48 @@ function Usuario() {
                     <td className="botaoNoCanto">
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                          <>
-                            <button
-                              className="botao-vermelho"
-                              onClick={() =>
-                                handleDeleteUsuario(
-                                  usuario.id_usuario,
-                                  usuario.nome
-                                )
-                              }
-                              disabled={deletingId === usuario.id_usuario}
-                            >
-                              {deletingId === usuario.id_usuario ? (
-                                <RotateRightIcon className="loading" />
-                              ) : (
-                                <DeleteIcon />
-                              )}
-                            </button>
-                            <button
-                              className="botao_azul"
-                              onClick={() =>
-                                toggleStateById(usuario.id_usuario, setEditingId)
-                              }
-                            >
-                              {editingId === usuario.id_usuario ? (
-                                <EditOffIcon />
-                              ) : (
-                                <BorderColorIcon />
-                              )}
-                            </button>
-                          </>
-                        )}
-                      {(usuario.tipo_usuario === "funcionario" ||
-                        usuario.tipo_usuario === "gerente") && (
+                        <>
                           <button
-                            className="botao_verde"
+                            className="botao-vermelho"
                             onClick={() =>
-                              handleVerFuncionario(usuario.id_usuario)
+                              handleDeleteUsuario(
+                                usuario.id_usuario,
+                                usuario.nome
+                              )
+                            }
+                            disabled={deletingId === usuario.id_usuario}
+                          >
+                            {deletingId === usuario.id_usuario ? (
+                              <RotateRightIcon className="loading" />
+                            ) : (
+                              <DeleteIcon />
+                            )}
+                          </button>
+                          <button
+                            className="botao_azul"
+                            onClick={() =>
+                              toggleStateById(usuario.id_usuario, setEditingId)
                             }
                           >
-                            <KeyboardArrowRightIcon />
+                            {editingId === usuario.id_usuario ? (
+                              <EditOffIcon />
+                            ) : (
+                              <BorderColorIcon />
+                            )}
                           </button>
-                        )}
+                        </>
+                      )}
+                      {(usuario.tipo_usuario === "funcionario" ||
+                        usuario.tipo_usuario === "gerente") && (
+                        <button
+                          className="botao_verde"
+                          onClick={() =>
+                            handleVerFuncionario(usuario.id_usuario)
+                          }
+                        >
+                          <KeyboardArrowRightIcon />
+                        </button>
+                      )}
                     </td>
                   </tr>
                   {editingId === usuario.id_usuario && (

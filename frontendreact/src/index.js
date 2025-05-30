@@ -20,5 +20,6 @@ root.render(
     <div class="shooting-star"></div>
     <div class="shooting-star"></div>
     <App />
+
   </React.StrictMode>
 );

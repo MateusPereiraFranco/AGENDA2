@@ -9,7 +9,7 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import SearchIcon from "@mui/icons-material/Search";
-import SearchOffIcon from '@mui/icons-material/SearchOff';
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import AddIcon from "@mui/icons-material/Add";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -57,7 +57,10 @@ function Empresa() {
   useEffect(() => {
     if (editInputRef.current) {
       editInputRef.current.focus();
-      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      editInputRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [editingEmpresaId]);
 
@@ -161,38 +164,15 @@ function Empresa() {
         pauseOnHover={false}
         pauseOnFocusLoss={false}
       />
-      <div>
-        <button className="botao_verde" onClick={toggleShowAddForm}><AddIcon /></button>
-      </div>
-      {showAddForm && (
-        <div className="form_empresa">
-          <form onSubmit={handleAddEmpresa}>
-            <input
-              type="text"
-              name="name"
-              placeholder="Nome da Empresa"
-              required
-            />
-            <input type="text" name="cnpj" placeholder="CNPJ" required />
-            <input type="text" name="email" placeholder="Email" required />
-            <button className="botao_verde" type="submit">
-              Adicionar Empresa
-            </button>
-          </form>
-        </div>
-      )}
-      <div className="tabela_empresa">
+      <div className="tabela">
         <table>
-          <thead>
+          <tbody>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
-              <td colSpan="4">
-                <h2 style={{ fontSize: 60, textDecoration: "underline" }}>EMPRESAS</h2>
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="4">
-                <div style={{ display: "flex", alignItems: "start" }}>
-                  <button className="botao_azul" onClick={toggleShowFilters}><SearchIcon /></button>
+              <th colSpan="4">
+                <div id="botaoBusca_botaoAdd">
+                  <button className="botao_azul" onClick={toggleShowFilters}>
+                    <SearchIcon />
+                  </button>
                   {showFilters && (
                     <form>
                       <input
@@ -211,17 +191,47 @@ function Empresa() {
                       />
                     </form>
                   )}
+                  {showAddForm && (
+                    <div className="form_empresa">
+                      <form onSubmit={handleAddEmpresa}>
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Nome da Empresa"
+                          required
+                        />
+                        <input
+                          type="text"
+                          name="cnpj"
+                          placeholder="CNPJ"
+                          required
+                        />
+                        <input
+                          type="text"
+                          name="email"
+                          placeholder="Email"
+                          required
+                        />
+                        <button className="botao_verde" type="submit">
+                          Adicionar Empresa
+                        </button>
+                      </form>
+                    </div>
+                  )}
+                  <div>
+                    <button className="botao_verde" onClick={toggleShowAddForm}>
+                      <AddIcon />
+                    </button>
+                  </div>
                 </div>
-              </td>
+              </th>
             </tr>
             <tr>
-              <th>Nome</th>
-              <th>CNPJ</th>
-              <th>EMAIL</th>
-              <th></th>
+              <td>Nome</td>
+              <td>CNPJ</td>
+              <td>EMAIL</td>
+              <td></td>
             </tr>
-          </thead>
-          <tbody>
             {empresas.length > 0 ? (
               empresas.map((empresa, index) => (
                 <React.Fragment key={empresa.id_empresa}>

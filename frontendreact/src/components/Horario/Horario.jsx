@@ -249,7 +249,7 @@ function Horario() {
       />
       <h1>{usuarioNome}</h1>
       <hr />
-      <div className="tabela_horario">
+      <div className="tabela">
         <table>
           <thead>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>

@@ -18,7 +18,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
-import SearchOffIcon from '@mui/icons-material/SearchOff';
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
@@ -83,7 +83,10 @@ function Agenda() {
   useEffect(() => {
     if (editInputRef.current) {
       editInputRef.current.focus();
-      editInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      editInputRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [editingAgendamentoId]);
 
@@ -226,13 +229,8 @@ function Agenda() {
       <hr />
       <div className="tabela_agenda">
         <table>
-          <thead>
+          <tbody>
             <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
-              <td colSpan="4">
-                <h2>AGENDAS</h2>
-              </td>
-            </tr>
-            <tr>
               <td colSpan="4">
                 <div id="botaoBusca_botaoAdd">
                   <div>
@@ -240,28 +238,46 @@ function Agenda() {
                       id="botao_redondo"
                       className="botao_azul"
                       onClick={toggleShowFilters}
-                    >{showFilters ? <SearchOffIcon /> : <SearchIcon />}</button>
+                    >
+                      {showFilters ? <SearchOffIcon /> : <SearchIcon />}
+                    </button>
                     {showFilters && (
                       <form onSubmit={(e) => e.preventDefault()}>
                         <input
                           type="date"
                           value={searchParams.dataInicio}
                           onChange={(e) =>
-                            setSearchParams({ ...searchParams, dataInicio: e.target.value })
+                            setSearchParams({
+                              ...searchParams,
+                              dataInicio: e.target.value,
+                            })
                           }
                         />
                         <input
                           type="date"
                           value={searchParams.dataFim}
                           onChange={(e) =>
-                            setSearchParams({ ...searchParams, dataFim: e.target.value })
+                            setSearchParams({
+                              ...searchParams,
+                              dataFim: e.target.value,
+                            })
                           }
                         />
-                        <button className="botao_verde" type="button" onClick={handleSearch}>
-                          Buscar
+                        <button
+                          id="botao_redondo"
+                          className="botao_verde"
+                          type="button"
+                          onClick={handleSearch}
+                        >
+                          <CheckIcon />
                         </button>
-                        <button className="botao_verde" type="button" onClick={limparFiltros}>
-                          Limpar
+                        <button
+                          id="botao_redondo"
+                          className="botao-vermelho"
+                          type="button"
+                          onClick={limparFiltros}
+                        >
+                          <CloseIcon />
                         </button>
                       </form>
                     )}
@@ -269,18 +285,20 @@ function Agenda() {
                   <div>
                     <button
                       id="botao_redondo"
-                      className={
-                        showAddForm ? "botao-vermelho" : "botao_verde"
-                      }
+                      className={showAddForm ? "botao-vermelho" : "botao_verde"}
                       type="button"
-                      onClick={
-                        toggleShowAddForm
-                      }
-                    >{showAddForm ? <CloseIcon /> : <AddIcon />}</button>
+                      onClick={toggleShowAddForm}
+                    >
+                      {showAddForm ? <CloseIcon /> : <AddIcon />}
+                    </button>
                     {showAddForm && (
                       <form onSubmit={handleAddAgendamento}>
                         <input type="date" name="data" required />
-                        <button className="botao_verde" type="submit" style={{ marginLeft: 10 }}>
+                        <button
+                          className="botao_verde"
+                          type="submit"
+                          style={{ marginLeft: 10 }}
+                        >
                           <CheckIcon />
                         </button>
                       </form>
@@ -290,13 +308,11 @@ function Agenda() {
               </td>
             </tr>
             <tr>
-              <th>Data</th>
-              <th>Agendados</th>
-              <th>Valor</th>
-              <th></th>
+              <td>Data</td>
+              <td>Agendados</td>
+              <td>Valor</td>
+              <td></td>
             </tr>
-          </thead>
-          <tbody>
             {loading ? (
               <tr>
                 <td
@@ -339,22 +355,22 @@ function Agenda() {
                       </button>
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                          <button
-                            className="botao_azul"
-                            onClick={() =>
-                              toggleStateById(
-                                agendamento.id_agenda,
-                                setEditingAgendamentoId
-                              )
-                            }
-                          >
-                            {editingAgendamentoId === agendamento.id_agenda ? (
-                              <EditOffIcon />
-                            ) : (
-                              <BorderColorIcon />
-                            )}
-                          </button>
-                        )}
+                        <button
+                          className="botao_azul"
+                          onClick={() =>
+                            toggleStateById(
+                              agendamento.id_agenda,
+                              setEditingAgendamentoId
+                            )
+                          }
+                        >
+                          {editingAgendamentoId === agendamento.id_agenda ? (
+                            <EditOffIcon />
+                          ) : (
+                            <BorderColorIcon />
+                          )}
+                        </button>
+                      )}
                       <button
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}
