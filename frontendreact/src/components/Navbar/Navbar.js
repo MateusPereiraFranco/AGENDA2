@@ -100,10 +100,10 @@ const Navbar = () => {
 
   return (
     <nav>
-      <div className="nav-logo-container">
-        <Relogio />
-      </div>
-      <div>
+      <div className="nav-left">
+        <div className="nav-logo-container">
+          <Relogio />
+        </div>
         <h1>{pageTitle}</h1>
       </div>
       <div className="navbar-links-container">

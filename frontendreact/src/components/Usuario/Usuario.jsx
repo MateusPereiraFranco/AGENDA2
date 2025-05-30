@@ -10,6 +10,7 @@ import {
 } from "../../services/usuarioService";
 import { fetchEmpresaNome } from "../../services/empresaService";
 
+import { FiSearch } from 'react-icons/fi';
 //icons
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
@@ -46,7 +47,7 @@ function Usuario() {
   const [hasMorePages, setHasMorePages] = useState(true);
   const itemsPerPage = 10;
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const editInputRef = useRef(null);
 
   const toggleShowFilters = () => {
@@ -212,39 +213,31 @@ function Usuario() {
         pauseOnFocusLoss={false}
       />
       <div className="tabela_usuario">
-        <h1 style={{ fontStyle: "italic" }}>{empresaNome}</h1>
+        <h1>{empresaNome}</h1>
         <table>
-          <thead>
-            <tr tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
-              <td colSpan="3">
+          <tbody>
+            <tr style={{ background: `rgba(177, 209, 196, 0.25)` }}>
+              <th colSpan="3">
                 <div id="botaoBusca_botaoAdd">
-                  <div className="">
-                    <button
-                      id="botao_redondo"
-                      className="botao_azul"
-                      onClick={toggleShowFilters}
+                  <div className="relative w-full">
+                    <FiSearch style={{ position: "relative", left: 3, top: 1 }} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Buscar por nome"
+                      value={searchParams.nome}
+                      onChange={handleSearchChangeNome}
+                      className="w-full pl-10 py-2 pr-3 rounded-md border border-gray-700 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <select
+                      value={searchParams.tipo_usuario || "Todos"}
+                      onChange={handleSearchChangeTipo_Usuario}
                     >
-                      {showFilters ? <SearchOffIcon /> : <SearchIcon />}
-                    </button>
-                    {showFilters && (
-                      <>
-                        <input
-                          type="text"
-                          placeholder="Buscar por nome"
-                          value={searchParams.nome}
-                          onChange={handleSearchChangeNome}
-                        />
-                        <select
-                          value={searchParams.tipo_usuario || "Todos"}
-                          onChange={handleSearchChangeTipo_Usuario}
-                        >
-                          <option value="Todos">Todos</option>
-                          <option value="gerente">Gerente</option>
-                          <option value="secretario">Secretário</option>
-                          <option value="funcionario">Funcionário</option>
-                        </select>
-                      </>
-                    )}
+                      <option value="Todos">Todos</option>
+                      <option value="gerente">Gerente</option>
+                      <option value="secretario">Secretário</option>
+                      <option value="funcionario">Funcionário</option>
+                    </select>
+
                   </div>
                   <div className="">
                     {(tipo_usuario === "gerente" ||
@@ -304,15 +297,13 @@ function Usuario() {
 
                   </div>
                 </div>
-              </td>
+              </th>
             </tr>
             <tr>
-              <th>Nome</th>
-              <th>Cargo</th>
-              <th></th>
+              <td>Nome</td>
+              <td>Cargo</td>
+              <td></td>
             </tr>
-          </thead>
-          <tbody>
             {usuarios.length > 0 ? (
               usuarios.map((usuario, index) => (
                 <React.Fragment key={usuario.id_usuario}>

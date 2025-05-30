@@ -26,6 +26,7 @@ body {
   line-height: 1.6;
 }
 
+/*
 .stars {
   width: 1px;
   height: 1px;
@@ -73,6 +74,7 @@ body {
   left: -100px;
   animation-delay: 2s;
 }
+*/
 
 h1 {
   font-size: 4rem;
@@ -139,7 +141,6 @@ button {
   font-weight: 600;
   transition: 0.5s;
   box-shadow: 0 2px 4px var(--shadows);
-
 }
 
 .botao_verde {
@@ -181,13 +182,16 @@ table {
   width: 100%;
   max-width: 100%;
   margin: 20px 0;
-  border-collapse: collapse;
-  overflow-x: auto;
+  border-collapse: separate; /* IMPORTANTE: permite o border-radius funcionar */
+  border-spacing: 0; /* remove espaçamento entre as células */
+  overflow: hidden; /* esconde o conteúdo que ultrapassa os cantos arredondados */
   box-shadow: 0 2px 4px var(--shadows);
+  border-radius: 10px; /* ajuste o valor conforme desejar */
 }
 
 th, td {
-  padding: 12px 20px;
+  font-size: 1.3rem;
+  padding: 18px 26px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -202,13 +206,33 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+/* Arredondar os cantos do cabeçalho */
+th:first-child {
+  border-top-left-radius: 10px;
+}
+
+th:last-child {
+  border-top-right-radius: 10px;
+}
+
+/* Arredondar os cantos da última linha */
+tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
 tr {
-  transition: 0.5s
+  transition: 0.5s;
 }
 
 tr:hover {
   background-color: var(--secondary-bg-hover);
 }
+
 
 .forgot_password_conteiner button {
   border: none;
@@ -331,6 +355,20 @@ nav {
 nav:hover{
   background-color: var(--secondary-bg-hover)
 }
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 90px; /* espaçamento entre Relogio e o h1 */
+}
+
+.nav-left h1 {
+  font-size: 1.5rem;
+  text-shadow: 2px 2px var(--shadows);
+  color: var(--text-color);
+  margin: 0; /* remove o espaçamento padrão */
+}
+
 .navbar-menu-container {
   display: none;
 }
