@@ -19,6 +19,7 @@ import UpdatePassword from "./components/UpdatePassword/UpdatePassword";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import ProtectedHorarioRoute from "./services/ProtectedHorarioRoute copy";
 import ProtectedUpdatePasswordRoute from "./services/ProtectedUpdatePasswordRoute";
+import AgendaHorario from "./components/AgendaHorario/AgendaHorario";
 
 function App() {
   return (
@@ -44,6 +45,9 @@ function App() {
 
           <Route element={<ProtectedAgendaRoute />}>
             <Route path="/agenda/:id" element={<Agenda />} />
+          </Route>
+          <Route element={<ProtectedAgendaRoute />}>
+            <Route path="/agendaHorario/:id" element={<AgendaHorario />} />
           </Route>
           <Route element={<ProtectedHorarioRoute />}>
             <Route path="/horario/:id" element={<Horario />} />
