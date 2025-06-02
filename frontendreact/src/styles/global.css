@@ -584,13 +584,15 @@ nav:hover {
 .form_horario,
 .form_empresa,
 .form_agenda {
+  align-items: center;
   display: flex;
-  flex-direction: column;
+  flex-direction: center;
   gap: 12px;
   width: 100%;
-  max-width: 600px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 10px;
+  background-color: var(--secondary-bg-hover);
 }
 
 .form_usuario:hover,
@@ -609,6 +611,17 @@ nav:hover {
   max-width: 200px;
   margin-left: 3px;
   border-radius: 4px;
+}
+
+.form_usuario input{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 30px;
+  min-width: 190px;
+  max-width: 200px;
+  margin-left: 3px;
 }
 
 .add_horario {
