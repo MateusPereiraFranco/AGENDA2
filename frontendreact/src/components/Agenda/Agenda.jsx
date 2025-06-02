@@ -166,7 +166,7 @@ function Agenda() {
     }
   };
 
-  const handleDeleteEmpresa = async (id) => {
+  const handleDeleteAgenda = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir esta agenda?")) return;
 
     setDeletingId(id);
@@ -343,7 +343,7 @@ function Agenda() {
                       <button
                         className="botao-vermelho"
                         onClick={() =>
-                          handleDeleteEmpresa(agendamento.id_agenda)
+                          handleDeleteAgenda(agendamento.id_agenda)
                         }
                         disabled={deletingId === agendamento.id_agenda}
                       >
@@ -355,22 +355,22 @@ function Agenda() {
                       </button>
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <button
-                          className="botao_azul"
-                          onClick={() =>
-                            toggleStateById(
-                              agendamento.id_agenda,
-                              setEditingAgendamentoId
-                            )
-                          }
-                        >
-                          {editingAgendamentoId === agendamento.id_agenda ? (
-                            <EditOffIcon />
-                          ) : (
-                            <BorderColorIcon />
-                          )}
-                        </button>
-                      )}
+                          <button
+                            className="botao_azul"
+                            onClick={() =>
+                              toggleStateById(
+                                agendamento.id_agenda,
+                                setEditingAgendamentoId
+                              )
+                            }
+                          >
+                            {editingAgendamentoId === agendamento.id_agenda ? (
+                              <EditOffIcon />
+                            ) : (
+                              <BorderColorIcon />
+                            )}
+                          </button>
+                        )}
                       <button
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}
