@@ -23,7 +23,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import { useAuth } from "../../context/AuthContext";
-import { fetchHorarios } from "../../services/horarioService";
+import { addHorario, fetchHorarios } from "../../services/horarioService";
 
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -35,6 +35,7 @@ function AgendaHorario() {
 
   const navigate = useNavigate();
 
+  // agendamento
   const [agendamentos, setAgendamentos] = useState([]);
   const [usuarioNome, setUsuarioNome] = useState("");
   const [error, setError] = useState("");
@@ -45,11 +46,15 @@ function AgendaHorario() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showFullCalendar, setShowFullCalendar] = useState(false);
 
+
+  //  horario
   const [horarios, setHorarios] = useState([]);
+  const [contato, setContato] = useState("");
+  const [valor, setValor] = useState("");
   const itemsPerPage = 10;
   const [searchParams, setSearchParams] = useState({ sortBy: "horario" });
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMorePages, setHasMorePages] = useState(true);
+  const [hasMorePages, setHasMorePages] = useState(false);
 
   const editInputRef = useRef(null);
 
@@ -85,6 +90,77 @@ function AgendaHorario() {
       setHasMorePages(false);
       console.error(error);
     }
+  };
+
+  const handleAddHorario = async (e) => {
+    e.preventDefault();
+
+    let agendaId;
+
+    if (!agendamentos || agendamentos.length === 0) {
+      try {
+        const newAgendamento = await addAgendamento({ data: selectedDate.toISOString().split("T")[0] }, id);
+        toast.success("Agendamento adicionado com sucesso!");
+
+        // Atualiza a agenda local
+        await loadAgendamentos();
+        console.log("Novo agendamento adicionado:", newAgendamento.data.id_agenda);
+        agendaId = newAgendamento.data.id_agenda; // <- Pegue o ID retornado aqui
+      } catch (error) {
+        setError(error.message);
+        toast.error(error.message);
+        return; // interrompe o fluxo
+      }
+    } else {
+      console.log("Agendamentos existentes:", agendamentos);
+      agendaId = agendamentos[0].id_agenda;
+    }
+
+    const horario = {
+      horario: e.target.horario.value,
+      nome: e.target.nome.value,
+      contato: contato,
+      observacoes: e.target.observacoes.value,
+      agendadoPor: `${usuarioNome}`,
+      valor_servico: parseFloat(
+        e.target.valor_servico.value.replace("R$", "").replace(",", ".")
+      ),
+      fk_agenda_id: agendaId, // Usa o ID certo
+    };
+
+    try {
+      await addHorario({ horario }, id);
+      await loadHorarios();
+      e.target.reset();
+      setContato("");
+      setValor("");
+    } catch (error) {
+      setError(error.message);
+      toast.error(error.message);
+    }
+  };
+
+
+  const handleContatoChange = (e) => {
+    const input = e.target.value.replace(/\D/g, "");
+    let formattedInput = "";
+
+    if (input.length > 0) {
+      formattedInput = `(${input.substring(0, 2)}`;
+    }
+    if (input.length > 2) {
+      formattedInput += `) ${input.substring(2, 7)}`;
+    }
+    if (input.length > 7) {
+      formattedInput += `-${input.substring(7, 11)}`;
+    }
+    setContato(formattedInput);
+  };
+
+  const handleValorChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, "");
+    let formatted = (Number(raw) / 100).toFixed(2).replace(".", ",");
+    setValor("R$ " + formatted);
   };
 
   const loadUsuarioName = async () => {
@@ -357,12 +433,41 @@ function AgendaHorario() {
           {showAddForm ? <CloseIcon /> : <AddIcon />}
         </button>
         {showAddForm && (
-          <form onSubmit={handleAddAgendamento}>
-            <input type="date" name="data" required />
-            <button className="botao_verde" type="submit">
-              <CheckIcon />
-            </button>
-          </form>
+          <div className="form_horario">
+            <form className="add_horario" onSubmit={handleAddHorario}>
+              <div>
+                <input type="time" name="horario" placeholder="Horário" required />
+                <input type="text" name="nome" placeholder="Nome" required />
+                <input
+                  type="text"
+                  name="contato"
+                  placeholder="Contato (Opcional)"
+                  value={contato}
+                  onChange={handleContatoChange}
+                  maxLength={15}
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  id="valor_servico"
+                  name="valor_servico"
+                  placeholder="R$ 0,00"
+                  value={valor}
+                  onChange={handleValorChange}
+                  required
+                />
+                <input
+                  type="text"
+                  name="observacoes"
+                  placeholder="Observação (Opcional)"
+                />
+                <button className="botao_verde" type="submit">
+                  Adicionar Horário
+                </button>
+              </div>
+            </form>
+          </div>
         )}
       </div>
 
