@@ -339,24 +339,6 @@ hr {
   color: var(--text-color);
 }
 
-/* Slidesssssssssssssssssssssssssssssssssssssssssssssssss*/
-.semana-slider {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-.semana-slider button {
-  padding: 0.5rem;
-  border: none;
-  background: #f0f0f0;
-  cursor: pointer;
-  border-radius: 4px;
-}
-.semana-slider button:hover {
-  background: #ddd;
-}
-
 /*Navbar*/
 nav {
   display: flex;
@@ -597,47 +579,67 @@ nav:hover {
   text-align: center;
 }
 
-/* Forms */
-.form_usuario,
-.form_horario,
-.form_empresa,
-.form_agenda {
+/* AgendaHorario */
+.slideDataSelected {
+  font-family: "Playwrite IT Moderna", cursive;
+  color: var(--text-color);
+  font-Weight: bold;
+}
+
+.slideData {
+  font-family: "Playwrite IT Moderna", cursive;
+  font-Weight: normal;
+  color: rgb(179, 211, 236);
+}
+
+.semana-slider {
+  display: flex;
   align-items: center;
-  display: flex;
-  flex-direction: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 10px;
-  background-color: var(--secondary-bg-hover);
-}
-
-.form_usuario:hover,
-.form_horario:hover,
-.form_empresa:hover,
-.form_agenda:hover {
-  background-color: var(--secondary-bg-hover);
-}
-
-.form_horario button,
-.form_empresa button,
-.form_agenda button {
-  width: 100%;
-  height: 30px;
-  min-width: 190px;
-  max-width: 200px;
-  margin-left: 3px;
-  border-radius: 4px;
-}
-
-.form_usuario input{
-  display: flex;
   justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.semana-slider button {
+  border: none;
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  width: 7%;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 5px;
+  text-transform: uppercase;
+  background: var(--secondary-bg);
+  transition: 0.5s;
+}
+
+.semana-slider button.slideDataSelected {
+  background: linear-gradient(#409292, #1a5526, #034912);
+}
+.semana-slider button.slideDataSelected:hover {
+  background: linear-gradient(#409292, #247534, #034912);
+}
+.semana-slider button:hover {
+  background: var(--secondary-bg-hover);
+}
+
+/* Forms */
+.form_usuario {
+  display: flex;
   align-items: center;
-  width: 50%;
-  height: 30px;
-  min-width: 190px;
+  flex-direction: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 5px;
+  background-color: none;
+}
+
+.form_usuario input {
+  width: 40%;
+  height: 21px;
+  min-width: 160px;
   max-width: 200px;
   margin-left: 3px;
 }

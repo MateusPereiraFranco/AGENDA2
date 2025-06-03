@@ -9,7 +9,8 @@ import {
   updateAgendamento,
 } from "../../services/agendaService";
 import { fetchUsuarioNome } from "../../services/usuarioService";
-
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,7 +18,6 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import EditOffIcon from "@mui/icons-material/EditOff";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RotateRightIcon from "@mui/icons-material/RotateRight";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -45,7 +45,6 @@ function AgendaHorario() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showFullCalendar, setShowFullCalendar] = useState(false);
-
 
   //  horario
   const [horarios, setHorarios] = useState([]);
@@ -99,12 +98,18 @@ function AgendaHorario() {
 
     if (!agendamentos || agendamentos.length === 0) {
       try {
-        const newAgendamento = await addAgendamento({ data: selectedDate.toISOString().split("T")[0] }, id);
+        const newAgendamento = await addAgendamento(
+          { data: selectedDate.toISOString().split("T")[0] },
+          id
+        );
         toast.success("Agendamento adicionado com sucesso!");
 
         // Atualiza a agenda local
         await loadAgendamentos();
-        console.log("Novo agendamento adicionado:", newAgendamento.data.id_agenda);
+        console.log(
+          "Novo agendamento adicionado:",
+          newAgendamento.data.id_agenda
+        );
         agendaId = newAgendamento.data.id_agenda; // <- Pegue o ID retornado aqui
       } catch (error) {
         setError(error.message);
@@ -139,7 +144,6 @@ function AgendaHorario() {
       toast.error(error.message);
     }
   };
-
 
   const handleContatoChange = (e) => {
     const input = e.target.value.replace(/\D/g, "");
@@ -280,42 +284,61 @@ function AgendaHorario() {
 
   return (
     <div className="agenda_conteiner_geral">
-      <ToastContainer autoClose={1500} pauseOnHover={false} pauseOnFocusLoss={false} />
+      <ToastContainer
+        autoClose={1500}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
       <h1>{usuarioNome}</h1>
       <hr />
 
       <div className="semana-slider">
-        <button onClick={handlePrevWeek}><ArrowBackIosIcon /></button>
+        <button onClick={handlePrevWeek}>
+          <ArrowBackIosIcon />
+        </button>
         {weekDays.map((day) => (
           <button
             key={day.toISOString()}
             onClick={() => setSelectedDate(day)}
-            style={{
-              fontWeight: day.toDateString() === selectedDate.toDateString() ? "bold" : "normal"
-            }}
+            className={
+              day.toDateString() === selectedDate.toDateString()
+                ? "slideDataSelected"
+                : "slideData"
+            }
           >
-            {day.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" })}
+            <div>
+              {day.toLocaleDateString("pt-BR", {
+                weekday: "short",
+              })}
+            </div>
+            <div>
+              {day.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+              })}
+            </div>
           </button>
         ))}
-        <button onClick={handleNextWeek}><ArrowForwardIosIcon /></button>
-        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
-          <CalendarMonthIcon />
+        <button onClick={handleNextWeek}>
+          <ArrowForwardIosIcon />
         </button>
+        {/*        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
+          <CalendarMonthIcon />
+          </button> 
+          */}
       </div>
 
       {showFullCalendar && (
         <div style={{ marginBottom: "1rem" }}>
           <Calendar
-            onChange={(date) => { setSelectedDate(date); setShowFullCalendar(false); }}
+            onChange={(date) => {
+              setSelectedDate(date);
+              setShowFullCalendar(false);
+            }}
             value={selectedDate}
             locale="pt-BR"
           />
         </div>
       )}
-
-      <div>
-        <h3>Agendamentos para: {selectedDate.toLocaleDateString("pt-BR")}</h3>
-      </div>
 
       <div className="tabela_agenda">
         <table>
@@ -330,7 +353,10 @@ function AgendaHorario() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "1rem" }}>
+                <td
+                  colSpan="4"
+                  style={{ textAlign: "center", padding: "1rem" }}
+                >
                   Carregando...
                 </td>
               </tr>
@@ -349,7 +375,9 @@ function AgendaHorario() {
                     <td>
                       <button
                         className="botao-vermelho"
-                        onClick={() => handleDeleteAgenda(agendamento.id_agenda)}
+                        onClick={() =>
+                          handleDeleteAgenda(agendamento.id_agenda)
+                        }
                         disabled={deletingId === agendamento.id_agenda}
                       >
                         {deletingId === agendamento.id_agenda ? (
@@ -359,11 +387,15 @@ function AgendaHorario() {
                         )}
                       </button>
 
-                      {(tipo_usuario === "gerente" || tipo_usuario === "admin") && (
+                      {(tipo_usuario === "gerente" ||
+                        tipo_usuario === "admin") && (
                         <button
                           className="botao_azul"
                           onClick={() =>
-                            toggleStateById(agendamento.id_agenda, setEditingAgendamentoId)
+                            toggleStateById(
+                              agendamento.id_agenda,
+                              setEditingAgendamentoId
+                            )
                           }
                         >
                           {editingAgendamentoId === agendamento.id_agenda ? (
@@ -436,7 +468,12 @@ function AgendaHorario() {
           <div className="form_horario">
             <form className="add_horario" onSubmit={handleAddHorario}>
               <div>
-                <input type="time" name="horario" placeholder="Horário" required />
+                <input
+                  type="time"
+                  name="horario"
+                  placeholder="Horário"
+                  required
+                />
                 <input type="text" name="nome" placeholder="Nome" required />
                 <input
                   type="text"
@@ -501,19 +538,21 @@ function AgendaHorario() {
             </tbody>
           </table>
 
-          <div style={{ marginTop: "1rem" }}>
+          <div className="vai_volta">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="botao_verde"
+              onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
             >
-              Anterior
+              <KeyboardArrowLeftIcon className="seta_icon" />
             </button>
-            <span style={{ margin: "0 1rem" }}>Página {currentPage}</span>
+            <span>Página {currentPage}</span>
             <button
-              onClick={() => setCurrentPage((prev) => prev + 1)}
+              className="botao_verde"
+              onClick={() => setCurrentPage(currentPage + 1)}
               disabled={!hasMorePages}
             >
-              Próxima
+              <KeyboardArrowRightIcon className="seta_icon" />
             </button>
           </div>
         </div>
