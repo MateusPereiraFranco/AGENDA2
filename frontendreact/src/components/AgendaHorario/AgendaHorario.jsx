@@ -131,6 +131,7 @@ function AgendaHorario() {
     try {
       await addHorario({ horario }, id);
       await loadHorarios();
+      await loadAgendamentos();
       e.target.reset();
       setContato("");
       setValor("");
@@ -139,7 +140,6 @@ function AgendaHorario() {
       toast.error(error.message);
     }
   };
-
 
   const handleContatoChange = (e) => {
     const input = e.target.value.replace(/\D/g, "");
