@@ -25,7 +25,12 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { useAuth } from "../../context/AuthContext";
-import { addHorario, deleteHorario, fetchHorarios, updateHorario } from "../../services/horarioService";
+import {
+  addHorario,
+  deleteHorario,
+  fetchHorarios,
+  updateHorario,
+} from "../../services/horarioService";
 
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -80,7 +85,6 @@ function AgendaHorario() {
       }
     });
   };
-
 
   const loadAgendamentos = async () => {
     setLoading(true);
@@ -460,22 +464,22 @@ function AgendaHorario() {
 
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                          <button
-                            className="botao_azul"
-                            onClick={() =>
-                              toggleStateById(
-                                agendamento.id_agenda,
-                                setEditingAgendamentoId
-                              )
-                            }
-                          >
-                            {editingAgendamentoId === agendamento.id_agenda ? (
-                              <EditOffIcon />
-                            ) : (
-                              <BorderColorIcon />
-                            )}
-                          </button>
-                        )}
+                        <button
+                          className="botao_azul"
+                          onClick={() =>
+                            toggleStateById(
+                              agendamento.id_agenda,
+                              setEditingAgendamentoId
+                            )
+                          }
+                        >
+                          {editingAgendamentoId === agendamento.id_agenda ? (
+                            <EditOffIcon />
+                          ) : (
+                            <BorderColorIcon />
+                          )}
+                        </button>
+                      )}
                       <button
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}
@@ -526,7 +530,6 @@ function AgendaHorario() {
           </tbody>
         </table>
       </div>
-
       <div style={{ marginTop: "1rem" }}>
         <button
           id="botao_redondo"
@@ -537,43 +540,39 @@ function AgendaHorario() {
         </button>
         {showAddForm && (
           <div className="form_horario">
-            <form className="add_horario" onSubmit={handleAddHorario}>
-              <div>
-                <input
-                  type="time"
-                  name="horario"
-                  placeholder="Horário"
-                  required
-                />
-                <input type="text" name="nome" placeholder="Nome" required />
-                <input
-                  type="text"
-                  name="contato"
-                  placeholder="Contato (Opcional)"
-                  value={contato}
-                  onChange={handleContatoChange}
-                  maxLength={15}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  id="valor_servico"
-                  name="valor_servico"
-                  placeholder="R$ 0,00"
-                  value={valor}
-                  onChange={handleValorChange}
-                  required
-                />
-                <input
-                  type="text"
-                  name="observacoes"
-                  placeholder="Observação (Opcional)"
-                />
-                <button className="botao_verde" type="submit">
-                  Adicionar Horário
-                </button>
-              </div>
+            <form onSubmit={handleAddHorario}>
+              <input
+                type="time"
+                name="horario"
+                placeholder="Horário"
+                required
+              />
+              <input
+                type="text"
+                id="valor_servico"
+                name="valor_servico"
+                placeholder="R$ 0,00"
+                value={valor}
+                onChange={handleValorChange}
+                required
+              />
+              <input type="text" name="nome" placeholder="Nome" required />
+              <input
+                type="text"
+                name="contato"
+                placeholder="Contato (Opcional)"
+                value={contato}
+                onChange={handleContatoChange}
+                maxLength={15}
+              />
+              <input
+                type="text"
+                name="observacoes"
+                placeholder="Observação (Opcional)"
+              />
+              <button id="botao_redondo" className="botao_verde" type="submit">
+                <CheckIcon />
+              </button>
             </form>
           </div>
         )}
@@ -600,15 +599,18 @@ function AgendaHorario() {
                     <tr key={horario.id_horario}>
                       <td>{formatarHorarioSemSegundos(horario.horario)}</td>
                       <td>{horario.nome}</td>
-                      <td>{new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(horario.valor_servico)}
+                      <td>
+                        {new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(horario.valor_servico)}
                       </td>
                       <td className="botaoNoCanto">
                         <button
                           className="botao-vermelho"
-                          onClick={() => handleDeleteHorario(horario.id_horario)}
+                          onClick={() =>
+                            handleDeleteHorario(horario.id_horario)
+                          }
                           disabled={deletingHorarioId === horario.id_horario}
                         >
                           {deletingHorarioId === horario.id_horario ? (
@@ -620,7 +622,10 @@ function AgendaHorario() {
                         <button
                           className="botao_azul"
                           onClick={() =>
-                            toggleStateById(horario.id_horario, setEditingHorarioId)
+                            toggleStateById(
+                              horario.id_horario,
+                              setEditingHorarioId
+                            )
                           }
                         >
                           {editingHorarioId === horario.id_horario ? (
@@ -656,7 +661,8 @@ function AgendaHorario() {
                               <strong>Obs:</strong> {horario.observacoes}
                             </p>
                             <p>
-                              <strong>Agendado Por:</strong> {horario.agendadopor}
+                              <strong>Agendado Por:</strong>{" "}
+                              {horario.agendadopor}
                             </p>
                           </div>
                         </td>

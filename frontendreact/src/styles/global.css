@@ -617,9 +617,11 @@ nav:hover {
 .semana-slider button.slideDataSelected {
   background: linear-gradient(#409292, #1a5526, #034912);
 }
+
 .semana-slider button.slideDataSelected:hover {
   background: linear-gradient(#409292, #247534, #034912);
 }
+
 .semana-slider button:hover {
   background: var(--secondary-bg-hover);
 }
@@ -644,10 +646,27 @@ nav:hover {
   margin-left: 3px;
 }
 
-.add_horario {
+.form_horario form {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  background: var(--secondary-bg);
+  width: 90%;
+  height: 55px;
+  margin: -50px auto -5px auto;
+  border-radius: 10px;
+  animation: fadeIn 0.2s ease-in forwards;
+}
+.form_horario form input {
+  height: 20px;
+}
+#valor_servico{
+  width: 110px;
+}
 
+.form_horario button {
+  margin-left: 5px;
 }
 
 .tr-animation {
@@ -1058,28 +1077,6 @@ section:nth-of-type(60) {
     flex-wrap: wrap;
   }
 
-  .form_usuario,
-  .form_horario,
-  .form_empresa,
-  .form_agenda {
-    flex-wrap: wrap;
-  }
-
-  .form_usuario:hover,
-  .form_horario:hover,
-  .form_empresa:hover,
-  .form_agenda:hover {
-    background-color: var(--secondary-bg-hover);
-  }
-
-  .form_usuario button,
-  .form_horario button,
-  .form_empresa button,
-  .form_agenda button {
-    width: 70%;
-    min-width: 187px;
-  }
-
   .form_agenda hr,
   .form_usuario hr {
     margin-top: -10px;
@@ -1161,31 +1158,6 @@ section:nth-of-type(60) {
 }
 
 /* Animations */
-@keyframes twinkle {
-
-  0%,
-  100% {
-    opacity: 0.8;
-  }
-
-  50% {
-    opacity: 0.4;
-  }
-}
-
-@keyframes shoot {
-  0% {
-    transform: translateX(0) translateY(0) rotate(25deg);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateX(120vw) translateY(50vh) rotate(25deg);
-    opacity: 0;
-  }
-}
-
-/*conteiner tabelas*/
 @keyframes cascadeFadeIn {
   from {
     opacity: 0;
@@ -1209,6 +1181,14 @@ section:nth-of-type(60) {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 /*
 :root {
