@@ -21,9 +21,11 @@ import RotateRightIcon from "@mui/icons-material/RotateRight";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { useAuth } from "../../context/AuthContext";
-import { addHorario, fetchHorarios } from "../../services/horarioService";
+import { addHorario, deleteHorario, fetchHorarios, updateHorario } from "../../services/horarioService";
 
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -50,12 +52,35 @@ function AgendaHorario() {
   const [horarios, setHorarios] = useState([]);
   const [contato, setContato] = useState("");
   const [valor, setValor] = useState("");
+  const [editingHorarioId, setEditingHorarioId] = useState(null);
+  const [valorUpdate, setValorUpdate] = useState("");
+  const [deletingHorarioId, setDeletingHorarioId] = useState(null);
+  const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
   const itemsPerPage = 10;
   const [searchParams, setSearchParams] = useState({ sortBy: "horario" });
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(false);
 
   const editInputRef = useRef(null);
+
+  const handleValorUpdateChange = (e) => {
+    let raw = e.target.value.replace(/\D/g, "");
+    let formatted = (Number(raw) / 100).toFixed(2).replace(".", ",");
+    setValorUpdate("R$ " + formatted);
+  };
+
+  const toggleDetalhes = (id) => toggleStateByHoarioId(id, setDetalhesVisiveis);
+
+  const toggleStateByHoarioId = (id, setState) => {
+    setState((prev) => {
+      if (prev === null || typeof prev !== "object") {
+        return prev === id ? null : id;
+      } else {
+        return { ...prev, [id]: !prev[id] };
+      }
+    });
+  };
+
 
   const loadAgendamentos = async () => {
     setLoading(true);
@@ -144,6 +169,51 @@ function AgendaHorario() {
       setError(error.message);
       toast.error(error.message);
     }
+  };
+
+  const handleDeleteHorario = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir o horário?")) return;
+    setDeletingHorarioId(id);
+    try {
+      await deleteHorario(id);
+      loadHorarios();
+      toast.success("Horário excluído");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao excluir horário");
+    } finally {
+      setDeletingHorarioId(null);
+    }
+  };
+
+  const handleUpdateHorario = async (e) => {
+    e.preventDefault();
+    const nome = e.target.nome.value.trim();
+    const valor = parseFloat(
+      e.target.valor.value.replace("R$", "").replace(",", ".")
+    );
+
+    if (!nome || !valor) {
+      setError("Todos os campos são obrigatórios!");
+      return;
+    }
+
+    try {
+      await updateHorario(editingHorarioId, { nome, valor });
+      loadHorarios();
+      setEditingHorarioId(null);
+      setError("");
+      toast.success(`Horário atualizado com sucesso!`);
+    } catch (error) {
+      setError(error.message);
+      toast.error(error.message);
+    }
+  };
+
+  const formatarHorarioSemSegundos = (horarioCompleto) => {
+    if (!horarioCompleto) return "";
+    const partes = horarioCompleto.split(":");
+    return `${partes[0]}:${partes[1]}`;
   };
 
   const handleContatoChange = (e) => {
@@ -390,22 +460,22 @@ function AgendaHorario() {
 
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <button
-                          className="botao_azul"
-                          onClick={() =>
-                            toggleStateById(
-                              agendamento.id_agenda,
-                              setEditingAgendamentoId
-                            )
-                          }
-                        >
-                          {editingAgendamentoId === agendamento.id_agenda ? (
-                            <EditOffIcon />
-                          ) : (
-                            <BorderColorIcon />
-                          )}
-                        </button>
-                      )}
+                          <button
+                            className="botao_azul"
+                            onClick={() =>
+                              toggleStateById(
+                                agendamento.id_agenda,
+                                setEditingAgendamentoId
+                              )
+                            }
+                          >
+                            {editingAgendamentoId === agendamento.id_agenda ? (
+                              <EditOffIcon />
+                            ) : (
+                              <BorderColorIcon />
+                            )}
+                          </button>
+                        )}
                       <button
                         className="botao_verde"
                         onClick={() => handleVerAgenda(agendamento.id_agenda)}
@@ -518,20 +588,138 @@ function AgendaHorario() {
             <thead>
               <tr>
                 <th>Horário</th>
-                <th>Nome</th>
+                <th>Cliente</th>
+                <th>Valor</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
               {horarios.length > 0 ? (
-                horarios.map((horario) => (
-                  <tr key={horario.id_horario}>
-                    <td>{horario.horario}</td>
-                    <td>{horario.nome}</td>
-                  </tr>
+                horarios.map((horario, index) => (
+                  <>
+                    <tr key={horario.id_horario}>
+                      <td>{formatarHorarioSemSegundos(horario.horario)}</td>
+                      <td>{horario.nome}</td>
+                      <td>{new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(horario.valor_servico)}
+                      </td>
+                      <td className="botaoNoCanto">
+                        <button
+                          className="botao-vermelho"
+                          onClick={() => handleDeleteHorario(horario.id_horario)}
+                          disabled={deletingHorarioId === horario.id_horario}
+                        >
+                          {deletingHorarioId === horario.id_horario ? (
+                            <RotateRightIcon className="loading" />
+                          ) : (
+                            <DeleteIcon />
+                          )}
+                        </button>
+                        <button
+                          className="botao_azul"
+                          onClick={() =>
+                            toggleStateById(horario.id_horario, setEditingHorarioId)
+                          }
+                        >
+                          {editingHorarioId === horario.id_horario ? (
+                            <EditOffIcon />
+                          ) : (
+                            <BorderColorIcon />
+                          )}
+                        </button>
+                        <button
+                          className="botao_azul"
+                          onClick={() => toggleDetalhes(horario.id_horario)}
+                        >
+                          {detalhesVisiveis[horario.id_horario] ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+
+                    {detalhesVisiveis[horario.id_horario] && (
+                      <tr
+                        className="tr-animation"
+                        style={{ animationDelay: `${index * 100 + 50}ms` }}
+                      >
+                        <td colSpan="4">
+                          <div className="info_horario">
+                            <p>
+                              <strong>Contato:</strong> {horario.contato}
+                            </p>
+                            <p>
+                              <strong>Obs:</strong> {horario.observacoes}
+                            </p>
+                            <p>
+                              <strong>Agendado Por:</strong> {horario.agendadopor}
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+
+                    {editingHorarioId === horario.id_horario && (
+                      <tr
+                        className="tr-animation"
+                        style={{ animationDelay: `${index * 100 + 50}ms` }}
+                      >
+                        <td colSpan="4">
+                          <div className="edit-usuario-form">
+                            <div className="edit-usuario-form">
+                              <h2>Editar horário</h2>
+                              <form
+                                className="form-atualizacao"
+                                onSubmit={handleUpdateHorario}
+                              >
+                                <label htmlFor="nome">Nome:</label>
+                                <input
+                                  type="text"
+                                  id="nome"
+                                  name="nome"
+                                  defaultValue={horario.nome}
+                                  required
+                                />
+                                <br />
+                                <label htmlFor="valor">Valor:</label>
+                                <input
+                                  type="text"
+                                  id="valor"
+                                  name="valor"
+                                  placeholder="R$ 0,00"
+                                  value={valorUpdate}
+                                  onChange={handleValorUpdateChange}
+                                  required
+                                  ref={editInputRef}
+                                />
+                                <br />
+                                <div className="form-atualizacao_botao">
+                                  <button className="botao_verde" type="submit">
+                                    <CheckIcon />
+                                  </button>
+                                  <button
+                                    className="botao-vermelho"
+                                    type="button"
+                                    onClick={() => setEditingHorarioId(null)}
+                                  >
+                                    <CloseIcon />
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="2" style={{ textAlign: "center" }}>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
                     Nenhum horário encontrado
                   </td>
                 </tr>
