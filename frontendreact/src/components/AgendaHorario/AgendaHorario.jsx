@@ -61,9 +61,9 @@ function AgendaHorario() {
   const [valorUpdate, setValorUpdate] = useState("");
   const [deletingHorarioId, setDeletingHorarioId] = useState(null);
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
-  const [horarioFiltro, setHorarioFiltro] = useState("todos");
+  const [periodo, setPeriodo] = useState("");
   const itemsPerPage = 50;
-  const [searchParams, setSearchParams] = useState({ sortBy: "horario" });
+  const [searchParams, setSearchParams] = useState({ sortBy: "horario", limit: 30 });
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(false);
 
@@ -87,7 +87,6 @@ function AgendaHorario() {
     });
   };
 
-
   const loadAgendamentos = async () => {
     setLoading(true);
     try {
@@ -107,8 +106,18 @@ function AgendaHorario() {
     }
   };
 
+  const handlePeriodoChange = (e) => {
+    setPeriodo(e.target.value);
+    setCurrentPage(1); // 👈 volta para a primeira página
+  };
+
   const loadHorarios = async () => {
     try {
+      if (periodo !== "") {
+        searchParams.periodo = periodo;
+      } else {
+        delete searchParams.periodo;
+      }
       const params = { ...searchParams, page: currentPage };
       let data;
       if (agendamentos.length !== 0) {
@@ -120,20 +129,6 @@ function AgendaHorario() {
       setHasMorePages(false);
       console.error(error);
     }
-  };
-
-  const filtrarHorarios = () => {
-    if (!horarios) return [];
-
-    return horarios.filter((item) => {
-      const [horaStr] = item.horario.split(":");
-      const hora = parseInt(horaStr, 10);
-
-      if (horarioFiltro === "manha") return hora < 12;
-      if (horarioFiltro === "tarde") return hora >= 12;
-
-      return true; // "todos"
-    });
   };
 
   const handleAddHorario = async (e) => {
@@ -282,7 +277,7 @@ function AgendaHorario() {
     } else {
       setHorarios([]);
     }
-  }, [agendamentos, currentPage, searchParams]);
+  }, [agendamentos, currentPage, searchParams, periodo]);
 
   const toggleShowAddForm = () => {
     setShowAddForm((prev) => !prev);
@@ -592,10 +587,10 @@ function AgendaHorario() {
         <div className="filtro_horarios">
           <label>Filtrar Horários: </label>
           <select
-            value={horarioFiltro}
-            onChange={(e) => setHorarioFiltro(e.target.value)}
+            value={periodo}
+            onChange={handlePeriodoChange}
           >
-            <option value="todos">Todos</option>
+            <option value="">Todos</option>
             <option value="manha">Manhã</option>
             <option value="tarde">Tarde</option>
           </select>
@@ -612,7 +607,7 @@ function AgendaHorario() {
             </thead>
             <tbody>
               {horarios.length > 0 ? (
-                filtrarHorarios().map((horario, index) => (
+                horarios.map((horario, index) => (
                   <>
                     <tr key={horario.id_horario}>
                       <td>{formatarHorarioSemSegundos(horario.horario)}</td>

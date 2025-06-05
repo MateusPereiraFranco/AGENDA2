@@ -13,6 +13,7 @@ const searchSchema = Joi.object({
     observacoes: Joi.string().optional(),
     agendadoPor: Joi.string().optional(),
     valor_servico: Joi.number().precision(2).min(0),
+    periodo: Joi.string().valid('manha', 'tarde').optional(),
     page: Joi.number().integer().positive().default(1),
     limit: Joi.number().integer().positive().default(10),
     sortBy: Joi.string().valid('id_horario', 'horario', 'nome').default('id_horario'),
