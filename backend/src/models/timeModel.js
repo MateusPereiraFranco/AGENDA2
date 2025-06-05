@@ -14,7 +14,7 @@ export const getTimeById = async (id) => {
     }
 };
 
-const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico, page = 1, limit = 10, sortBy = 'id_horario', order = 'ASC' } = {}) => {
+const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes, agendadoPor, valor_servico, page = 1, limit = 50, sortBy = 'id_horario', order = 'ASC' } = {}) => {
     try {
         let query = 'SELECT * FROM horario';
         const params = [];
@@ -63,9 +63,9 @@ const getTimes = async ({ id, fk_agenda_id, horario, nome, contato, observacoes,
         query += ` ORDER BY ${sortBy} ${order}`;
 
         // Paginação
-        const offset = (page - 1) * limit;
+        /*const offset = (page - 1) * limit;
         query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-        params.push(limit, offset);
+        params.push(limit, offset);*/
 
         const result = await pool.query(query, params);
         return result.rows;

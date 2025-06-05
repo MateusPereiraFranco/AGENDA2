@@ -193,7 +193,7 @@ function Usuario() {
   };
 
   const handleVerFuncionario = (id) => {
-    navigate(`/agenda/${id}`);
+    navigate(`/agendaHorario/${id}`);
   };
 
   const handleSearchChangeNome = (e) => {

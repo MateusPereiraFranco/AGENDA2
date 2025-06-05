@@ -61,7 +61,8 @@ function AgendaHorario() {
   const [valorUpdate, setValorUpdate] = useState("");
   const [deletingHorarioId, setDeletingHorarioId] = useState(null);
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
-  const itemsPerPage = 10;
+  const [horarioFiltro, setHorarioFiltro] = useState("todos");
+  const itemsPerPage = 50;
   const [searchParams, setSearchParams] = useState({ sortBy: "horario" });
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(false);
@@ -85,6 +86,7 @@ function AgendaHorario() {
       }
     });
   };
+
 
   const loadAgendamentos = async () => {
     setLoading(true);
@@ -118,6 +120,20 @@ function AgendaHorario() {
       setHasMorePages(false);
       console.error(error);
     }
+  };
+
+  const filtrarHorarios = () => {
+    if (!horarios) return [];
+
+    return horarios.filter((item) => {
+      const [horaStr] = item.horario.split(":");
+      const hora = parseInt(horaStr, 10);
+
+      if (horarioFiltro === "manha") return hora < 12;
+      if (horarioFiltro === "tarde") return hora >= 12;
+
+      return true; // "todos"
+    });
   };
 
   const handleAddHorario = async (e) => {
@@ -365,7 +381,6 @@ function AgendaHorario() {
         pauseOnFocusLoss={false}
       />
       <h1>{usuarioNome}</h1>
-      <hr />
 
       <div className="semana-slider">
         <button onClick={handlePrevWeek}>
@@ -422,7 +437,7 @@ function AgendaHorario() {
               <th>Data</th>
               <th>Agendados</th>
               <th>Valor</th>
-              <th>Ações</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -447,7 +462,7 @@ function AgendaHorario() {
                         currency: "BRL",
                       }).format(agendamento.total_valores)}
                     </td>
-                    <td>
+                    <td className="botaoNoCanto">
                       <button
                         className="botao-vermelho"
                         onClick={() =>
@@ -464,28 +479,22 @@ function AgendaHorario() {
 
                       {(tipo_usuario === "gerente" ||
                         tipo_usuario === "admin") && (
-                        <button
-                          className="botao_azul"
-                          onClick={() =>
-                            toggleStateById(
-                              agendamento.id_agenda,
-                              setEditingAgendamentoId
-                            )
-                          }
-                        >
-                          {editingAgendamentoId === agendamento.id_agenda ? (
-                            <EditOffIcon />
-                          ) : (
-                            <BorderColorIcon />
-                          )}
-                        </button>
-                      )}
-                      <button
-                        className="botao_verde"
-                        onClick={() => handleVerAgenda(agendamento.id_agenda)}
-                      >
-                        <KeyboardArrowRightIcon />
-                      </button>
+                          <button
+                            className="botao_azul"
+                            onClick={() =>
+                              toggleStateById(
+                                agendamento.id_agenda,
+                                setEditingAgendamentoId
+                              )
+                            }
+                          >
+                            {editingAgendamentoId === agendamento.id_agenda ? (
+                              <EditOffIcon />
+                            ) : (
+                              <BorderColorIcon />
+                            )}
+                          </button>
+                        )}
                     </td>
                   </tr>
 
@@ -530,6 +539,7 @@ function AgendaHorario() {
           </tbody>
         </table>
       </div>
+      <hr style={{ margin: "2rem 0" }} />
       <div style={{ marginTop: "1rem" }}>
         <button
           id="botao_redondo"
@@ -577,11 +587,19 @@ function AgendaHorario() {
           </div>
         )}
       </div>
-
-      <hr style={{ margin: "2rem 0" }} />
-
+      {/* Renderiza a tabela de horários apenas se houver agendamentos */}
       <div>
-        <h3>Horários</h3>
+        <div className="filtro_horarios">
+          <label>Filtrar Horários: </label>
+          <select
+            value={horarioFiltro}
+            onChange={(e) => setHorarioFiltro(e.target.value)}
+          >
+            <option value="todos">Todos</option>
+            <option value="manha">Manhã</option>
+            <option value="tarde">Tarde</option>
+          </select>
+        </div>
         <div className="tabela_horarios">
           <table>
             <thead>
@@ -589,12 +607,12 @@ function AgendaHorario() {
                 <th>Horário</th>
                 <th>Cliente</th>
                 <th>Valor</th>
-                <th>Ações</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {horarios.length > 0 ? (
-                horarios.map((horario, index) => (
+                filtrarHorarios().map((horario, index) => (
                   <>
                     <tr key={horario.id_horario}>
                       <td>{formatarHorarioSemSegundos(horario.horario)}</td>

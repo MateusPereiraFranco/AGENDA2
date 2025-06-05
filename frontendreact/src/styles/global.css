@@ -669,6 +669,16 @@ nav:hover {
   margin-left: 5px;
 }
 
+.filtro_horarios {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 10px;
+  margin-top: 30px;
+  font-weight: 700;
+  font-size: large;
+}
+
 .tr-animation {
   opacity: 0;
   animation: cascadeFadeIn 0.5s ease forwards;

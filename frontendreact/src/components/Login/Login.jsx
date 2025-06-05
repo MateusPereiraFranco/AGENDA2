@@ -17,7 +17,7 @@ function Login() {
       const { tipo_usuario, id_usuario, fk_empresa_id } = user;
 
       const redirectPath = {
-        funcionario: `/agenda/${id_usuario}`,
+        funcionario: `/agendaHorario/${id_usuario}`,
         secretario: `/usuario/${fk_empresa_id}`,
         gerente: `/usuario/${fk_empresa_id}`,
         admin: '/empresa'
@@ -47,7 +47,7 @@ function Login() {
       setUser(userCompleto);
 
       const redirectPath = {
-        funcionario: `/agenda/${userCompleto.id_usuario}`,
+        funcionario: `/agendaHorario/${userCompleto.id_usuario}`,
         secretario: `/usuario/${userCompleto.fk_empresa_id}`,
         gerente: `/usuario/${userCompleto.fk_empresa_id}`,
         admin: '/empresa'
@@ -59,7 +59,6 @@ function Login() {
       setError(err.message || 'Erro ao fazer login. Tente novamente.');
     }
   };
-
 
   return (
     <div className="login-container">
@@ -85,7 +84,7 @@ function Login() {
             required
             id="senha"
           />
-          
+
         </div>
         <button id='botaoAtuSen' className="botao_verde" type="submit">Entrar</button>
       </form>
