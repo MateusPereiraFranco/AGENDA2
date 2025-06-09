@@ -52,6 +52,12 @@ function AgendaHorario() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showFullCalendar, setShowFullCalendar] = useState(false);
+  const [currentWeekStartDate, setCurrentWeekStartDate] = useState(() => {
+    const now = new Date();
+    now.setDate(now.getDate() - now.getDay() + 1); // Começa na segunda
+    return now;
+  });
+
 
   //  horario
   const [horarios, setHorarios] = useState([]);
@@ -355,18 +361,18 @@ function AgendaHorario() {
   };
 
   const handlePrevWeek = () => {
-    const prevWeek = new Date(selectedDate);
-    prevWeek.setDate(selectedDate.getDate() - 7);
-    setSelectedDate(prevWeek);
+    const prevWeek = new Date(currentWeekStartDate);
+    prevWeek.setDate(prevWeek.getDate() - 7);
+    setCurrentWeekStartDate(prevWeek);
   };
 
   const handleNextWeek = () => {
-    const nextWeek = new Date(selectedDate);
-    nextWeek.setDate(selectedDate.getDate() + 7);
-    setSelectedDate(nextWeek);
+    const nextWeek = new Date(currentWeekStartDate);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    setCurrentWeekStartDate(nextWeek);
   };
 
-  const weekDays = getWeekDays(selectedDate);
+  const weekDays = getWeekDays(currentWeekStartDate);
 
   return (
     <div className="agenda_conteiner_geral">
@@ -406,10 +412,16 @@ function AgendaHorario() {
         <button onClick={handleNextWeek}>
           <ArrowForwardIosIcon />
         </button>
-        {/*        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
+        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
           <CalendarMonthIcon />
-          </button> 
-          */}
+          <span>
+            {`${selectedDate.toLocaleDateString("pt-BR", {
+              weekday: "short",
+            })} ${selectedDate.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+            })}`}
+          </span>
+        </button>
       </div>
 
       {showFullCalendar && (
@@ -471,57 +483,8 @@ function AgendaHorario() {
                           <DeleteIcon />
                         )}
                       </button>
-
-                      {(tipo_usuario === "gerente" ||
-                        tipo_usuario === "admin") && (
-                          <button
-                            className="botao_azul"
-                            onClick={() =>
-                              toggleStateById(
-                                agendamento.id_agenda,
-                                setEditingAgendamentoId
-                              )
-                            }
-                          >
-                            {editingAgendamentoId === agendamento.id_agenda ? (
-                              <EditOffIcon />
-                            ) : (
-                              <BorderColorIcon />
-                            )}
-                          </button>
-                        )}
                     </td>
                   </tr>
-
-                  {editingAgendamentoId === agendamento.id_agenda && (
-                    <tr>
-                      <td colSpan="4">
-                        <form
-                          className="form-atualizacao"
-                          onSubmit={handleUpdateAgendamento}
-                        >
-                          <label htmlFor="data">Nova Data:</label>
-                          <input
-                            type="date"
-                            name="data"
-                            defaultValue={agendamento.data}
-                            required
-                            ref={editInputRef}
-                          />
-                          <button className="botao_verde" type="submit">
-                            <CheckIcon />
-                          </button>
-                          <button
-                            type="button"
-                            className="botao-vermelho"
-                            onClick={() => setEditingAgendamentoId(null)}
-                          >
-                            <CloseIcon />
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  )}
                 </React.Fragment>
               ))
             ) : (
@@ -768,5 +731,4 @@ function AgendaHorario() {
     </div>
   );
 }
-
 export default AgendaHorario;
