@@ -412,10 +412,16 @@ function AgendaHorario() {
         <button onClick={handleNextWeek}>
           <ArrowForwardIosIcon />
         </button>
-        {/*        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
+        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
           <CalendarMonthIcon />
-          </button> 
-          */}
+          <span>
+            {`${selectedDate.toLocaleDateString("pt-BR", {
+              weekday: "short",
+            })} ${selectedDate.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+            })}`}
+          </span>
+        </button>
       </div>
 
       {showFullCalendar && (
@@ -477,57 +483,8 @@ function AgendaHorario() {
                           <DeleteIcon />
                         )}
                       </button>
-
-                      {(tipo_usuario === "gerente" ||
-                        tipo_usuario === "admin") && (
-                          <button
-                            className="botao_azul"
-                            onClick={() =>
-                              toggleStateById(
-                                agendamento.id_agenda,
-                                setEditingAgendamentoId
-                              )
-                            }
-                          >
-                            {editingAgendamentoId === agendamento.id_agenda ? (
-                              <EditOffIcon />
-                            ) : (
-                              <BorderColorIcon />
-                            )}
-                          </button>
-                        )}
                     </td>
                   </tr>
-
-                  {editingAgendamentoId === agendamento.id_agenda && (
-                    <tr>
-                      <td colSpan="4">
-                        <form
-                          className="form-atualizacao"
-                          onSubmit={handleUpdateAgendamento}
-                        >
-                          <label htmlFor="data">Nova Data:</label>
-                          <input
-                            type="date"
-                            name="data"
-                            defaultValue={agendamento.data}
-                            required
-                            ref={editInputRef}
-                          />
-                          <button className="botao_verde" type="submit">
-                            <CheckIcon />
-                          </button>
-                          <button
-                            type="button"
-                            className="botao-vermelho"
-                            onClick={() => setEditingAgendamentoId(null)}
-                          >
-                            <CloseIcon />
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  )}
                 </React.Fragment>
               ))
             ) : (
