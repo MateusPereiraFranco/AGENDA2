@@ -33,7 +33,6 @@ import {
 } from "../../services/horarioService";
 
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 
 function AgendaHorario() {
   const { id } = useParams();
@@ -58,7 +57,6 @@ function AgendaHorario() {
     return now;
   });
 
-
   //  horario
   const [horarios, setHorarios] = useState([]);
   const [contato, setContato] = useState("");
@@ -69,7 +67,10 @@ function AgendaHorario() {
   const [detalhesVisiveis, setDetalhesVisiveis] = useState({});
   const [periodo, setPeriodo] = useState("");
   const itemsPerPage = 50;
-  const [searchParams, setSearchParams] = useState({ sortBy: "horario", limit: 30 });
+  const [searchParams, setSearchParams] = useState({
+    sortBy: "horario",
+    limit: 30,
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(false);
 
@@ -382,7 +383,33 @@ function AgendaHorario() {
         pauseOnFocusLoss={false}
       />
       <h1>{usuarioNome}</h1>
-
+      <div className="selectCalendar">
+        <button
+          className="botaoCalendario"
+          onClick={() => setShowFullCalendar((prev) => !prev)}
+        >
+          <CalendarMonthIcon />
+          <span>
+            {`${selectedDate.toLocaleDateString("pt-BR", {
+              weekday: "short",
+            })} ${selectedDate.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+            })}`}
+          </span>
+        </button>
+        {showFullCalendar && (
+          <div className="calendario" style={{ marginBottom: "1rem" }}>
+            <Calendar
+              onChange={(date) => {
+                setSelectedDate(date);
+                setShowFullCalendar(false);
+              }}
+              value={selectedDate}
+              locale="pt-BR"
+            />
+          </div>
+        )}
+      </div>
       <div className="semana-slider">
         <button onClick={handlePrevWeek}>
           <ArrowBackIosIcon />
@@ -412,30 +439,7 @@ function AgendaHorario() {
         <button onClick={handleNextWeek}>
           <ArrowForwardIosIcon />
         </button>
-        <button onClick={() => setShowFullCalendar((prev) => !prev)}>
-          <CalendarMonthIcon />
-          <span>
-            {`${selectedDate.toLocaleDateString("pt-BR", {
-              weekday: "short",
-            })} ${selectedDate.toLocaleDateString("pt-BR", {
-              day: "2-digit",
-            })}`}
-          </span>
-        </button>
       </div>
-
-      {showFullCalendar && (
-        <div style={{ marginBottom: "1rem" }}>
-          <Calendar
-            onChange={(date) => {
-              setSelectedDate(date);
-              setShowFullCalendar(false);
-            }}
-            value={selectedDate}
-            locale="pt-BR"
-          />
-        </div>
-      )}
 
       <div className="tabela_agenda">
         <table>
@@ -549,10 +553,7 @@ function AgendaHorario() {
       <div>
         <div className="filtro_horarios">
           <label>Filtrar Horários: </label>
-          <select
-            value={periodo}
-            onChange={handlePeriodoChange}
-          >
+          <select value={periodo} onChange={handlePeriodoChange}>
             <option value="">Todos</option>
             <option value="manha">Manhã</option>
             <option value="tarde">Tarde</option>

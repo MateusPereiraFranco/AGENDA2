@@ -658,10 +658,12 @@ nav:hover {
   border-radius: 10px;
   animation: fadeIn 0.2s ease-in forwards;
 }
+
 .form_horario form input {
   height: 20px;
 }
-#valor_servico{
+
+#valor_servico {
   width: 110px;
 }
 
@@ -737,11 +739,55 @@ nav:hover {
 
 /*////////////////////////////////////////////////////*/
 /* Relógio */
+.botaoCalendario {
+  width: 100px;
+  height: 30px;
+  margin-bottom: 15px;
+  color: var(--text-color);
+  background-color: var(--secondary-bg);
+}
+.botaoCalendario:hover{
+  background-color: var(--secondary-bg-hover);
+}
+
+.selectCalendar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 16.5rem;
+  gap: 20px;
+}
+
+.calendario {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+  background-color: rgba(12, 12, 12, 0.459);
+  text-align: center;
+  border-radius: 5px;
+  width: 430px;
+  height: 260px;
+  padding-left: 10px;
+  padding-right: 10px;
+  animation: fadeIn 0.4s ease-in forwards;
+}
+.calendario button {
+  align-items: center;
+  width: 85px;
+  height: 35px;
+  color: var(--text-color);
+  background-color: rgba(37, 36, 36, 0.459);
+  transition: 0.5s;
+}
+.calendario button:hover {
+  background-color: rgba(224, 215, 215, 0.692);
+}
+
 .tituloData {
   margin-right: -50px;
 }
 
-.diaMes{
+.diaMes {
   text-align: center;
   font-weight: 600;
 }
@@ -1204,6 +1250,7 @@ section:nth-of-type(60) {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
