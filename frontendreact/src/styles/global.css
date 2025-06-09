@@ -737,6 +737,15 @@ nav:hover {
 
 /*////////////////////////////////////////////////////*/
 /* Relógio */
+.tituloData {
+  margin-right: -50px;
+}
+
+.diaMes{
+  text-align: center;
+  font-weight: 600;
+}
+
 .clock {
   height: 90px;
   width: 90px;

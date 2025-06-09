@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom"; // Para redir
 
 // Relógio
 import Relogio from "./relogio.js";
+import Data from "./Data.js";
 
 //Icons
 import piratinha from "../../assets/piratinha.png";
@@ -104,7 +105,10 @@ const Navbar = () => {
         <div className="nav-logo-container">
           <Relogio />
         </div>
-        <h1>{pageTitle}</h1>
+        <div className="tituloData">
+          <Data />
+          <h1>{pageTitle}</h1>
+        </div>
       </div>
       <div className="navbar-links-container">
         {menuOptions.map((item) => (
@@ -129,11 +133,7 @@ const Navbar = () => {
       <div className="navbar-menu-container">
         <HiOutlineBars3 onClick={() => setOpenMenu(true)} />
       </div>
-      <Drawer
-        open={openMenu}
-        onClose={() => setOpenMenu(false)}
-        anchor="right"
-      >
+      <Drawer open={openMenu} onClose={() => setOpenMenu(false)} anchor="right">
         <Box
           sx={{ width: 250 }}
           role="presentation"
