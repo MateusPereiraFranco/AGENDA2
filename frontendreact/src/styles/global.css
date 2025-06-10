@@ -740,7 +740,10 @@ nav:hover {
 /*////////////////////////////////////////////////////*/
 /* Relógio */
 .botaoCalendario {
-  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  width: 175px;
   height: 30px;
   margin-bottom: 15px;
   color: var(--text-color);
@@ -754,6 +757,7 @@ nav:hover {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-items: center;
   margin-left: 16.5rem;
   gap: 20px;
 }
@@ -788,7 +792,7 @@ nav:hover {
 }
 
 .diaMes {
-  text-align: center;
+  text-align: start;
   font-weight: 600;
 }
 

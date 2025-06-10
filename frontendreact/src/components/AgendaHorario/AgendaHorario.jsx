@@ -23,6 +23,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -394,7 +395,15 @@ function AgendaHorario() {
               weekday: "short",
             })} ${selectedDate.toLocaleDateString("pt-BR", {
               day: "2-digit",
-            })}`}
+            })}
+            ${selectedDate.toLocaleDateString("pt-BR", {
+              month: "short",
+            })}
+            ${selectedDate.toLocaleDateString("pt-BR", {
+              year: "2-digit",
+            })}
+            `}
+            <KeyboardArrowDownIcon />
           </span>
         </button>
         {showFullCalendar && (
@@ -403,6 +412,7 @@ function AgendaHorario() {
               onChange={(date) => {
                 setSelectedDate(date);
                 setShowFullCalendar(false);
+                setCurrentWeekStartDate(date)
               }}
               value={selectedDate}
               locale="pt-BR"
